@@ -1,10 +1,7 @@
-import type { NextConfig } from 'next';
-import type { RuleSetRule } from 'webpack'; // 추가
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   webpack(config) {
     const fileLoaderRule = config.module.rules.find(
-      (rule: RuleSetRule) => rule?.test instanceof RegExp && rule.test.test('.svg'),
+      (rule) => rule?.test instanceof RegExp && rule.test.test('.svg'),
     );
 
     if (fileLoaderRule) {
@@ -21,4 +18,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
