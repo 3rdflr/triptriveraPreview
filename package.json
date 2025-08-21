@@ -22,12 +22,26 @@
     ]
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.85.5",
+    "motion": "^12.23.12",
     "next": "^14.2.32",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.62.0",
+    "react-icons": "^5.5.0",
+    "react-simplified-package": "^1.2.2",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@storybook/addon-essentials": "7.6.20",
+    "@storybook/addon-interactions": "7.6.20",
+    "@storybook/addon-links": "7.6.20",
+    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/blocks": "7.6.20",
+    "@storybook/nextjs": "7.6.20",
+    "@storybook/react": "7.6.20",
+    "@storybook/test": "7.6.20",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -42,16 +56,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
-    "tailwindcss": "^4",
-    "typescript": "^5",
     "storybook": "7.6.20",
-    "@storybook/react": "7.6.20",
-    "@storybook/nextjs": "7.6.20",
-    "@storybook/addon-links": "7.6.20",
-    "@storybook/addon-essentials": "7.6.20",
-    "@storybook/blocks": "7.6.20",
-    "@storybook/addon-onboarding": "^1.0.11",
-    "@storybook/addon-interactions": "7.6.20",
-    "@storybook/test": "7.6.20"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
