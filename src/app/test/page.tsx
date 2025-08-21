@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import './App.css';
+'use client';
+
+import { useState } from 'react';
 
 import { Modal, createToast, ToastRender, Dropdown } from 'react-simplified-package';
 import { FaCheckCircle } from 'react-icons/fa';
