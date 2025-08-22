@@ -2,10 +2,10 @@
 @import 'tailwindcss';
 
 :root {
-  --title: #000000;
+  --title: #222222;
   --subtitle: #6a6a6a;
 
-  --grayscale-25: #f8f8f8;
+  --grayscale-25: #f7f7f7;
   --grayscale-50: #edeef2;
   --grayscale-100: #e0e0e5;
   --grayscale-200: #c6c8cf;
@@ -16,11 +16,13 @@
   --grayscale-700: #5c5d61;
   --grayscale-800: #49494c;
   --grayscale-900: #323236;
+
   --primary-100: #fee5ee;
   --primary-200: #fdb3d1;
   --primary-300: #f97fb4;
   --primary-400: #f64b97;
   --primary-500: #e60e68;
+
   --secondary-red-400: #ff4d4d;
   --secondary-red-500: #e80000;
 }
@@ -33,7 +35,7 @@
   --color-subtitle: var(--subtitle);
 
   /* Grayscale */
-  --color-grayscale-25: #f8f8f8;
+  --color-grayscale-25: #f7f7f7;
   --color-grayscale-50: #edeef2;
   --color-grayscale-100: #e0e0e5;
   --color-grayscale-200: #c6c8cf;
