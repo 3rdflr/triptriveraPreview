@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ToastProvider from '@/components/common/ToastProvider';
+import { pretendard } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,9 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='ko'>
+    <html lang='ko' className={`${pretendard.variable}`}>
       <ToastProvider />
-      <body>{children}</body>
+      <body>테스트입니다.{children}</body>
     </html>
   );
 }
