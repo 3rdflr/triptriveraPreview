@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Nav() {
   return (
-    <div className='flex items-center justify-between px-12 py-4 bg-gradient-to-b from-white to-gray-50 border-b border-grayscale-100 h-[90px]'>
+    <div className='sticky top-0 flex items-center justify-between px-12 py-4 bg-gradient-to-b from-white to-gray-50 border-b border-grayscale-100 h-[90px] z-50'>
       <div>
         <Link href={'/'}>
           <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
