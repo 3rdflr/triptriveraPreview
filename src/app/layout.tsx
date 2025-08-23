@@ -5,6 +5,7 @@ import { pretendard } from '@/lib/fonts';
 import './globals.css';
 import { Suspense } from 'react';
 import Nav from '@/components/common/Nav';
+import { OverlayProvider } from '@/components/common/OverlayProvider';
 
 export const metadata: Metadata = {
   title: 'Trivera',
@@ -21,11 +22,13 @@ export default function RootLayout({
       <ToastProvider />
       <Suspense fallback={<div>Loading...</div>}>
         <body>
-          <Nav />
-          {children}
-          <div className='fixed bottom-0 left-0 right-0 flex items-center justify-between px-12 py-4 bg-black w-full  h-[82px] zindex-50 text-white'>
-            bottom nav for mobile test
-          </div>
+          <OverlayProvider>
+            <Nav />
+            {children}
+            <div className='fixed bottom-0 left-0 right-0 flex items-center justify-between px-12 py-4 bg-black w-full  h-[82px] zindex-50 text-white'>
+              bottom nav for mobile test
+            </div>
+          </OverlayProvider>
         </body>
       </Suspense>
     </html>
