@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ToastProvider from '@/components/common/ToastProvider';
+import QueryProvider from '@/providers/QueryProvider';
 import { pretendard } from '@/lib/fonts';
 import './globals.css';
 
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
       <ToastProvider />
-      <body>테스트입니다.{children}</body>
+      <body suppressHydrationWarning={true}>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

@@ -34,14 +34,13 @@ export interface AvailableSchedule {
   times: ScheduleTime[];
 }
 
-// 컴포넌트에서 사용할 기본 체험 인터페이스
-export interface Activity {
+// 🎯 캐시 가능한 기본 체험 정보 (정적 콘텐츠)
+export interface ActivityBasicInfo {
   id: number;
   userId: number;
   title: string;
   description: string;
   category: ActivitiesCategoryType;
-  price: number;
   address: string;
   bannerImageUrl: string;
   rating: number;
@@ -50,13 +49,39 @@ export interface Activity {
   updatedAt: string;
 }
 
-// 컴포넌트에서 사용할 체험 상세 인터페이스
-export interface ActivityDetail extends Activity {
-  subImages: SubImage[];
-  schedules: Schedule[];
+// 💰 캐시하면 안되는 실시간 가격/예약 정보 (동적 콘텐츠)
+export interface ActivityPricingInfo {
+  id: number;
+  price: number; // 실시간 가격 (할인/프로모션 적용)
+  originalPrice?: number; // 원가
+  discountRate?: number; // 할인율
+  availableSchedules: AvailableSchedule[]; // 실시간 예약 가능 시간
+  isAvailable: boolean; // 현재 예약 가능 여부
+  maxCapacity: number; // 최대 인원
+  currentBookings: number; // 현재 예약 인원
+  lastUpdated: string; // 마지막 업데이트 시간
 }
 
-// 체험 카드 표시용
+// 컴포넌트에서 사용할 기본 체험 인터페이스 (기본 정보만)
+export interface Activity extends ActivityBasicInfo {
+  price: number; // 기본 가격 (참고용)
+}
+
+// 컴포넌트에서 사용할 체험 상세 인터페이스 (기본 정보 + 이미지)
+export interface ActivityDetail extends ActivityBasicInfo {
+  subImages: SubImage[];
+  schedules: Schedule[];
+  price: number; // 기본 가격 (참고용)
+}
+
+// 🔄 완전한 체험 정보 (기본 정보 + 실시간 정보)
+export interface ActivityFullInfo extends ActivityBasicInfo {
+  subImages: SubImage[];
+  schedules: Schedule[];
+  pricingInfo: ActivityPricingInfo;
+}
+
+// 체험 카드 표시용 간단한 인터페이스
 export interface ActivityCard {
   id: number;
   title: string;

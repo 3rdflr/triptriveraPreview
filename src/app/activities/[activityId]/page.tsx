@@ -1,8 +1,8 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { getActivityDetail, getActivitiesList } from '@/api/activities';
+import { HydrationBoundary } from '@tanstack/react-query';
+import { getActivitiesList } from '@/api/activities';
 import ActivityClient from '@/app/activities/[activityId]/activities/ActivityClient';
 import ActivitySkeleton from '@/app/activities/[activityId]/activities/ActivitySkeleton';
-import { ErrorBoundary, ActivityErrorFallback } from '@/components/common/ErrorBoundary';
+import { prefetchActivityData } from './queryClients';
 import { Suspense } from 'react';
 
 interface ActivityPageProps {
@@ -11,59 +11,56 @@ interface ActivityPageProps {
   }>;
 }
 
+interface ActivityStaticParams {
+  activityId: string;
+}
+
 const ActivityPage = async ({ params }: ActivityPageProps) => {
+  const startTime = performance.now();
+  console.log('🎬 [SSR] ActivityPage 시작');
+
+  // params 추출
   const { activityId } = await params;
 
-  // 서버에서 데이터 prefetch (SSR/SSG 최적화)
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-        gcTime: Infinity,
-      },
-    },
-  });
+  // Activity 데이터 prefetch
+  const dehydratedState = await prefetchActivityData(activityId);
 
-  try {
-    // 서버에서 데이터를 미리 가져와서 hydration 준비
-    await queryClient.prefetchQuery({
-      queryKey: ['activity', activityId],
-      queryFn: () => getActivityDetail(Number(activityId)),
-    });
-  } catch (error) {
-    // prefetch 실패해도 클라이언트에서 재시도 가능하도록 graceful degradation
-    console.warn('Server prefetch failed, will retry on client:', error);
-  }
+  const duration = performance.now() - startTime;
+  console.log(`⏱️ [SSR] ActivityPage 완료: ${duration.toFixed(2)}ms`, { activityId });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ErrorBoundary fallback={<ActivityErrorFallback />}>
-        <Suspense fallback={<ActivitySkeleton />}>
-          <ActivityClient activityId={activityId} />
-        </Suspense>
-      </ErrorBoundary>
+    <HydrationBoundary state={dehydratedState}>
+      <Suspense fallback={<ActivitySkeleton />}>
+        <ActivityClient activityId={activityId} />
+      </Suspense>
     </HydrationBoundary>
   );
 };
 export default ActivityPage;
 
 // SSG를 위한 정적 경로 생성
-export async function generateStaticParams() {
-  try {
-    const activities = await getActivitiesList({
-      method: 'offset',
-      page: 1,
-      size: 20,
-      sort: 'most_reviewed',
-    });
+export async function generateStaticParams(): Promise<ActivityStaticParams[]> {
+  const startTime = performance.now();
+  console.log('🏗️ [SSG] generateStaticParams 시작 - 인기 체험 20개 선정');
 
-    return activities.activities.map((activity) => ({
-      activityId: activity.id.toString(),
-    }));
-  } catch (error) {
-    console.warn('Failed to generate static params:', error);
-    return [];
-  }
+  const activities = await getActivitiesList({
+    method: 'offset',
+    page: 1,
+    size: 20,
+    sort: 'most_reviewed',
+  });
+
+  const staticParams: ActivityStaticParams[] = activities.activities.map((activity) => ({
+    activityId: activity.id.toString(),
+  }));
+
+  const duration = performance.now() - startTime;
+  console.log(`⏱️ [SSG] generateStaticParams 완료: ${duration.toFixed(2)}ms`, {
+    count: staticParams.length,
+    activityIds: staticParams.map((p) => p.activityId),
+  });
+
+  return staticParams;
 }
 
 export const dynamicParams = true;
