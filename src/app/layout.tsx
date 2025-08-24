@@ -3,6 +3,7 @@ import ToastProvider from '@/components/common/ToastProvider';
 import QueryProvider from '@/providers/QueryProvider';
 import { pretendard } from '@/lib/fonts';
 import './globals.css';
+import { OverlayProvider } from '@/components/common/OverlayProvider';
 
 export const metadata: Metadata = {
   title: 'Trivera',
@@ -17,8 +18,11 @@ export default function RootLayout({
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
       <ToastProvider />
+
       <body suppressHydrationWarning={true}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <OverlayProvider>{children}</OverlayProvider>
+        </QueryProvider>
       </body>
     </html>
   );
