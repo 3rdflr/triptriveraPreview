@@ -10,21 +10,21 @@ const useDateInput = () => {
 
   function formatDate(date: Date | undefined) {
     if (!(date instanceof Date) || isNaN(date.getTime())) return '';
-    return format(date, 'yyyy/MM/dd');
+    return format(date, 'yy/MM/dd');
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let currentDate = e.target.value;
     currentDate = currentDate.replace(/\D/g, '');
-    if (currentDate.length > 4 && currentDate.length <= 6) {
-      currentDate = currentDate.slice(0, 4) + '/' + currentDate.slice(4);
-    } else if (currentDate.length > 6) {
+    if (currentDate.length > 2 && currentDate.length <= 4) {
+      currentDate = currentDate.slice(0, 2) + '/' + currentDate.slice(2);
+    } else if (currentDate.length > 4) {
       currentDate =
-        currentDate.slice(0, 4) + '/' + currentDate.slice(4, 6) + '/' + currentDate.slice(6, 8);
+        currentDate.slice(0, 2) + '/' + currentDate.slice(2, 4) + '/' + currentDate.slice(4, 6);
     }
     setValue(currentDate);
-    if (/^\d{4}\/\d{2}\/\d{2}$/.test(currentDate)) {
-      const parsedDate = parse(currentDate, 'yyyy/MM/dd', new Date());
+    if (/^\d{2}\/\d{2}\/\d{2}$/.test(currentDate)) {
+      const parsedDate = parse(currentDate, 'yy/MM/dd', new Date());
       if (isValid(parsedDate)) {
         setDate(parsedDate);
         setMonth(parsedDate);
