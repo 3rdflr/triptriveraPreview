@@ -12,13 +12,14 @@ interface RoundButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const RoundButton = ({ mode = 'close', children, className, onClick }: RoundButtonProps) => {
-  const baseClass = 'rounded-full flex items-center justify-center';
+  const baseClass =
+    'cursor-pointer rounded-full flex items-center justify-center border border-transparent focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]';
 
   const getModeClass = (): string => {
     const modeClassMap: Record<string, string> = {
-      plus: 'w-[42px] h-[42px] bg-primary-500',
-      minus: 'w-[42px] h-[42px] bg-grayscale-50',
-      close: 'w-[26px] h-[26px] bg-grayscale-950',
+      plus: 'w-[28px] h-[28px] sm:w-[42px] sm:h-[42px] bg-primary-500 hover:bg-[var(--primary-400)]',
+      minus: 'w-[28px] h-[28px] sm:w-[42px] sm:h-[42px] bg-grayscale-50 hover:bg-grayscale-25',
+      close: 'w-[20px] h-[20px] sm:w-[26px] sm:h-[26px] bg-grayscale-950 hover:bg-grayscale-800',
     };
     return modeClassMap[mode];
   };

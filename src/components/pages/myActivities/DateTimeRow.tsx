@@ -1,12 +1,12 @@
 import DateInput from './DateInput';
 import StartEndTimeSelect from './StartEndTimeSelect';
 import RoundButton from './RoundButton';
-import { RowData } from '@/types/myActivityTypes';
+import { MyActivitySchedule } from '@/types/myActivity.types';
 
 interface DateTimeRowProps {
-  data: RowData;
+  data: Omit<MyActivitySchedule, 'id'>;
   isFirstRow?: boolean;
-  onChange: (newData: RowData) => void;
+  onChange: (newData: Omit<MyActivitySchedule, 'id'>) => void;
   onAdd?: () => void;
   onRemove?: () => void;
 }
@@ -25,15 +25,20 @@ const DateTimeRow = ({ data, isFirstRow = false, onChange, onAdd, onRemove }: Da
   };
 
   return (
-    <div className='flex items-end gap-3.5'>
+    <div className='flex flex-col sm:flex-row items-start gap-3.5'>
       <DateInput value={data.date} showLabel={isFirstRow} onChange={handleDateInputChange} />
-      <StartEndTimeSelect
-        value={data.time}
-        showLabel={isFirstRow}
-        onChange={(newVal) => onChange({ ...data, time: newVal })}
-      />
-      <div className='flex flex-col justify-center h-[3.375rem]'>
-        <RoundButton mode={isFirstRow ? 'plus' : 'minus'} onClick={isFirstRow ? onAdd : onRemove} />
+      <div className='flex flex-row items-end gap-3.5'>
+        <StartEndTimeSelect
+          value={{ start: data.startTime, end: data.endTime }}
+          showLabel={isFirstRow}
+          onChange={(newVal) => onChange({ ...data, startTime: newVal.start, endTime: newVal.end })}
+        />
+        <div className='flex flex-col justify-center h-[3.375rem]'>
+          <RoundButton
+            mode={isFirstRow ? 'plus' : 'minus'}
+            onClick={isFirstRow ? onAdd : onRemove}
+          />
+        </div>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
     <div className='flex items-start'>
       <div className='flex flex-col'>
         {showLabel && (
-          <Label htmlFor='date' className='px-1 mb-2.5'>
+          <Label htmlFor='date' className='mb-2.5'>
             날짜
           </Label>
         )}
@@ -45,7 +45,7 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
             id='date'
             value={value}
             placeholder='yy/mm/dd'
-            className='bg-background pr-10 min-w-[327px] h-[3.375rem]'
+            className='bg-background pr-10 min-w-[327px]'
             onChange={(e) => {
               const val = e.target.value;
               onChange?.(val);
@@ -75,7 +75,7 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
               <Button
                 id='date-picker'
                 variant='ghost'
-                className='absolute top-1/2 right-2 size-6 -translate-y-1/2'
+                className='absolute top-1/2 right-2 size-6 -translate-y-1/2 border border-transparent focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]'
               >
                 <CalendarIcon className='size-3.5' />
                 <span className='sr-only'>Select date</span>
