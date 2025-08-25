@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Expand, ImageIcon } from 'lucide-react';
 import ImageGalleryModal from '@/app/activities/[activityId]/activities/ImageGalleryModal';
-import ImageSkeleton from '@/components/common/ImageSkeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useOverlay } from '@/hooks/useOverlay';
 import clsx from 'clsx';
 
@@ -34,6 +34,13 @@ export default function ActivityImageViewer({
   // 남은 이미지 개수 = 전체 - 표시된 3개
   const remainingCount = Math.max(0, allImages.length - 3);
 
+  // 모든 이미지가 로드되었는지 확인
+  const requiredImages = ['main', 'sub-0', 'sub-1'].filter((_, index) => {
+    if (index === 0) return true; // 메인 이미지는 항상 필요
+    return subImages[index - 1]; // 서브 이미지는 존재할 때만
+  });
+  const allImagesLoaded = requiredImages.every((key) => imageLoadStates[key]);
+
   const handleImageLoad = (key: string) => {
     setImageLoadStates((prev) => ({ ...prev, [key]: true }));
   };
@@ -52,12 +59,6 @@ export default function ActivityImageViewer({
     ));
   };
 
-  console.log('🖼️ [CSR] ActivityImageViewer 렌더링', {
-    totalImages: allImages.length,
-    displayedImages: 3,
-    remainingCount,
-  });
-
   return (
     <div className='w-full'>
       {/* 배너 + 서브 2개만 표시 */}
@@ -71,7 +72,9 @@ export default function ActivityImageViewer({
           )}
         >
           <div className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'>
-            {!imageLoadStates['main'] && <ImageSkeleton className='absolute inset-0 z-10' />}
+            {!allImagesLoaded && !imageLoadStates['main'] && (
+              <Skeleton className='absolute inset-0 z-10' />
+            )}
             <Image
               src={bannerImageUrl}
               alt={title}
@@ -96,9 +99,11 @@ export default function ActivityImageViewer({
         </div>
         {/* 첫 번째 서브 이미지 (상단) */}
         {subImages[0] && (
-          <div className='col-span-2 relative rounded-tr-2xl overflow-hidden bg-gray-100 group cursor-pointer'>
+          <div className='col-span-2 relative rounded-tr-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
             <div className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'>
-              {!imageLoadStates['sub-0'] && <ImageSkeleton className='absolute inset-0 z-10' />}
+              {!allImagesLoaded && !imageLoadStates['sub-0'] && (
+                <Skeleton className='absolute inset-0 z-10' />
+              )}
               <Image
                 src={subImages[0].imageUrl}
                 alt={`${title} 서브 이미지 1`}
@@ -119,9 +124,11 @@ export default function ActivityImageViewer({
 
         {/* 두 번째 서브 이미지 (하단) */}
         {subImages[1] && (
-          <div className='col-span-2 relative rounded-br-2xl overflow-hidden bg-gray-100 group cursor-pointer'>
+          <div className='col-span-2 relative rounded-br-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
             <div className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'>
-              {!imageLoadStates['sub-1'] && <ImageSkeleton className='absolute inset-0 z-10' />}
+              {!allImagesLoaded && !imageLoadStates['sub-1'] && (
+                <Skeleton className='absolute inset-0 z-10' />
+              )}
               <Image
                 src={subImages[1].imageUrl}
                 alt={`${title} 서브 이미지 2`}
@@ -134,10 +141,12 @@ export default function ActivityImageViewer({
               {/* 남은 개수 표시 */}
               {remainingCount > 0 && (
                 <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
-                  <div className='text-white text-center'>
-                    <ImageIcon className='w-8 h-8 mx-auto mb-2' />
-                    <span className='text-lg font-semibold'>+{remainingCount}</span>
-                    <p className='text-sm'>더보기</p>
+                  <div className='text-white text-center flex flex-col items-center gap-3'>
+                    <ImageIcon className='w-8 h-8 mx-auto' />
+                    <div className='flex items-baseline justify-center gap-1'>
+                      <span className='text-sm'>더보기</span>
+                      <span className='text-lg font-semibold'> +{remainingCount}</span>
+                    </div>
                   </div>
                 </div>
               )}
