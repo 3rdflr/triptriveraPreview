@@ -4,7 +4,7 @@ import { SubImage } from '@/types/activities.type';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Expand, ImageIcon } from 'lucide-react';
-import ImageGalleryModal from '@/app/activities/[activityId]/activities/ImageGalleryModal';
+import ImageGalleryModal from '@/components/pages/activities/ImageGalleryModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useOverlay } from '@/hooks/useOverlay';
 import clsx from 'clsx';
@@ -46,6 +46,7 @@ export default function ActivityImageViewer({
   };
 
   const handleImageClick = (index: number) => {
+    console.log('이미지 클릭', { index });
     // OverlayProvider를 통한 모달 오픈
     overlay.open(({ isOpen, close }) => (
       <ImageGalleryModal
@@ -79,7 +80,7 @@ export default function ActivityImageViewer({
               src={bannerImageUrl}
               alt={title}
               fill
-              className='object-cover'
+              className='object-cover cursor-pointer'
               onClick={() => handleImageClick(0)}
               onLoad={() => handleImageLoad('main')}
               priority
@@ -88,7 +89,7 @@ export default function ActivityImageViewer({
             <div
               className={clsx(
                 'absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors ',
-                'flex items-center justify-center',
+                'flex items-center justify-center pointer-events-none',
               )}
             >
               <div className='opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm rounded-full p-3'>
@@ -108,12 +109,12 @@ export default function ActivityImageViewer({
                 src={subImages[0].imageUrl}
                 alt={`${title} 서브 이미지 1`}
                 fill
-                className='object-cover'
+                className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(1)}
                 onLoad={() => handleImageLoad('sub-0')}
               />
               {/* 호버 효과 */}
-              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center'>
+              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none'>
                 <div className='opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm rounded-full p-2'>
                   <Expand className='w-5 h-5 text-white' />
                 </div>
@@ -133,14 +134,14 @@ export default function ActivityImageViewer({
                 src={subImages[1].imageUrl}
                 alt={`${title} 서브 이미지 2`}
                 fill
-                className='object-cover'
+                className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(2)}
                 onLoad={() => handleImageLoad('sub-1')}
               />
 
               {/* 남은 개수 표시 */}
               {remainingCount > 0 && (
-                <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
+                <div className='absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none'>
                   <div className='text-white text-center flex flex-col items-center gap-3'>
                     <ImageIcon className='w-8 h-8 mx-auto' />
                     <div className='flex items-baseline justify-center gap-1'>
@@ -152,7 +153,7 @@ export default function ActivityImageViewer({
               )}
 
               {/* 호버 효과 */}
-              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center'>
+              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none'>
                 <div className='opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm rounded-full p-2'>
                   <Expand className='w-5 h-5 text-white' />
                 </div>

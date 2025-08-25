@@ -1,5 +1,5 @@
 import { QueryClient, dehydrate, type DehydratedState } from '@tanstack/react-query';
-import { getActivityDetail } from '@/api/activities';
+import { getActivityDetail } from '@/app/api/activities';
 
 /**
  * Activity 페이지 전용 QueryClient 설정들

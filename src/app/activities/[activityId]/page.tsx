@@ -1,9 +1,21 @@
 import { HydrationBoundary } from '@tanstack/react-query';
-import { getActivitiesList } from '@/api/activities';
-import ActivityClient from '@/app/activities/[activityId]/activities/ActivityClient';
-import ActivitySkeleton from '@/app/activities/[activityId]/activities/ActivitySkeleton';
+import { getActivitiesList } from '@/app/api/activities';
+import ActivityClient from '@/app/activities/[activityId]/ActivityClientPage';
+import ActivitySkeleton from '@/components/pages/activities/ActivitySkeleton';
 import { prefetchActivityData } from './queryClients';
 import { Suspense } from 'react';
+
+/**
+ * 체험 상세 페이지
+ * 인기 체험 20개를 먼저 SSG로 생성하고, 그 외 요청은 ISR로 처리합니다.
+ * Hydration 이후에, ActivityClient가 CSR로 동작하여 실시간 데이터를 처리합니다.
+ *
+ * 페이지 전략:
+ * - SSG: 인기 체험 20개를 사전 생성
+ * - ISR: 그 외는 요청 시 생성 후 1시간 캐시
+ * - SSR: ActivityClient는 CSR로 동작
+ * - CSR: 클라이언트에서 실시간 가격/스케줄 정보 조회
+ */
 
 interface ActivityPageProps {
   params: Promise<{

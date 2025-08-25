@@ -1,10 +1,10 @@
 'use client';
 
 import { useSuspenseQuery, useQuery } from '@tanstack/react-query';
-import { getActivityDetail } from '@/api/activities';
-import ActivityImageViewer from './ActivityImageViewer';
-import ActivityInfo from './ActivityInfo';
-import { activityQueryKeys } from '../queryClients';
+import { getActivityDetail } from '@/app/api/activities';
+import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
+import ActivityInfo from '@/components/pages/activities/ActivityInfo';
+import { activityQueryKeys } from './queryClients';
 import { useEffect } from 'react';
 
 interface ActivityClientProps {
@@ -12,13 +12,9 @@ interface ActivityClientProps {
 }
 
 /**
- * useSuspenseQuery를 사용한 완전 선언형 체험 클라이언트 컴포넌트
+ * ActivityClient 컴포넌트
+ * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
  *
- * 장점:
- * 1. 로딩 상태를 명시적으로 처리할 필요 없음 (Suspense가 처리)
- * 2. 에러 상태는 Error Boundary가 처리
- * 3. 성공 상태만 고려하면 되어 로직이 간단해짐
- * 4. React 18의 Concurrent Features와 완벽 호환
  */
 export default function ActivityClient({ activityId }: ActivityClientProps) {
   useEffect(() => {

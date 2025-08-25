@@ -8,8 +8,7 @@ export const mockActivityDetail: ActivityDetail = {
   category: '투어',
   price: 10000,
   address: '서울특별시 강남구 테헤란로 427',
-  bannerImageUrl:
-    'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/a.png',
+  bannerImageUrl: 'https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=800&q=80',
   rating: 4.74,
   reviewCount: 1300,
   createdAt: '2023-12-31T21:28:50.589Z',
@@ -17,23 +16,27 @@ export const mockActivityDetail: ActivityDetail = {
   subImages: [
     {
       id: 1,
-      imageUrl:
-        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/b.png',
+      imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
     },
     {
       id: 2,
-      imageUrl:
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=600&q=80',
     },
     {
       id: 3,
-      imageUrl:
-        'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1540479859555-17af45c78602?w=600&q=80',
     },
     {
       id: 4,
-      imageUrl:
-        'https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+    },
+    {
+      id: 5,
+      imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80',
+    },
+    {
+      id: 6,
+      imageUrl: 'https://images.unsplash.com/photo-1567729715436-b6773a832e9c?w=600&q=80',
     },
   ],
   schedules: [

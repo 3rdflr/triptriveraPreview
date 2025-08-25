@@ -21,11 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
-      <ToastProvider />
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <body suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true}>
+        <Suspense fallback={<div>Loading...</div>}>
           <QueryProvider>
+            <ToastProvider />
             <OverlayProvider>
               <Nav />
               {children}
@@ -34,8 +33,8 @@ export default function RootLayout({
               </div>
             </OverlayProvider>
           </QueryProvider>
-        </body>
-      </Suspense>
+        </Suspense>
+      </body>
     </html>
   );
 }

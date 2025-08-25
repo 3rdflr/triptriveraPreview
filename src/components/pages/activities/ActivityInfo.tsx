@@ -1,6 +1,12 @@
 import { ActivityDetail } from '@/types/activities.type';
 import { MapPin, Star } from 'lucide-react';
 
+/**
+ *
+ * 체험 기본 정보 컴포넌트
+ * ActivityClient에서 데이터를 받아와서 렌더링
+ * 제목, 카테고리, 평점, 리뷰 수, 주소, 가격, 설명 등을 표시
+ */
 interface ActivityInfoProps {
   activity: ActivityDetail;
 }
