@@ -4,7 +4,13 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, useMotionValue, animate, AnimatePresence } from 'framer-motion';
 import { FaMapMarkedAlt as MapIcon } from 'react-icons/fa';
 
-export default function ActivitySheet({ children }: { children?: React.ReactNode }) {
+export default function ActivitySheet({
+  totalCount,
+  children,
+}: {
+  totalCount: number;
+  children?: React.ReactNode;
+}) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const CLOSED_HEIGHT = 120;
@@ -76,7 +82,7 @@ export default function ActivitySheet({ children }: { children?: React.ReactNode
             WebkitOverflowScrolling: 'touch',
           }}
         >
-          <h2 className='text-[15px] text-center mb-6'>지도 표시 지역의 체험 00개</h2>
+          <h2 className='text-[15px] text-center mb-6'>지도 표시 지역의 체험 {totalCount}개</h2>
           {children}
         </article>
       </motion.div>
