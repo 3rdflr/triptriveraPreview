@@ -1,6 +1,12 @@
 export {};
 
 declare global {
+  interface DaumPostcodeOpenOptions {
+    popupName?: string;
+    left?: number;
+    top?: number;
+  }
+
   interface Window {
     daum: {
       Postcode: new (options: {
@@ -13,7 +19,10 @@ declare global {
           buildingName: string;
           apartment: 'Y' | 'N';
         }) => void;
-      }) => { open: () => void };
+      }) => {
+        open: (options?: DaumPostcodeOpenOptions) => void;
+        // embed: (element: HTMLElement, options?: any) => void;
+      };
     };
   }
 }

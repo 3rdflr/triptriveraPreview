@@ -1,37 +1,45 @@
 'use client';
 import { useState } from 'react';
 import DateTimeRow from './DateTimeRow';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  FieldError,
+  FieldErrorsImpl,
+  FormProvider,
+  Merge,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import clsx from 'clsx';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import ImageUploader from '@/components/pages/myActivities/ImageUploader';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import CategorySelect from './CategorySelect';
 import Script from 'next/script';
-import { MyActivityFormData, MyActivitySchema } from '@/types/myActivitySchema';
+import { MyActivitySchema } from '@/types/myActivitySchema';
 import FormInput from '@/components/common/FormInput';
+import { MyActivitySchedule } from '@/types/myActivity.types';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
 }
 
 const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
-  const methods = useForm<MyActivityFormData>({
+  const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
     defaultValues: {
       title: '',
       category: '',
       description: '',
-      price: 0,
+      price: '',
       address: '',
       bannerImageUrl: '',
       subImageUrls: [],
       schedules: [{ date: '', startTime: '', endTime: '' }],
     },
-    mode: 'all',
+    mode: 'onChange', // input 값이 바뀔 때 바로 validation
+    reValidateMode: 'onChange', // 재검증도 입력 시
   });
 
   const { register, control, setValue, watch, formState } = methods;
@@ -41,13 +49,11 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     fields: scheduleFields,
     append,
     remove,
-    update,
   } = useFieldArray({
     control,
     name: 'schedules',
   });
 
-  const watchAddress = watch('address');
   const watchCategory = watch('category');
   const [bannerFiles, setBannerFiles] = useState<File[]>([]);
   const [subFiles, setSubFiles] = useState<File[]>([]);
@@ -125,37 +131,48 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
 
           {/* 가격 */}
           <div className='flex flex-col gap-2.5'>
-            <FormInput
-              type='text'
-              id='price'
-              label='가격'
-              placeholder='체험 금액을 입력해 주세요'
-              error={errors.price?.message}
-              {...register('price')}
+            <Controller
+              name='price'
+              control={methods.control}
+              render={({ field }) => (
+                <FormInput
+                  label='가격'
+                  id='price'
+                  placeholder='체험 금액을 입력해주세요'
+                  {...field}
+                  value={
+                    field.value
+                      ? new Intl.NumberFormat('ko-KR').format(Number(field.value.replace(/,/g, '')))
+                      : ''
+                  }
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/,/g, '');
+                    if (/^\d*$/.test(raw)) field.onChange(raw);
+                  }}
+                  error={errors.price?.message}
+                  maxLength={8}
+                />
+              )}
             />
           </div>
 
           {/* 주소 */}
           <div className='flex flex-col gap-2.5'>
-            <Label>주소</Label>
-            <div className='flex gap-2 w-full'>
-              <div className='relative flex-1 min-w-0'>
-                <Input
-                  type='text'
-                  value={watchAddress}
-                  placeholder='주소를 선택해 주세요'
-                  readOnly
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleOpenAddressSearch();
-                  }}
-                  onClick={handleOpenAddressSearch}
-                  className='w-full box-border bg-grayscale-25 text-muted-foreground !placeholder-grayscale-400 cursor-pointer'
-                />
-                {errors.address && (
-                  <span className='text-red-500 text-sm'>{errors.address.message}</span>
-                )}
-              </div>
-
+            <div className='flex gap-2 w-full items-end'>
+              <FormInput
+                type='text'
+                id='address'
+                label='주소'
+                placeholder='주소를 선택해 주세요'
+                error={errors.address?.message}
+                readOnly
+                className='w-full box-border bg-grayscale-25 text-muted-foreground !placeholder-grayscale-400 cursor-pointer'
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleOpenAddressSearch();
+                }}
+                onClick={handleOpenAddressSearch}
+                {...register('address')}
+              />
               <Button
                 size='lg'
                 className='px-4 py-3 text-sm font-bold text-white rounded-[16px] flex-shrink-0'
@@ -170,7 +187,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
         {/* 예약 가능한 시간대 */}
         <div className='mt-7.5'>
           <Label>예약 가능한 시간대</Label>
-          {scheduleFields.map((scheduleField, index) => (
+          {/* {scheduleFields.map((scheduleField, index) => (
             <div
               key={index}
               className={clsx(
@@ -188,6 +205,28 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                 onRemove={() => remove(index)}
               />
             </div>
+          ))} */}
+          {scheduleFields.map((scheduleField, index) => (
+            <Controller
+              key={scheduleField.id}
+              name={`schedules.${index}` as const}
+              control={control}
+              render={({ field }) => (
+                <DateTimeRow
+                  data={field.value}
+                  onChange={(val) => field.onChange(val)}
+                  onAdd={() => append({ date: '', startTime: '', endTime: '' })}
+                  onRemove={() => remove(index)}
+                  isFirstRow={index === 0}
+                  errors={
+                    errors?.schedules?.[index] as Merge<
+                      FieldError,
+                      FieldErrorsImpl<Omit<MyActivitySchedule, 'id'>>
+                    >
+                  }
+                />
+              )}
+            />
           ))}
         </div>
 
@@ -198,7 +237,11 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
             <span className='text-12-regular text-grayscale-500 py-1'>
               <span className='text-primary-500 mr-0.5'>*</span>배너 이미지는 필수입니다
             </span>
-            <ImageUploader files={bannerFiles} onChange={(val) => setBannerFiles(val)} />
+            <ImageUploader
+              maxImages={1}
+              files={bannerFiles}
+              onChange={(val) => setBannerFiles(val)}
+            />
           </div>
 
           <div className='flex flex-col'>

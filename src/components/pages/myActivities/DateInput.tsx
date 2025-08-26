@@ -18,8 +18,7 @@ interface DateInputProps {
 }
 
 export function DateInput({ showLabel = false, value = '', onChange }: DateInputProps) {
-  const { date, error, month, setMonth, setDateValid, setDate, setError, formatDate } =
-    useDateInput();
+  const { date, month, setMonth, setDate, setError, formatDate } = useDateInput();
   const [open, setOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
@@ -28,7 +27,7 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
     setDate(selectedDate);
     onChange?.(formatted);
     setOpen(false);
-    setDateValid(true);
+    // setDateValid(true);
     setError(null);
   };
 
@@ -55,11 +54,11 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
                 if (isValid(parsedDate) && val.length === 8) {
                   setDate(parsedDate);
                   setMonth(parsedDate);
-                  setError(null);
-                  setDateValid(true);
+                  // setError(null);
+                  // setDateValid(true);
                 } else if (val.length === 8) {
-                  setError('유효한 날짜를 입력해주세요');
-                  setDateValid(false);
+                  // setError('유효한 날짜를 입력해주세요');
+                  // setDateValid(false);
                 }
               }
             }}
@@ -67,6 +66,12 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
               if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 setOpen(true);
+              }
+            }}
+            onBlur={(e) => {
+              const val = e.target.value;
+              if (!val) {
+                // setError('날짜를 입력해주세요');
               }
             }}
           />
@@ -100,7 +105,11 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
             </PopoverContent>
           </Popover>
         </div>
-        {error && <span className='text-secondary-red-500 text-xs px-1'>{error}</span>}
+        {/* {error && (
+          <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
+            {error}
+          </small>
+        )} */}
       </div>
     </div>
   );

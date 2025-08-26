@@ -2,16 +2,25 @@ import DateInput from './DateInput';
 import StartEndTimeSelect from './StartEndTimeSelect';
 import RoundButton from './RoundButton';
 import { MyActivitySchedule } from '@/types/myActivity.types';
+import { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 
 interface DateTimeRowProps {
   data: Omit<MyActivitySchedule, 'id'>;
+  errors?: Merge<FieldError, FieldErrorsImpl<Omit<MyActivitySchedule, 'id'>>>;
   isFirstRow?: boolean;
   onChange: (newData: Omit<MyActivitySchedule, 'id'>) => void;
   onAdd?: () => void;
   onRemove?: () => void;
 }
 
-const DateTimeRow = ({ data, isFirstRow = false, onChange, onAdd, onRemove }: DateTimeRowProps) => {
+const DateTimeRow = ({
+  data,
+  errors,
+  isFirstRow = false,
+  onChange,
+  onAdd,
+  onRemove,
+}: DateTimeRowProps) => {
   const handleDateInputChange = (value: string): void => {
     let currentDate = value;
     currentDate = currentDate.replace(/\D/g, '');
@@ -26,7 +35,11 @@ const DateTimeRow = ({ data, isFirstRow = false, onChange, onAdd, onRemove }: Da
 
   return (
     <div className='flex flex-col sm:flex-row items-start gap-3.5'>
-      <DateInput value={data.date} showLabel={isFirstRow} onChange={handleDateInputChange} />
+      <div>
+        <DateInput value={data.date} showLabel={isFirstRow} onChange={handleDateInputChange} />
+        {errors?.date && <p className='text-red-500 text-xs'>{errors.date.message}</p>}
+      </div>
+
       <div className='flex flex-row items-end gap-3.5'>
         <StartEndTimeSelect
           value={{ start: data.startTime, end: data.endTime }}
