@@ -23,8 +23,7 @@ const ImageUploader = ({ maxImages = 4, files = [], onChange }: ImageUploaderPro
   };
 
   const handleUploadClick = () => {
-    if (files.length >= 4) {
-      alert('이미지는 4개까지만 등록이 가능합니다.');
+    if (files.length >= maxImages) {
       return;
     }
     inputRef.current?.click();
@@ -40,6 +39,7 @@ const ImageUploader = ({ maxImages = 4, files = [], onChange }: ImageUploaderPro
   return (
     <div className='flex gap-3'>
       <button
+        type='button'
         className={clsx(
           'w-20 h-20 sm:w-31.5 sm:h-31.5 border border-grayscale-100  rounded-2xl gap-0.5 flex flex-col items-center justify-center focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]',
           {

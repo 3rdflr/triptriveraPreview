@@ -1,5 +1,5 @@
 export interface MyActivitySchedule {
-  id?: number; // 서버에 있는 경우만
+  id?: number;
   date: string;
   startTime: string;
   endTime: string;

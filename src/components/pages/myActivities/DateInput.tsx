@@ -15,9 +15,10 @@ interface DateInputProps {
   showLabel?: boolean;
   value?: string;
   onChange?: (val: string) => void;
+  onBlur?: () => void;
 }
 
-export function DateInput({ showLabel = false, value = '', onChange }: DateInputProps) {
+export function DateInput({ showLabel = false, value = '', onChange, onBlur }: DateInputProps) {
   const { date, month, setMonth, setDate, setError, formatDate } = useDateInput();
   const [open, setOpen] = useState(false);
 
@@ -68,11 +69,8 @@ export function DateInput({ showLabel = false, value = '', onChange }: DateInput
                 setOpen(true);
               }
             }}
-            onBlur={(e) => {
-              const val = e.target.value;
-              if (!val) {
-                // setError('날짜를 입력해주세요');
-              }
+            onBlur={() => {
+              onBlur?.();
             }}
           />
           <Popover open={open} onOpenChange={setOpen}>

@@ -25,7 +25,7 @@ const RoundButton = ({ mode = 'close', children, className, onClick }: RoundButt
   };
 
   return (
-    <button className={clsx(baseClass, getModeClass(), className)} onClick={onClick}>
+    <button type='button' className={clsx(baseClass, getModeClass(), className)} onClick={onClick}>
       {mode === 'plus' && <FaPlus size={12} className='text-white' />}
       {mode === 'minus' && <FaMinus size={12} className='text-black' />}
       {mode === 'close' && <FaTimes size={10} className='text-white' />}
