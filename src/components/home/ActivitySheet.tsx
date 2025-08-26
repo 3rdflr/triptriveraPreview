@@ -14,16 +14,35 @@ export default function ActivitySheet({ children }: { children?: React.ReactNode
   const [isFullyOpen, setIsFullyOpen] = useState(false);
 
   useEffect(() => {
-    const height = window.innerHeight * 0.9;
-    setFullHeight(height);
-    y.set(height - CLOSED_HEIGHT);
-  }, [y]);
+    const handleResize = () => {
+      const height = window.innerHeight * 0.9;
+      setFullHeight(height);
+      // 시트가 닫힌 상태를 유지하도록 y 값만 업데이트
+      if (!isFullyOpen) {
+        y.set(height - CLOSED_HEIGHT);
+      } else {
+        y.set(0);
+      }
+    };
+
+    // 초기값 설정
+    handleResize();
+
+    // 이벤트 리스너 추가
+    window.addEventListener('resize', handleResize);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [y, isFullyOpen]);
 
   const handleDragEnd = (_: Event, info: { velocity: { y: number } }) => {
     if (!fullHeight) return;
 
     const currentY = y.get();
-    if (info.velocity.y > 500 || currentY > CLOSED_HEIGHT + 100) {
+    if (info.velocity.y > 500 || currentY > fullHeight - 200) {
+      // CLOSED_HEIGHT + 100 대신 fullHeight - 200으로 수정
       animate(y, fullHeight - CLOSED_HEIGHT, { type: 'spring', stiffness: 200, damping: 35 });
       setIsFullyOpen(false);
     } else {
@@ -58,14 +77,7 @@ export default function ActivitySheet({ children }: { children?: React.ReactNode
           }}
         >
           <h2 className='text-[15px] text-center mb-6'>지도 표시 지역의 체험 00개</h2>
-          <div className='space-y-4'>
-            {children}
-            {Array.from({ length: 30 }).map((_, i) => (
-              <div key={i} className='p-4 bg-gray-100 rounded-lg shadow-sm'>
-                아이템 {i + 1}
-              </div>
-            ))}
-          </div>
+          {children}
         </article>
       </motion.div>
       <AnimatePresence>
