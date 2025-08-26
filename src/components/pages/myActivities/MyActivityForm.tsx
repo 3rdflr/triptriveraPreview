@@ -22,6 +22,8 @@ import { MyActivityFormData, MyActivitySchema } from '@/types/myActivitySchema';
 import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.types';
+// import { useMutation } from '@tanstack/react-query';
+// import { ImageUploadResponse, uploadActivityImage } from '@/app/api/activities';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -46,6 +48,9 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   });
 
   const { register, control, setValue, watch, formState } = methods;
+  const watchCategory = watch('category');
+  const [bannerFiles, setBannerFiles] = useState<File[]>([]);
+  const [subFiles, setSubFiles] = useState<File[]>([]);
   const { errors } = formState;
 
   const {
@@ -58,9 +63,36 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     name: 'schedules',
   });
 
-  const watchCategory = watch('category');
-  const [bannerFiles, setBannerFiles] = useState<File[]>([]);
-  const [subFiles, setSubFiles] = useState<File[]>([]);
+  // const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
+  //   mutationFn: (file: File) => uploadActivityImage(file),
+  //   retry: 1,
+  //   retryDelay: 300,
+  //   onSuccess: (response) => {
+  //     console.log('업로드 성공', response.activityImageUrl);
+  //   },
+  //   onError: (error) => {
+  //     console.log('업로드 실패', error);
+  //   },
+  // });
+
+  // // 메인 이미지 업로드
+  // uploadImageMutation.mutate(mainImageFile, {
+  //   onSuccess: (res) => {
+  //     setDetailData((prev) => ({ ...prev, mainImageUrl: res.activityImageUrl }));
+  //   },
+  // });
+
+  // // 서브 이미지 여러 개 업로드
+  // subImageFiles.forEach((file) => {
+  //   uploadImageMutation.mutate(file, {
+  //     onSuccess: (res) => {
+  //       setDetailData((prev) => ({
+  //         ...prev,
+  //         subImageUrls: [...(prev.subImageUrls || []), res.activityImageUrl],
+  //       }));
+  //     },
+  //   });
+  // });
 
   const handleOpenAddressSearch = () => {
     let addr = '';
