@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import DateTimeRow from './DateTimeRow';
 import {
   Controller,
@@ -22,8 +21,8 @@ import { MyActivityFormData, MyActivitySchema } from '@/types/myActivitySchema';
 import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.types';
-// import { useMutation } from '@tanstack/react-query';
-// import { ImageUploadResponse, uploadActivityImage } from '@/app/api/activities';
+import { useMutation } from '@tanstack/react-query';
+import { ImageUploadResponse, uploadActivityImage } from '@/app/api/activities';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -40,6 +39,8 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
       address: '',
       bannerImageUrl: '',
       subImages: [] as string[],
+      bannerFiles: [],
+      subFiles: [],
       schedules: [{ date: '', startTime: '', endTime: '' }],
     },
     mode: 'onSubmit',
@@ -48,9 +49,6 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   });
 
   const { register, control, setValue, watch, formState } = methods;
-  const watchCategory = watch('category');
-  const [bannerFiles, setBannerFiles] = useState<File[]>([]);
-  const [subFiles, setSubFiles] = useState<File[]>([]);
   const { errors } = formState;
 
   const {
@@ -63,36 +61,38 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     name: 'schedules',
   });
 
-  // const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
-  //   mutationFn: (file: File) => uploadActivityImage(file),
-  //   retry: 1,
-  //   retryDelay: 300,
-  //   onSuccess: (response) => {
-  //     console.log('업로드 성공', response.activityImageUrl);
-  //   },
-  //   onError: (error) => {
-  //     console.log('업로드 실패', error);
-  //   },
-  // });
+  const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
+    mutationFn: (file: File) => uploadActivityImage(file),
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: (response) => {
+      console.log('업로드 성공', response.activityImageUrl);
+    },
+    onError: (error) => {
+      console.log('업로드 실패', error);
+    },
+  });
 
-  // // 메인 이미지 업로드
-  // uploadImageMutation.mutate(mainImageFile, {
-  //   onSuccess: (res) => {
-  //     setDetailData((prev) => ({ ...prev, mainImageUrl: res.activityImageUrl }));
-  //   },
-  // });
-
-  // // 서브 이미지 여러 개 업로드
-  // subImageFiles.forEach((file) => {
-  //   uploadImageMutation.mutate(file, {
-  //     onSuccess: (res) => {
-  //       setDetailData((prev) => ({
-  //         ...prev,
-  //         subImageUrls: [...(prev.subImageUrls || []), res.activityImageUrl],
-  //       }));
-  //     },
-  //   });
-  // });
+  const uploadImageAndGetUrl = async () => {
+    // 메인 이미지 업로드
+    const bannerUploadResponse = await uploadImageMutation.mutateAsync(watch('bannerFiles')[0]);
+    setValue('bannerImageUrl', bannerUploadResponse.activityImageUrl, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    // 서브 이미지 업로드
+    const subImagesUploadResponse = await Promise.all(
+      watch('subFiles').map((file) => uploadImageMutation.mutateAsync(file)),
+    );
+    setValue(
+      'subImages',
+      subImagesUploadResponse.map((response) => response.activityImageUrl),
+      {
+        shouldValidate: true,
+        shouldDirty: true,
+      },
+    );
+  };
 
   const handleOpenAddressSearch = () => {
     let addr = '';
@@ -108,8 +108,14 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     }).open();
   };
 
-  const onSubmit = (data: MyActivityFormData) => {
+  const registerForm = () => {
+    console.log('등록 api 호출');
+  };
+
+  const onSubmit = async (data: MyActivityFormData) => {
     console.log('폼 유효성 통과 ✅', data);
+    await uploadImageAndGetUrl();
+    registerForm();
   };
 
   const onError = (errors: FieldErrors<MyActivityFormData>) => {
@@ -140,7 +146,21 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
             {/* 카테고리 */}
             <div className='flex flex-col gap-2.5'>
               <Label>카테고리</Label>
-              <CategorySelect value={watchCategory} onChange={(val) => setValue('category', val)} />
+              <Controller
+                name='category'
+                control={control}
+                rules={{ required: '카테고리를 선택해주세요' }}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <CategorySelect value={field.value} onChange={field.onChange} />
+                    {fieldState.error && (
+                      <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
+                        {fieldState.error.message}
+                      </small>
+                    )}
+                  </div>
+                )}
+              />
             </div>
 
             {/* 설명 */}
@@ -257,10 +277,24 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
               <span className='text-12-regular text-grayscale-500 py-1'>
                 <span className='text-primary-500 mr-0.5'>*</span>배너 이미지는 필수입니다
               </span>
-              <ImageUploader
-                maxImages={1}
-                files={bannerFiles}
-                onChange={(val) => setBannerFiles(val)}
+              <Controller
+                name='bannerFiles'
+                control={control}
+                rules={{ required: '배너 이미지를 업로드해주세요' }}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <ImageUploader
+                      maxImages={1}
+                      files={field.value || []}
+                      onChange={(val) => field.onChange(val)}
+                    />
+                    {fieldState.error && (
+                      <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
+                        {fieldState.error.message}
+                      </small>
+                    )}
+                  </div>
+                )}
               />
             </div>
 
@@ -270,7 +304,24 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                 <span className='text-primary-500 mr-0.5'>*</span>소개 이미지는 최소 2개 이상
                 등록해주세요
               </span>
-              <ImageUploader files={subFiles} onChange={(val) => setSubFiles(val)} />
+              <Controller
+                name='subFiles'
+                control={control}
+                rules={{ required: '배너 이미지를 업로드해주세요' }}
+                render={({ field, fieldState }) => (
+                  <div>
+                    <ImageUploader
+                      files={field.value || []}
+                      onChange={(val) => field.onChange(val)}
+                    />
+                    {fieldState.error && (
+                      <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
+                        {fieldState.error.message}
+                      </small>
+                    )}
+                  </div>
+                )}
+              />
             </div>
             {/* 다음 주소 API 스크립트 */}
             <Script
@@ -279,9 +330,11 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
             />
           </div>
 
-          <Button type='submit' className='w-30 self-center mt-6'>
-            등록하기
-          </Button>
+          <div className='flex justify-center w-full mt-6'>
+            <Button type='submit' className='w-30'>
+              등록하기
+            </Button>
+          </div>
         </form>
       </FormProvider>
     </div>

@@ -70,6 +70,8 @@ export const MyActivitySchema = z.object({
         seen.add(key);
       });
     }),
+  bannerFiles: z.array(z.instanceof(File)).min(1, '배너 이미지를 업로드해주세요'),
+  subFiles: z.array(z.instanceof(File)).min(2, '소개 이미지를 2개 이상 업로드해주세요'),
   bannerImageUrl: z.string(),
   subImages: z.array(z.string()),
 });

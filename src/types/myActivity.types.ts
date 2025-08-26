@@ -19,7 +19,7 @@ export interface MyActivityRequest extends MyActivityBase {
   schedules: MyActivitySchedule[];
 }
 
-export interface MyActivityDetail extends MyActivityBase {
+export interface MyActivityDetail {
   id: number;
   userId: number;
   subImages: { id: number; imageUrl: string }[];
