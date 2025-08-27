@@ -22,7 +22,14 @@ import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.types';
 import { useMutation } from '@tanstack/react-query';
-import { ImageUploadResponse, uploadActivityImage } from '@/app/api/activities';
+import {
+  ActivityCreateRequest,
+  ActivityCreateResponse,
+  createActivity,
+  ImageUploadResponse,
+  uploadActivityImage,
+} from '@/app/api/activities';
+import { ActivitiesCategoryType } from '@/types/activities.type';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -33,12 +40,12 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     resolver: zodResolver(MyActivitySchema),
     defaultValues: {
       title: '',
-      category: '',
+      category: undefined,
       description: '',
       price: '',
       address: '',
       bannerImageUrl: '',
-      subImages: [] as string[],
+      subImageUrls: [] as string[],
       bannerFiles: [],
       subFiles: [],
       schedules: [{ date: '', startTime: '', endTime: '' }],
@@ -48,7 +55,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     shouldFocusError: false,
   });
 
-  const { register, control, setValue, watch, formState } = methods;
+  const { register, control, setValue, watch, formState, trigger } = methods;
   const { errors } = formState;
 
   const {
@@ -73,6 +80,19 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     },
   });
 
+  const registerMutation = useMutation<ActivityCreateResponse, Error, ActivityCreateRequest>({
+    mutationFn: (data: ActivityCreateRequest) => createActivity(data),
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: (response) => {
+      console.log(response);
+      console.log('등록 완료 후 페이지 이동 필요');
+    },
+    onError: (error) => {
+      console.log('업로드 실패', error);
+    },
+  });
+
   const uploadImageAndGetUrl = async () => {
     // 메인 이미지 업로드
     const bannerUploadResponse = await uploadImageMutation.mutateAsync(watch('bannerFiles')[0]);
@@ -85,7 +105,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
       watch('subFiles').map((file) => uploadImageMutation.mutateAsync(file)),
     );
     setValue(
-      'subImages',
+      'subImageUrls',
       subImagesUploadResponse.map((response) => response.activityImageUrl),
       {
         shouldValidate: true,
@@ -103,18 +123,26 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
         } else {
           addr = data.jibunAddress;
         }
-        setValue('address', addr, { shouldValidate: false });
+        setValue('address', addr, { shouldValidate: true });
       },
     }).open();
   };
 
-  const registerForm = () => {
+  const registerForm = async () => {
     console.log('등록 api 호출');
+    await uploadImageAndGetUrl();
+    // 2. API 전송용 데이터 변환
+    const payload: ActivityCreateRequest = {
+      ...methods.getValues(),
+      category: methods.getValues('category') as ActivitiesCategoryType,
+      price: Number(methods.getValues('price').replace(/,/g, '')),
+    };
+
+    registerMutation.mutate(payload);
   };
 
   const onSubmit = async (data: MyActivityFormData) => {
     console.log('폼 유효성 통과 ✅', data);
-    await uploadImageAndGetUrl();
     registerForm();
   };
 
@@ -152,7 +180,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                 rules={{ required: '카테고리를 선택해주세요' }}
                 render={({ field, fieldState }) => (
                   <div>
-                    <CategorySelect value={field.value} onChange={field.onChange} />
+                    <CategorySelect value={field.value || ''} onChange={field.onChange} />
                     {fieldState.error && (
                       <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
                         {fieldState.error.message}
@@ -249,7 +277,10 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                 <DateTimeRow
                   key={index}
                   data={scheduleField}
-                  onChange={(val) => update(index, val)}
+                  onChange={(val) => {
+                    update(index, val);
+                    trigger('schedules'); // 변경 후 검증 실행
+                  }}
                   onAdd={() =>
                     append({
                       date: '',

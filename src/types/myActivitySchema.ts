@@ -3,7 +3,9 @@ import { parse, isAfter, isValid } from 'date-fns';
 
 export const MyActivitySchema = z.object({
   title: z.string().min(1, { message: '제목을 입력해주세요.' }),
-  category: z.string().min(1, { message: '카테고리를 선택해주세요.' }),
+  category: z.enum(['문화 · 예술', '식음료', '스포츠', '투어', '관광', '웰빙'], {
+    message: '카테고리를 선택해주세요.',
+  }),
   description: z.string().min(1, { message: '설명을 입력해주세요.' }),
   price: z
     .string()
@@ -17,7 +19,6 @@ export const MyActivitySchema = z.object({
         date: z.string(),
         startTime: z.string(),
         endTime: z.string(),
-        _isNewRow: z.boolean().optional(),
       }),
     )
     .superRefine((schedules, ctx) => {
@@ -73,7 +74,7 @@ export const MyActivitySchema = z.object({
   bannerFiles: z.array(z.instanceof(File)).min(1, '배너 이미지를 업로드해주세요'),
   subFiles: z.array(z.instanceof(File)).min(2, '소개 이미지를 2개 이상 업로드해주세요'),
   bannerImageUrl: z.string(),
-  subImages: z.array(z.string()),
+  subImageUrls: z.array(z.string()),
 });
 
 export type MyActivityFormData = z.infer<typeof MyActivitySchema>;
