@@ -116,14 +116,9 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   };
 
   const handleOpenAddressSearch = () => {
-    let addr = '';
     new window.daum.Postcode({
       oncomplete: function (data) {
-        if (data.userSelectedType === 'R') {
-          addr = data.roadAddress;
-        } else {
-          addr = data.jibunAddress;
-        }
+        const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
         setValue('address', addr, { shouldValidate: true });
       },
     }).open();
@@ -132,14 +127,13 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   const registerForm = async () => {
     console.log('등록 api 호출');
     await uploadImageAndGetUrl();
-    // 2. API 전송용 데이터 변환
-    const payload: ActivityCreateRequest = {
+    const params: ActivityCreateRequest = {
       ...methods.getValues(),
       category: methods.getValues('category') as ActivitiesCategoryType,
       price: Number(methods.getValues('price').replace(/,/g, '')),
     };
 
-    registerMutation.mutate(payload);
+    registerMutation.mutate(params);
   };
 
   const onSubmit = async (data: MyActivityFormData) => {
@@ -242,19 +236,24 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
             {/* 주소 */}
             <div className='flex flex-col gap-2.5'>
               <div className='flex gap-2 w-full items-end'>
-                <FormInput
-                  type='text'
-                  id='address'
-                  label='주소'
-                  placeholder='주소를 선택해 주세요'
-                  error={errors.address?.message}
-                  readOnly
-                  className='w-full box-border bg-grayscale-25 text-muted-foreground !placeholder-grayscale-400 cursor-pointer'
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleOpenAddressSearch();
-                  }}
-                  onClick={handleOpenAddressSearch}
-                  {...register('address')}
+                <Controller
+                  name='address'
+                  control={control}
+                  rules={{ required: '주소를 선택해 주세요' }}
+                  render={({ field, fieldState }) => (
+                    <FormInput
+                      type='text'
+                      id='address'
+                      label='주소'
+                      placeholder='주소를 선택해 주세요'
+                      {...field}
+                      readOnly
+                      className='w-full box-border bg-grayscale-25 text-muted-foreground !placeholder-grayscale-400 cursor-pointer'
+                      onClick={handleOpenAddressSearch}
+                      onBlur={() => {}} // onBlur 비워서 validation 안 발생
+                      error={fieldState.error?.message}
+                    />
+                  )}
                 />
                 <Button
                   type='button'
