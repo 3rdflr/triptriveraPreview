@@ -50,7 +50,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
       subFiles: [],
       schedules: [{ date: '', startTime: '', endTime: '' }],
     },
-    mode: 'onSubmit',
+    mode: 'all',
     reValidateMode: 'onChange',
     shouldFocusError: false,
   });
@@ -87,6 +87,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
     onSuccess: (response) => {
       console.log(response);
       console.log('등록 완료 후 페이지 이동 필요');
+      // '등록하기' 버튼을 누르면 체험이 등록이 되고 “등록이 완료되었습니다” 모달창이 나타납니다.
     },
     onError: (error) => {
       console.log('업로드 실패', error);
@@ -180,7 +181,14 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                 rules={{ required: '카테고리를 선택해주세요' }}
                 render={({ field, fieldState }) => (
                   <div>
-                    <CategorySelect value={field.value || ''} onChange={field.onChange} />
+                    <CategorySelect
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      onBlur={() => {
+                        field.onBlur(); // 필드 기본 onBlur 호출
+                        trigger('category'); // 선택 안 하면 즉시 validation
+                      }}
+                    />
                     {fieldState.error && (
                       <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
                         {fieldState.error.message}
@@ -279,7 +287,10 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                   data={scheduleField}
                   onChange={(val) => {
                     update(index, val);
-                    trigger('schedules'); // 변경 후 검증 실행
+                    trigger('schedules');
+                  }}
+                  onBlur={() => {
+                    trigger('schedules');
                   }}
                   onAdd={() =>
                     append({
@@ -317,7 +328,10 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
                     <ImageUploader
                       maxImages={1}
                       files={field.value || []}
-                      onChange={(val) => field.onChange(val)}
+                      onChange={(val) => {
+                        field.onChange(val);
+                        field.onBlur();
+                      }}
                     />
                     {fieldState.error && (
                       <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>

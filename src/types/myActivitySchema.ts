@@ -9,9 +9,9 @@ export const MyActivitySchema = z.object({
   description: z.string().min(1, { message: '설명을 입력해주세요.' }),
   price: z
     .string()
-    .nonempty('가격을 입력해 주세요')
-    .regex(/^\d+$/, '숫자만 입력할 수 있습니다')
-    .refine((val) => Number(val) >= 0, '0 이상의 숫자여야 합니다'),
+    .nonempty('가격을 입력해 주세요.')
+    .regex(/^\d+$/, '숫자만 입력할 수 있습니다.')
+    .refine((val) => Number(val) > 0, '가격은 0 이상이어야 합니다.'),
   address: z.string().min(1, { message: '주소를 입력해주세요.' }),
   schedules: z
     .array(
@@ -71,8 +71,8 @@ export const MyActivitySchema = z.object({
         seen.add(key);
       });
     }),
-  bannerFiles: z.array(z.instanceof(File)).min(1, '배너 이미지를 업로드해주세요'),
-  subFiles: z.array(z.instanceof(File)).min(2, '소개 이미지를 2개 이상 업로드해주세요'),
+  bannerFiles: z.array(z.instanceof(File)).min(1, '배너 이미지를 업로드해주세요.'),
+  subFiles: z.array(z.instanceof(File)).min(2, '소개 이미지를 2개 이상 업로드해주세요.'),
   bannerImageUrl: z.string(),
   subImageUrls: z.array(z.string()),
 });

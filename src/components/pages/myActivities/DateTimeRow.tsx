@@ -8,6 +8,7 @@ interface DateTimeRowProps {
   errors?: Merge<FieldError, FieldErrorsImpl<Omit<MyActivitySchedule, 'id'>>>;
   isFirstRow?: boolean;
   onChange: (newData: Omit<MyActivitySchedule, 'id'>) => void;
+  onBlur: () => void;
   onAdd?: () => void;
   onRemove?: () => void;
 }
@@ -17,6 +18,7 @@ const DateTimeRow = ({
   errors,
   isFirstRow = false,
   onChange,
+  onBlur,
   onAdd,
   onRemove,
 }: DateTimeRowProps) => {
@@ -33,9 +35,14 @@ const DateTimeRow = ({
   };
 
   return (
-    <div className='flex flex-col sm:flex-row items-start gap-3.5'>
+    <div className='flex flex-col md:flex-row items-start gap-3.5'>
       <div>
-        <DateInput value={data.date} showLabel={isFirstRow} onChange={handleDateInputChange} />
+        <DateInput
+          value={data.date}
+          showLabel={isFirstRow}
+          onChange={handleDateInputChange}
+          onBlur={onBlur}
+        />
         {errors?.date && (
           <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
             {errors.date.message}

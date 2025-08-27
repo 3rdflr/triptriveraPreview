@@ -10,13 +10,22 @@ import {
 interface CategorySelectProps {
   value: string;
   onChange: (val: string) => void;
+  onBlur: () => void;
 }
 
 const categories = ['문화 · 예술', '식음료', '스포츠', '투어', '관광', '웰빙'];
 
-const CategorySelect = ({ value, onChange }: CategorySelectProps) => {
+const CategorySelect = ({ value, onChange, onBlur }: CategorySelectProps) => {
   return (
-    <Select value={value} onValueChange={(newVal) => onChange(newVal)}>
+    <Select
+      value={value}
+      onValueChange={(newVal) => onChange(newVal)}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          onBlur();
+        }
+      }}
+    >
       <SelectTrigger className='w-full'>
         <SelectValue placeholder='카테고리를 선택해 주세요' />
       </SelectTrigger>

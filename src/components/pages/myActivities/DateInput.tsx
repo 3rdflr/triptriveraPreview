@@ -28,7 +28,6 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
     setDate(selectedDate);
     onChange?.(formatted);
     setOpen(false);
-    // setDateValid(true);
     setError(null);
   };
 
@@ -55,11 +54,6 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
                 if (isValid(parsedDate) && val.length === 8) {
                   setDate(parsedDate);
                   setMonth(parsedDate);
-                  // setError(null);
-                  // setDateValid(true);
-                } else if (val.length === 8) {
-                  // setError('유효한 날짜를 입력해주세요');
-                  // setDateValid(false);
                 }
               }
             }}
@@ -103,11 +97,6 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
             </PopoverContent>
           </Popover>
         </div>
-        {/* {error && (
-          <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
-            {error}
-          </small>
-        )} */}
       </div>
     </div>
   );
