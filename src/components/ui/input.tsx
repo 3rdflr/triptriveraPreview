@@ -36,9 +36,14 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
-              <Image width={24} height={24} alt='비밀번호 표시' src='/icon/active_on.svg' />
+              <Image width={24} height={24} alt='비밀번호 표시' src='/images/icons/active_on.svg' />
             ) : (
-              <Image width={24} height={24} alt='비밀번호 숨김' src='/icon/active_off.svg' />
+              <Image
+                width={24}
+                height={24}
+                alt='비밀번호 숨김'
+                src='/images/icons/active_off.svg'
+              />
             )}
           </button>
         )}
