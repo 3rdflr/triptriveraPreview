@@ -110,7 +110,10 @@ const Login = () => {
         width={150}
         height={200}
         alt='Trivera'
-        className='object-contain w-auto h-auto mb-[60px]'
+        className='object-contain w-auto h-auto mb-[60px] cursor-pointer'
+        onClick={() => {
+          router.push('/');
+        }}
       />
       <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1'>
         <FormInput

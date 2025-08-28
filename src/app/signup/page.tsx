@@ -71,7 +71,7 @@ const SignUp = () => {
       console.log('회원가입 정보', data);
 
       // alert => 모달로 변경 예정
-      alert('회원가입이 완료되었습니다.');
+      alert('회원가입이 완료되었습니다');
 
       goToLogin();
     },
@@ -119,7 +119,10 @@ const SignUp = () => {
         width={150}
         height={200}
         alt='Trivera'
-        className='object-contain w-auto h-auto mb-[60px]'
+        className='object-contain w-auto h-auto mb-[60px] cursor-pointer'
+        onClick={() => {
+          router.push('/');
+        }}
       />
       <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1' noValidate>
         <FormInput
