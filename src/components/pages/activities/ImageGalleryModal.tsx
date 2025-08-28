@@ -7,6 +7,12 @@ import { SubImage } from '@/types/activities.type';
 import { cn } from '@/lib/utils/shadCnUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/**
+ * 이미지 갤러리 모달 컴포넌트
+ * - 이미지들을 모달로 확대하여 표시
+ * - ActivityImageViewer 컴포넌트와 애니메이션 연동
+ * - 이미지 로드 실패 시 대체 이미지 표시
+ */
 interface ImageGalleryModalProps {
   isOpen: boolean; // 모달 열림 상태
   close: () => void;
@@ -133,6 +139,7 @@ export default function ImageGalleryModal({
                   {currentIndex + 1} / {allImages.length}
                 </div>
               )}
+              <h1 className='text-lg font-semibold text-gray-800'>{title}</h1>
               {/*닫기 버튼 */}
               <button
                 onClick={handleClose}
@@ -162,8 +169,6 @@ export default function ImageGalleryModal({
                     <div className='w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin' />
                   </div>
                 )}
-
-                {/* 📸 메인 이미지 */}
                 <Image
                   src={getCurrentImageSrc(currentIndex)}
                   alt={`${title} - ${currentIndex + 1}`}
@@ -184,7 +189,7 @@ export default function ImageGalleryModal({
                 />
               </motion.div>
 
-              {/* 🔄 미니멀 네비게이션 */}
+              {/*네비게이션 */}
               {allImages.length > 1 && (
                 <>
                   <motion.button
@@ -223,7 +228,7 @@ export default function ImageGalleryModal({
               )}
             </div>
 
-            {/* 🎨 썸네일 네비게이션 */}
+            {/*썸네일 네비게이션 */}
             {allImages.length > 1 && (
               <motion.div
                 className='flex justify-center pb-8 px-8'

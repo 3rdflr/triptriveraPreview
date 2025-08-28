@@ -11,6 +11,15 @@ import { motion } from 'motion/react';
 import { useImageWithFallback } from '@/hooks/useImageWithFallback';
 import clsx from 'clsx';
 
+/**
+ * 이미지를 표시하는 컴포넌트
+ * - 배너 이미지와 서브 이미지 2개를 그리드 형태로 배치
+ * - 클릭 시 모달로 확대
+ * - Motion을 사용해서, 이미지 전환 시 부드러운 애니메이션 효과를 추가
+ * - 호버 시 확대 효과 추가
+ * - 이미지 로드 실패 시 대체 이미지를 표시
+ * - 로딩 시 Skeleton 표시
+ */
 interface ActivityImageViewerProps {
   bannerImageUrl: string;
   subImages: SubImage[];
@@ -73,7 +82,7 @@ export default function ActivityImageViewer({
         {/* 메인 배너 이미지 (좌측 2x2) */}
         <div className='col-span-2 row-span-2 relative rounded-s-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
           <motion.div
-            className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'
+            className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105 '
             layoutId='activity-image-0'
           >
             {!allImagesLoaded && !imageLoadStates['main'] && (
