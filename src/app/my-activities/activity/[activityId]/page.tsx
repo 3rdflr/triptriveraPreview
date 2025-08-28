@@ -7,7 +7,6 @@ interface ActivityEditPageProps {
 
 const ActivityEditPage = async ({ params }: ActivityEditPageProps) => {
   const { activityId } = await params;
-  console.log(activityId);
   return (
     <div className='flex justify-center items-center max-w-[327px] md:max-w-[627px] mx-auto p-16'>
       {/* 수정 페이지 + 공통 폼 */}
