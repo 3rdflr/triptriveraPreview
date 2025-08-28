@@ -51,14 +51,13 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
   const [hoverSection, setHoverSection] = useState<'place' | 'price' | 'keyword' | null>(null);
   const [place, setPlace] = useState('');
   const [price, setPrice] = useState<[number, number]>([0, 300_000]);
-  const [placeInput, setPlaceInput] = useState(''); // 사용자가 입력하는 텍스트
+  const [placeInput, setPlaceInput] = useState('');
   const [filteredPlaces, setFilteredPlaces] = useState<Place[]>(PLACES);
   const [keyword, setKeyword] = useState('');
 
   const sectionLabels = { place: '지역', price: '가격', keyword: '검색어' } as const;
   const sections: Array<keyof typeof sectionLabels> = ['place', 'price', 'keyword'];
 
-  // refs
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = {
     place: useRef<HTMLDivElement | null>(null),
@@ -124,7 +123,6 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
     };
   }, [isSearching]);
 
-  // scrollY 기반 shrink 상태 자동 반영
   useEffect(() => {
     const unsub = height.onChange((h) => setIsShrunk(h < 50));
     setIsShrunk(height.get() < 50);
@@ -189,7 +187,7 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
         className='absolute top-0 bottom-0 z-10 bg-white rounded-full shadow-md pointer-events-none'
       />
 
-      <div className='relative z-20 w-full h-full grid grid-cols-[1fr_1fr_1fr]'>
+      <div className='relative z-20 w-full h-full grid overflow-auto grid-cols-[1fr_1fr_1fr]'>
         {sections.map((sec, idx) => {
           const ref = sectionRefs[sec];
           const isKeyword = sec === 'keyword';
@@ -220,12 +218,12 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
               }}
             >
               <span
-                className={`text-title ${isShrunk ? 'text-center text-14-regular' : 'text-12-regular'}`}
+                className={`text-title ${isShrunk ? 'text-center text-14-regular' : 'text-12-regular'} truncate`}
+                style={{ minWidth: 0 }}
               >
                 {sectionLabels[sec]}
               </span>
 
-              {/* place / price 요약 텍스트 */}
               {!isShrunk && sec === 'place' && (
                 <input
                   type='text'
@@ -234,7 +232,6 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                     const val = e.target.value;
                     setPlaceInput(val);
 
-                    // 리스트 필터링
                     setFilteredPlaces(
                       PLACES.filter((place) =>
                         place.name.toLowerCase().includes(val.toLowerCase()),
@@ -245,26 +242,26 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                     setOpenedSection('place');
                   }}
                   placeholder='여행지 검색'
-                  className='bg-transparent text-sm text-title focus:outline-none placeholder:text-14-regular placeholder:text-subtitle'
+                  className='bg-transparent text-sm text-title focus:outline-none placeholder:text-14-regular placeholder:text-subtitle truncate'
+                  style={{ minWidth: 0 }}
                 />
               )}
               {!isShrunk && sec === 'price' && (
-                <span className='text-14-regular text-subtitle'>
+                <span className='text-14-regular text-subtitle truncate' style={{ minWidth: 0 }}>
                   {price[0].toLocaleString()}원~{price[1].toLocaleString()}원
                 </span>
               )}
 
-              {/* keyword 섹션 */}
               {isKeyword && (
                 <>
-                  {/* SHRINK 아닐 때만 input 노출 */}
                   {!isShrunk && (
                     <input
                       type='text'
                       value={keyword}
                       onChange={(e) => setKeyword(e.target.value)}
                       placeholder='원하는 체험 검색'
-                      className='bg-transparent text-sm text-title focus:outline-none placeholder:text-14px-regular placeholder:text-subtitle'
+                      className='bg-transparent text-sm text-title focus:outline-none placeholder:text-14px-regular placeholder:text-subtitle truncate'
+                      style={{ minWidth: 0 }}
                       onMouseDown={(e) => {
                         e.stopPropagation();
                         setIsSearching(true);
@@ -274,7 +271,6 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                     />
                   )}
 
-                  {/* SHRINK 상태여도 버튼은 항상 보이게 */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -290,7 +286,6 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                 </>
               )}
 
-              {/* 세로 구분선 (끊긴 느낌) */}
               {!isSearching && idx < sections.length - 1 && (
                 <div className='absolute top-2 bottom-2 right-0 w-px bg-grayscale-100' />
               )}
@@ -329,9 +324,9 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                   >
                     <Image src={place.src} alt='한옥' width={56} height={56} />
 
-                    <div className='flex flex-col justify-center'>
-                      <span className='text-14-regular text-title'>{place.name}</span>
-                      <span className='block text-12-regular text-grayscale-500'>
+                    <div className='flex flex-col justify-center min-w-0'>
+                      <span className='text-14-regular text-title truncate'>{place.name}</span>
+                      <span className='block text-12-regular text-grayscale-500 truncate'>
                         {place.description}
                       </span>
                     </div>
