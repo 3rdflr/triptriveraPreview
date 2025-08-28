@@ -19,7 +19,7 @@ interface DateInputProps {
 }
 
 export function DateInput({ showLabel = false, value = '', onChange, onBlur }: DateInputProps) {
-  const { date, month, setMonth, setDate, setError, formatDate } = useDateInput();
+  const { date, month, setMonth, setDate, formatDate } = useDateInput();
   const [open, setOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
@@ -28,7 +28,6 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
     setDate(selectedDate);
     onChange?.(formatted);
     setOpen(false);
-    setError(null);
   };
 
   return (
