@@ -54,9 +54,8 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           ref={ref}
           {...props}
           className={
-            error
-              ? 'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50'
-              : ''
+            error &&
+            'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50'
           }
         />
         <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px] min-h-[20px]'>

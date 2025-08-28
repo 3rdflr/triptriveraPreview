@@ -72,12 +72,18 @@ const SignUp = () => {
     onError: (err: unknown) => {
       const error = err as AxiosError<{ message: string }>;
 
-      // 서버 에러 메시지가 이메일 관련이면 form에 에러 표시
-      if (error.response?.data.message.includes('이메일')) {
-        setError('email', {
-          type: 'server',
-          message: error.response?.data.message,
-        });
+      // 그외 에러 메세지 처리... 모달 추가 할 때..
+
+      if (error.response?.status === 400 || error.response?.status === 409) {
+        const emailError = error.response?.data.message.includes('이메일');
+        if (emailError) {
+          setError('email', {
+            type: 'server',
+            message: error.response?.data.message,
+          });
+        }
+
+        // 예외 경우 모달 처리하기
       }
     },
     retry: 0,
