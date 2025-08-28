@@ -25,22 +25,39 @@ import { useMutation } from '@tanstack/react-query';
 import {
   ActivityCreateRequest,
   ActivityCreateResponse,
+  ActivityUpdateRequest,
+  ActivityUpdateResponse,
   createActivity,
   getActivityDetail,
   ImageUploadResponse,
+  updateActivity,
   uploadActivityImage,
 } from '@/app/api/activities';
 import { ActivitiesCategoryType, ActivityDetail } from '@/types/activities.type';
-import { useEffect } from 'react';
-import { toInputDate } from '@/lib/utils/dateUtils';
+import { useEffect, useState } from 'react';
+import { toApiDate, toInputDate } from '@/lib/utils/dateUtils';
+import { SubImage } from '@/types/activities.types';
+import { createToast } from 'react-simplified-package';
+import { FaCheckCircle } from 'react-icons/fa';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
-  activityId: string;
+  activityId?: string;
 }
 
 const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) => {
-  console.log(activityId);
+  // 성공 토스트 전용 인스턴스 (스타일을 JSX에 직접 적용)
+  const successToast = createToast(
+    () => (
+      <div className='flex items-center  text-green-500 border border-green-500 p-4 rounded-lg bg-white shadow-md'>
+        <FaCheckCircle className='mr-1' />
+        <span className='text-xs'>{mode === 'REGISTER' ? '등록' : '수정'}이 완료되었습니다.</span>
+      </div>
+    ),
+    { duration: 3000 },
+  );
+
+  const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
   const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
     defaultValues: {
@@ -52,8 +69,14 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
       bannerImageUrl: '',
       subImageUrls: [] as string[],
       bannerFiles: [],
+      subImages: [],
+      bannerImages: [], // 상세조회한 배너 이미지를 보여주기 위해 추가
       subFiles: [],
       schedules: [{ date: '', startTime: '', endTime: '' }],
+      subImageUrlsToAdd: [],
+      subImageIdsToRemove: [],
+      schedulesToAdd: [],
+      scheduleIdsToRemove: [],
     },
     mode: 'all',
     reValidateMode: 'onChange',
@@ -81,7 +104,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
       console.log('상세 조회 성공', response);
     },
     onError: (error) => {
-      console.log('업로드 실패', error);
+      console.log('상세 조회 실패', error);
     },
   });
 
@@ -90,10 +113,10 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     retry: 1,
     retryDelay: 300,
     onSuccess: (response) => {
-      console.log('업로드 성공', response.activityImageUrl);
+      console.log('이미지 업로드 성공', response.activityImageUrl);
     },
     onError: (error) => {
-      console.log('업로드 실패', error);
+      console.log('이미지 업로드 실패', error);
     },
   });
 
@@ -101,10 +124,24 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     mutationFn: (data: ActivityCreateRequest) => createActivity(data),
     retry: 1,
     retryDelay: 300,
-    onSuccess: (response) => {
-      console.log(response);
-      console.log('등록 완료 후 페이지 이동 필요');
-      // '등록하기' 버튼을 누르면 체험이 등록이 되고 “등록이 완료되었습니다” 모달창이 나타납니다.
+    onSuccess: () => {
+      successToast.run();
+    },
+    onError: (error) => {
+      console.log('업로드 실패', error);
+    },
+  });
+
+  const updateMutation = useMutation<
+    ActivityUpdateResponse,
+    Error,
+    { activityId: number; data: ActivityUpdateRequest }
+  >({
+    mutationFn: ({ activityId, data }) => updateActivity(activityId, data),
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: () => {
+      successToast.run();
     },
     onError: (error) => {
       console.log('업로드 실패', error);
@@ -112,24 +149,30 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
   });
 
   const uploadImageAndGetUrl = async () => {
-    // 메인 이미지 업로드
-    const bannerUploadResponse = await uploadImageMutation.mutateAsync(watch('bannerFiles')[0]);
-    setValue('bannerImageUrl', bannerUploadResponse.activityImageUrl, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    // 서브 이미지 업로드
-    const subImagesUploadResponse = await Promise.all(
-      watch('subFiles').map((file) => uploadImageMutation.mutateAsync(file)),
-    );
-    setValue(
-      'subImageUrls',
-      subImagesUploadResponse.map((response) => response.activityImageUrl),
-      {
+    const bannerFiles = watch('bannerFiles') ?? [];
+    const subFiles = watch('subFiles') ?? [];
+
+    if (bannerFiles.length > 0) {
+      const bannerUploadResponse = await uploadImageMutation.mutateAsync(bannerFiles[0]);
+      setValue('bannerImageUrl', bannerUploadResponse.activityImageUrl, {
         shouldValidate: true,
         shouldDirty: true,
-      },
-    );
+      });
+    }
+
+    if (subFiles.length > 0) {
+      const subImagesUploadResponse = await Promise.all(
+        subFiles.map((file) => uploadImageMutation.mutateAsync(file)),
+      );
+
+      const subImageUrls = subImagesUploadResponse.map((res) => res.activityImageUrl);
+
+      if (mode === 'EDIT') {
+        setValue('subImageUrlsToAdd', subImageUrls, { shouldValidate: true, shouldDirty: true });
+      } else {
+        setValue('subImageUrls', subImageUrls, { shouldValidate: true, shouldDirty: true });
+      }
+    }
   };
 
   const handleOpenAddressSearch = () => {
@@ -142,39 +185,104 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
   };
 
   const registerForm = async () => {
-    console.log('등록 api 호출');
-    await uploadImageAndGetUrl();
+    const values = methods.getValues();
+
     const params: ActivityCreateRequest = {
-      ...methods.getValues(),
-      category: methods.getValues('category') as ActivitiesCategoryType,
-      price: Number(methods.getValues('price').replace(/,/g, '')),
-      subImageUrls: methods.getValues('subImageUrls') ?? [],
+      ...values,
+      category: values.category as ActivitiesCategoryType,
+      price: Number(values.price.replace(/,/g, '')),
+      subImageUrls: values.subImageUrls ?? [],
+      schedules: values.schedules.map(({ date, startTime, endTime }) => ({
+        date: toApiDate(date),
+        startTime,
+        endTime,
+      })),
     };
 
     registerMutation.mutate(params);
   };
 
+  const updateForm = async () => {
+    const values = methods.getValues();
+
+    // 삭제된 스케줄
+    const scheduleIdsToRemove: number[] = originalSchedules
+      .filter((s) => {
+        const current = values.schedules.find((v) => v.id === s.id);
+        if (!current) return true;
+
+        return (
+          current.date !== s.date ||
+          current.startTime !== s.startTime ||
+          current.endTime !== s.endTime
+        );
+      })
+      .map((s) => Number(s.id));
+
+    // 새로 추가된 스케줄
+    const schedulesToAdd = values.schedules
+      .filter((s) => {
+        if (!s.id) return true;
+
+        const original = originalSchedules.find((v) => v.id === s.id);
+        if (!original) return true;
+
+        return (
+          original.date !== s.date ||
+          original.startTime !== s.startTime ||
+          original.endTime !== s.endTime
+        );
+      })
+      .map(({ date, startTime, endTime }) => ({
+        date: toApiDate(date),
+        startTime,
+        endTime,
+      }));
+
+    const params: ActivityUpdateRequest = {
+      ...values,
+      category: values.category as ActivitiesCategoryType,
+      price: Number(values.price.replace(/,/g, '')),
+      scheduleIdsToRemove,
+      schedulesToAdd,
+      subImageIdsToRemove: values.subImageIdsToRemove ?? [],
+      subImageUrlsToAdd: values.subImageUrlsToAdd ?? [],
+    };
+
+    updateMutation.mutate({ activityId: Number(activityId), data: params });
+  };
+
   const onSubmit = async (data: MyActivityFormData) => {
-    console.log('폼 유효성 통과 ✅', data);
-    registerForm();
+    console.log('폼 유효성 통과', data);
+    await uploadImageAndGetUrl();
+    if (mode === 'REGISTER') {
+      registerForm();
+    } else {
+      console.log(data);
+      updateForm();
+    }
   };
 
   const onError = (errors: FieldErrors<MyActivityFormData>) => {
-    console.log('폼 에러 발생 ❌', errors);
+    console.log('폼 에러 발생', errors);
   };
 
   useEffect(() => {
     if (mode === 'EDIT') {
-      getDetailMutation.mutate(7, {
+      getDetailMutation.mutate(Number(activityId), {
         onSuccess: (activity) => {
+          const detailSchedules = activity.schedules.map((schedule) => ({
+            ...schedule,
+            date: toInputDate(schedule.date),
+          }));
+
+          setOriginalSchedules(detailSchedules);
           const formData: MyActivityFormData = {
             ...activity,
             price: String(activity.price),
-            schedules: activity.schedules.map((schedule) => ({
-              ...schedule,
-              date: toInputDate(schedule.date),
-            })),
+            schedules: detailSchedules,
             subImages: activity.subImages ?? [],
+            bannerImages: [{ imageUrl: activity.bannerImageUrl }],
             subImageUrls: [] as string[],
             bannerFiles: [],
             subFiles: [],
@@ -221,8 +329,8 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                       value={field.value || ''}
                       onChange={field.onChange}
                       onBlur={() => {
-                        field.onBlur(); // 필드 기본 onBlur 호출
-                        trigger('category'); // 선택 안 하면 즉시 validation
+                        field.onBlur();
+                        trigger('category');
                       }}
                     />
                     {fieldState.error && (
@@ -277,7 +385,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
             {/* 주소 */}
             <div className='flex flex-col gap-2.5'>
-              <div className='flex gap-2 w-full items-end'>
+              <div className='flex gap-2 w-full items-center'>
                 <Controller
                   name='address'
                   control={control}
@@ -369,9 +477,25 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                     <ImageUploader
                       maxImages={1}
                       files={field.value || []}
+                      fetchedImages={
+                        methods.getValues('bannerImages')?.length
+                          ? methods.getValues('bannerImages')
+                          : []
+                      }
                       onChange={(val) => {
                         field.onChange(val);
                         field.onBlur();
+                      }}
+                      onDeleteFetched={() => {
+                        setValue('bannerImageUrl', '', {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                        methods.setValue('bannerImages', [], {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                        field.onChange([]);
                       }}
                     />
                     {fieldState.error && (
@@ -398,7 +522,27 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                   <div>
                     <ImageUploader
                       files={field.value || []}
+                      fetchedImages={methods.getValues('subImages')}
                       onChange={(val) => field.onChange(val)}
+                      onDeleteFetched={(id) => {
+                        if (id !== undefined) {
+                          const prev = methods.getValues('subImageIdsToRemove') || [];
+                          methods.setValue('subImageIdsToRemove', [...prev, id], {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+
+                          // subImages 배열에서 삭제
+                          const prevImages = (methods.getValues('subImages') as SubImage[]) || [];
+                          const newImages = prevImages.filter((img) => img.id !== id);
+                          methods.setValue('subImages', newImages, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          });
+
+                          field.onChange([]);
+                        }
+                      }}
                     />
                     {fieldState.error && (
                       <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
@@ -417,7 +561,11 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
           </div>
 
           <div className='flex justify-center w-full mt-6'>
-            <Button type='submit' className='w-30'>
+            <Button
+              type='submit'
+              className='w-30'
+              disabled={!methods.formState.isDirty || !methods.formState.isValid}
+            >
               {mode === 'REGISTER' ? '등록' : '수정'}하기
             </Button>
           </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { parse, isValid, format } from 'date-fns';
+import { format } from 'date-fns';
 
 const useDateInput = () => {
   const [value, setValue] = useState('');
@@ -13,40 +13,12 @@ const useDateInput = () => {
     return format(date, 'yy/MM/dd');
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let currentDate = e.target.value;
-    currentDate = currentDate.replace(/\D/g, '');
-    if (currentDate.length > 2 && currentDate.length <= 4) {
-      currentDate = currentDate.slice(0, 2) + '/' + currentDate.slice(2);
-    } else if (currentDate.length > 4) {
-      currentDate =
-        currentDate.slice(0, 2) + '/' + currentDate.slice(2, 4) + '/' + currentDate.slice(4, 6);
-    }
-    setValue(currentDate);
-    if (/^\d{2}\/\d{2}\/\d{2}$/.test(currentDate)) {
-      const parsedDate = parse(currentDate, 'yy/MM/dd', new Date());
-      if (isValid(parsedDate)) {
-        setDate(parsedDate);
-        setMonth(parsedDate);
-        setError(null);
-        setDateValid(true);
-      } else {
-        setError('유효한 날짜를 입력해주세요');
-        setDateValid(false);
-      }
-    } else {
-      setError(null);
-      setDateValid(false);
-    }
-  };
-
   return {
     value,
     date,
     error,
     month,
     isDateValid,
-    handleChange,
     setMonth,
     setDate,
     setDateValid,
