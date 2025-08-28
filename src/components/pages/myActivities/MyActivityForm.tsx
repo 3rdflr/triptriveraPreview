@@ -7,38 +7,23 @@ import {
   FieldErrorsImpl,
   FormProvider,
   Merge,
-  useFieldArray,
-  useForm,
 } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '@/components/ui/label';
 import ImageUploader from '@/components/pages/myActivities/ImageUploader';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import CategorySelect from './CategorySelect';
 import Script from 'next/script';
-import { MyActivityFormData, MyActivitySchema } from '@/types/myActivitySchema';
+import { MyActivityFormData } from '@/types/myActivitySchema';
 import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.types';
-import { useMutation } from '@tanstack/react-query';
-import {
-  ActivityCreateRequest,
-  ActivityCreateResponse,
-  ActivityUpdateRequest,
-  ActivityUpdateResponse,
-  createActivity,
-  getActivityDetail,
-  ImageUploadResponse,
-  updateActivity,
-  uploadActivityImage,
-} from '@/app/api/activities';
-import { ActivitiesCategoryType, ActivityDetail } from '@/types/activities.type';
+import { ActivityCreateRequest, ActivityUpdateRequest } from '@/app/api/activities';
+import { ActivitiesCategoryType } from '@/types/activities.type';
 import { useEffect, useState } from 'react';
 import { toApiDate, toInputDate } from '@/lib/utils/dateUtils';
 import { SubImage } from '@/types/activities.types';
-import { createToast } from 'react-simplified-package';
-import { FaCheckCircle } from 'react-icons/fa';
+import useMyActivityForm from '@/hooks/useMyActivityForm';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -46,107 +31,24 @@ interface MyActivityFormProps {
 }
 
 const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) => {
-  // 성공 토스트 전용 인스턴스 (스타일을 JSX에 직접 적용)
-  const successToast = createToast(
-    () => (
-      <div className='flex items-center  text-green-500 border border-green-500 p-4 rounded-lg bg-white shadow-md'>
-        <FaCheckCircle className='mr-1' />
-        <span className='text-xs'>{mode === 'REGISTER' ? '등록' : '수정'}이 완료되었습니다.</span>
-      </div>
-    ),
-    { duration: 3000 },
-  );
-
-  const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
-  const methods = useForm({
-    resolver: zodResolver(MyActivitySchema),
-    defaultValues: {
-      title: '',
-      category: undefined,
-      description: '',
-      price: '',
-      address: '',
-      bannerImageUrl: '',
-      subImageUrls: [] as string[],
-      bannerFiles: [],
-      subImages: [],
-      bannerImages: [], // 상세조회한 배너 이미지를 보여주기 위해 추가
-      subFiles: [],
-      schedules: [{ date: '', startTime: '', endTime: '' }],
-      subImageUrlsToAdd: [],
-      subImageIdsToRemove: [],
-      schedulesToAdd: [],
-      scheduleIdsToRemove: [],
-    },
-    mode: 'all',
-    reValidateMode: 'onChange',
-    shouldFocusError: false,
-  });
-
-  const { register, control, setValue, watch, formState, trigger } = methods;
-  const { errors } = formState;
-
   const {
-    fields: scheduleFields,
+    methods,
+    errors,
+    control,
+    scheduleFields,
+    register,
+    setValue,
+    watch,
+    trigger,
     update,
     append,
     remove,
-  } = useFieldArray({
-    control,
-    name: 'schedules',
-  });
-
-  const getDetailMutation = useMutation<ActivityDetail, Error, number>({
-    mutationFn: (activityId) => getActivityDetail(activityId),
-    retry: 1,
-    retryDelay: 300,
-    onSuccess: (response) => {
-      console.log('상세 조회 성공', response);
-    },
-    onError: (error) => {
-      console.log('상세 조회 실패', error);
-    },
-  });
-
-  const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
-    mutationFn: (file: File) => uploadActivityImage(file),
-    retry: 1,
-    retryDelay: 300,
-    onSuccess: (response) => {
-      console.log('이미지 업로드 성공', response.activityImageUrl);
-    },
-    onError: (error) => {
-      console.log('이미지 업로드 실패', error);
-    },
-  });
-
-  const registerMutation = useMutation<ActivityCreateResponse, Error, ActivityCreateRequest>({
-    mutationFn: (data: ActivityCreateRequest) => createActivity(data),
-    retry: 1,
-    retryDelay: 300,
-    onSuccess: () => {
-      successToast.run();
-    },
-    onError: (error) => {
-      console.log('업로드 실패', error);
-    },
-  });
-
-  const updateMutation = useMutation<
-    ActivityUpdateResponse,
-    Error,
-    { activityId: number; data: ActivityUpdateRequest }
-  >({
-    mutationFn: ({ activityId, data }) => updateActivity(activityId, data),
-    retry: 1,
-    retryDelay: 300,
-    onSuccess: () => {
-      successToast.run();
-    },
-    onError: (error) => {
-      console.log('업로드 실패', error);
-    },
-  });
+    getDetailMutation,
+    uploadImageMutation,
+    registerMutation,
+    updateMutation,
+  } = useMyActivityForm();
+  const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
 
   const uploadImageAndGetUrl = async () => {
     const bannerFiles = watch('bannerFiles') ?? [];
