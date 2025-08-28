@@ -80,9 +80,19 @@ export default function ActivityImageViewer({
       {/* 배너 + 서브 2개만 표시 */}
       <div className='grid grid-cols-4 grid-rows-2 gap-2 md:gap-3 h-61 md:h-100'>
         {/* 메인 배너 이미지 (좌측 2x2) */}
-        <div className='col-span-2 row-span-2 relative rounded-s-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
+        <div
+          className={clsx(
+            'col-span-2 row-span-2 relative',
+            'bg-gray-100 group cursor-pointer',
+            'rounded-s-3xl overflow-hidden',
+          )}
+        >
           <motion.div
-            className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105 '
+            className={clsx(
+              'relative h-full w-full',
+              'transition-transform duration-300 ease-out transform-gpu group-hover:scale-105',
+              'rounded-s-3xl overflow-hidden',
+            )}
             layoutId='activity-image-0'
           >
             {!allImagesLoaded && !imageLoadStates['main'] && (
@@ -118,9 +128,20 @@ export default function ActivityImageViewer({
 
         {/* 첫 번째 서브 이미지 (상단) */}
         {subImages[0] && (
-          <div className='col-span-2 relative rounded-tr-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
+          <div
+            className={clsx(
+              'col-span-2 relative',
+              'rounded-tr-3xl overflow-hidden',
+              'isolate will-change-[transform]',
+              'bg-gray-100 group cursor-pointer',
+            )}
+          >
             <motion.div
-              className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'
+              className={clsx(
+                'relative h-full w-full ',
+                'transition-transform duration-300 ease-out transform-gpu group-hover:scale-105',
+                'overflow-hidden rounded-tr-3xl',
+              )}
               layoutId='activity-image-1'
             >
               {!allImagesLoaded && !imageLoadStates['sub-0'] && (

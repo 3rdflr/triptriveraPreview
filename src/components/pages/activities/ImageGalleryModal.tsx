@@ -68,12 +68,29 @@ export default function ImageGalleryModal({
   // 스크롤 잠금 처리
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    }
+      // 모바일에서는 body 스크롤을 완전히 막지 않고, 모달 외부만 막음
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        document.body.style.overflow = 'hidden';
+      }
+      // 모바일에서는 body 스크롤은 유지하되, 배경 터치 방지를 위해 touchmove 이벤트만 막음
+      const preventScroll = (e: TouchEvent) => {
+        if (isMobile && e.target === document.body) {
+          e.preventDefault();
+        }
+      };
 
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+      if (isMobile) {
+        document.addEventListener('touchmove', preventScroll, { passive: false });
+      }
+
+      return () => {
+        document.body.style.overflow = 'unset';
+        if (isMobile) {
+          document.removeEventListener('touchmove', preventScroll);
+        }
+      };
+    }
   }, [isOpen]);
 
   // ESC 키로 모달 닫기
@@ -114,7 +131,7 @@ export default function ImageGalleryModal({
           />
 
           <motion.div
-            className='relative w-full h-full flex flex-col max-w-7xl mx-auto'
+            className='relative w-full h-full flex flex-col max-w-7xl mx-auto max-h-screen md:max-h-full'
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -122,16 +139,16 @@ export default function ImageGalleryModal({
           >
             {/* 헤더 */}
             <motion.div
-              className='w-full flex justify-between items-center p-10'
+              className='w-full flex justify-between items-center p-4 md:p-10'
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {/*이미지 카운터 */}
+              {/*이미지 카운터 - 데스크톱에서만 표시 */}
               {allImages.length > 1 && (
                 <div
                   className={cn(
-                    ' px-3 py-1.5 rounded-full',
+                    'hidden md:block px-3 py-1.5 rounded-full',
                     'bg-gray-100 text-gray-600 text-sm font-medium',
                     'border border-gray-200',
                   )}
@@ -139,7 +156,11 @@ export default function ImageGalleryModal({
                   {currentIndex + 1} / {allImages.length}
                 </div>
               )}
-              <h1 className='text-lg font-semibold text-gray-800'>{title}</h1>
+              {/* 모바일에서는 빈 div로 공간 확보 */}
+              <div className='md:hidden' />
+              <h1 className='text-base md:text-lg font-semibold text-gray-800 text-center flex-1 md:flex-none'>
+                {title}
+              </h1>
               {/*닫기 버튼 */}
               <button
                 onClick={handleClose}
@@ -154,84 +175,132 @@ export default function ImageGalleryModal({
             </motion.div>
 
             {/*메인 이미지 영역 */}
-            <div className='flex-1 flex items-center justify-center px-16 py-12'>
-              <motion.div
-                key={currentIndex}
-                layoutId={`activity-image-${currentIndex}`}
-                className='flex items-center justify-center w-full max-w-4xl max-h-[70vh]'
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
+            <div className='flex-1 px-4 py-6 md:py-12 min-h-0'>
+              {/* 모바일: 수직 스크롤 갤러리 */}
+              <div
+                className='md:hidden h-full overflow-y-auto overscroll-contain'
+                style={{ WebkitOverflowScrolling: 'touch' }}
               >
-                {/*이미지 로딩 상태 */}
-                {!imageLoadStates[currentIndex] && (
-                  <div className='absolute flex items-center justify-center'>
-                    <div className='w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin' />
-                  </div>
-                )}
-                <Image
-                  src={getCurrentImageSrc(currentIndex)}
-                  alt={`${title} - ${currentIndex + 1}`}
-                  width={600}
-                  height={400}
-                  className='object-contain rounded-2xl shadow-lg'
-                  onLoad={() => {
-                    handleImageLoad(currentIndex);
-                  }}
-                  onError={() => {
-                    console.log(
-                      '🖼️ Modal image failed to load:',
-                      allImages[currentIndex]?.imageUrl,
-                    );
-                    setImageErrors((prev) => ({ ...prev, [currentIndex]: true }));
-                  }}
-                  priority={currentIndex === 0}
-                />
-              </motion.div>
+                <motion.div
+                  className='space-y-4'
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {allImages.map((image, index) => (
+                    <motion.div
+                      key={index}
+                      className='relative w-full'
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.4 }}
+                      whileInView={{ scale: [0.95, 1] }}
+                      viewport={{ once: true, margin: '-50px' }}
+                    >
+                      <div className='aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100'>
+                        {!imageLoadStates[index] && (
+                          <div className='absolute inset-0 flex items-center justify-center z-10'>
+                            <div className='w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin' />
+                          </div>
+                        )}
+                        <Image
+                          src={getCurrentImageSrc(index)}
+                          alt={`${title} - ${index + 1} 이미지`}
+                          fill
+                          className='object-cover'
+                          onLoad={() => handleImageLoad(index)}
+                          onError={() => {
+                            console.log('🖼️ Mobile image failed to load:', image.imageUrl);
+                            setImageErrors((prev) => ({ ...prev, [index]: true }));
+                          }}
+                          priority={index === 0}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
 
-              {/*네비게이션 */}
-              {allImages.length > 1 && (
-                <>
-                  <motion.button
-                    onClick={handlePrevious}
-                    className={cn(
-                      'absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full',
-                      'bg-gray-100 text-gray-600',
-                      'hover:bg-gray-200 transition-all duration-300',
-                      'border border-gray-200',
-                    )}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 0.8, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <ChevronLeft className='w-6 h-6' />
-                  </motion.button>
-                  <motion.button
-                    onClick={handleNext}
-                    className={cn(
-                      'absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full',
-                      'bg-gray-100 text-gray-600',
-                      'hover:bg-gray-200 transition-all duration-300',
-                      'border border-gray-200',
-                    )}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 0.8, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <ChevronRight className='w-6 h-6' />
-                  </motion.button>
-                </>
-              )}
+              {/* 데스크톱: 기존 단일 이미지 + 네비게이션 */}
+              <div className='hidden md:flex items-center justify-center h-full relative'>
+                <motion.div
+                  key={currentIndex}
+                  layoutId={`activity-image-${currentIndex}`}
+                  className='flex items-center justify-center w-full max-w-4xl max-h-[70vh]'
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/*이미지 로딩 상태 */}
+                  {!imageLoadStates[currentIndex] && (
+                    <div className='absolute flex items-center justify-center'>
+                      <div className='w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin' />
+                    </div>
+                  )}
+                  <Image
+                    src={getCurrentImageSrc(currentIndex)}
+                    alt={`${title} - ${currentIndex + 1}`}
+                    width={600}
+                    height={400}
+                    className='object-contain rounded-2xl shadow-lg'
+                    onLoad={() => {
+                      handleImageLoad(currentIndex);
+                    }}
+                    onError={() => {
+                      console.log(
+                        '🖼️ Modal image failed to load:',
+                        allImages[currentIndex]?.imageUrl,
+                      );
+                      setImageErrors((prev) => ({ ...prev, [currentIndex]: true }));
+                    }}
+                    priority={currentIndex === 0}
+                  />
+                </motion.div>
+
+                {/*네비게이션 - 데스크톱에서만 표시 */}
+                {allImages.length > 1 && (
+                  <>
+                    <motion.button
+                      onClick={handlePrevious}
+                      className={cn(
+                        'absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full',
+                        'bg-gray-100 text-gray-600',
+                        'hover:bg-gray-200 transition-all duration-300',
+                        'border border-gray-200',
+                      )}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 0.8, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ChevronLeft className='w-6 h-6' />
+                    </motion.button>
+                    <motion.button
+                      onClick={handleNext}
+                      className={cn(
+                        'absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full',
+                        'bg-gray-100 text-gray-600',
+                        'hover:bg-gray-200 transition-all duration-300',
+                        'border border-gray-200',
+                      )}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 0.8, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ChevronRight className='w-6 h-6' />
+                    </motion.button>
+                  </>
+                )}
+              </div>
             </div>
 
-            {/*썸네일 네비게이션 */}
+            {/*썸네일 네비게이션 - 데스크톱에서만 표시 */}
             {allImages.length > 1 && (
               <motion.div
-                className='flex justify-center pb-8 px-8'
+                className='hidden md:flex justify-center pb-8 px-8'
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
