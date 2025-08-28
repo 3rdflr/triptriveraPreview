@@ -29,9 +29,16 @@ export default function ImageGalleryModal({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   // 이미지 로드 상태
   const [imageLoadStates, setImageLoadStates] = useState<Record<string | number, boolean>>({});
+  // 이미지 에러 상태 (fallback 사용 여부)
+  const [imageErrors, setImageErrors] = useState<Record<string | number, boolean>>({});
 
   // 전체 이미지 배열 (배너 + 서브 이미지들)
   const allImages = [{ id: 0, imageUrl: bannerImageUrl }, ...subImages];
+
+  // 현재 이미지 src (에러 시 placeholder 사용)
+  const getCurrentImageSrc = (index: number) => {
+    return imageErrors[index] ? '/images/placeholder.svg' : allImages[index]?.imageUrl;
+  };
 
   // 이전 이미지로 이동
   const handlePrevious = useCallback(() => {
@@ -91,7 +98,7 @@ export default function ImageGalleryModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {/* 🎨 화이트 배경 오버레이 */}
+          {/*배경 오버레이 */}
           <motion.div
             className='absolute inset-0 bg-white'
             onClick={handleClose}
@@ -139,7 +146,7 @@ export default function ImageGalleryModal({
               </button>
             </motion.div>
 
-            {/* 🎯 메인 이미지 영역 */}
+            {/*메인 이미지 영역 */}
             <div className='flex-1 flex items-center justify-center px-16 py-12'>
               <motion.div
                 key={currentIndex}
@@ -149,7 +156,7 @@ export default function ImageGalleryModal({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* 🔄 이미지 로딩 상태 */}
+                {/*이미지 로딩 상태 */}
                 {!imageLoadStates[currentIndex] && (
                   <div className='absolute flex items-center justify-center'>
                     <div className='w-8 h-8 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin' />
@@ -158,13 +165,20 @@ export default function ImageGalleryModal({
 
                 {/* 📸 메인 이미지 */}
                 <Image
-                  src={allImages[currentIndex].imageUrl}
+                  src={getCurrentImageSrc(currentIndex)}
                   alt={`${title} - ${currentIndex + 1}`}
                   width={600}
                   height={400}
                   className='object-contain rounded-2xl shadow-lg'
                   onLoad={() => {
                     handleImageLoad(currentIndex);
+                  }}
+                  onError={() => {
+                    console.log(
+                      '🖼️ Modal image failed to load:',
+                      allImages[currentIndex]?.imageUrl,
+                    );
+                    setImageErrors((prev) => ({ ...prev, [currentIndex]: true }));
                   }}
                   priority={currentIndex === 0}
                 />
@@ -225,22 +239,26 @@ export default function ImageGalleryModal({
                       className={cn(
                         'relative w-16 h-16 rounded-xl overflow-hidden transition-all duration-300 flex-shrink-0',
                         currentIndex === index
-                          ? 'ring-2 ring-blue-500 scale-110'
+                          ? 'ring-2 ring-gray-200 scale-110'
                           : 'hover:scale-105 opacity-70 hover:opacity-100',
                       )}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Image
-                        src={image.imageUrl}
+                        src={getCurrentImageSrc(index)}
                         alt={`${title} thumbnail ${index + 1}`}
                         width={64}
                         height={64}
                         className='w-full h-full object-cover'
+                        onError={() => {
+                          console.log('🖼️ Thumbnail failed to load:', image.imageUrl);
+                          setImageErrors((prev) => ({ ...prev, [index]: true }));
+                        }}
                       />
                       {currentIndex === index && (
                         <motion.div
-                          className='absolute inset-0 bg-blue-500/20 rounded-xl'
+                          className='absolute inset-0 bg-white/20 rounded-xl'
                           layoutId='thumbnail-active'
                         />
                       )}

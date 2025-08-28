@@ -8,6 +8,7 @@ import ImageGalleryModal from '@/components/pages/activities/ImageGalleryModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useOverlay } from '@/hooks/useOverlay';
 import { motion } from 'motion/react';
+import { useImageWithFallback } from '@/hooks/useImageWithFallback';
 import clsx from 'clsx';
 
 interface ActivityImageViewerProps {
@@ -24,6 +25,11 @@ export default function ActivityImageViewer({
   const [imageLoadStates, setImageLoadStates] = useState<Record<string, boolean>>({});
 
   const overlay = useOverlay();
+
+  // 각 이미지에 대한 fallback 처리
+  const bannerImage = useImageWithFallback(bannerImageUrl);
+  const subImage1 = useImageWithFallback(subImages[0]?.imageUrl || '');
+  const subImage2 = useImageWithFallback(subImages[1]?.imageUrl || '');
 
   // 배너 이미지를 첫 번째로, 서브 이미지들을 그 다음으로 배치
   const allImages = [{ id: 0, imageUrl: bannerImageUrl }, ...subImages];
@@ -74,13 +80,17 @@ export default function ActivityImageViewer({
               <Skeleton className='absolute inset-0 z-10' />
             )}
             <Image
-              src={bannerImageUrl}
+              src={bannerImage.src}
               alt={title}
               fill
               sizes='(max-width: 768px) 50vw, 25vw'
               className='object-cover cursor-pointer'
               onClick={() => handleImageClick(0)}
-              onLoad={() => handleImageLoad('main')}
+              onLoad={() => {
+                handleImageLoad('main');
+                bannerImage.onLoad();
+              }}
+              onError={bannerImage.onError}
               priority
             />
             {/* 호버 시 확대 아이콘 */}
@@ -108,13 +118,17 @@ export default function ActivityImageViewer({
                 <Skeleton className='absolute inset-0 z-10' />
               )}
               <Image
-                src={subImages[0].imageUrl}
+                src={subImage1.src}
                 alt={`${title} 서브 이미지 1`}
                 fill
                 sizes='(max-width: 768px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(1)}
-                onLoad={() => handleImageLoad('sub-0')}
+                onLoad={() => {
+                  handleImageLoad('sub-0');
+                  subImage1.onLoad();
+                }}
+                onError={subImage1.onError}
               />
               {/* 호버 효과 */}
               <div className='absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none'>
@@ -137,13 +151,17 @@ export default function ActivityImageViewer({
                 <Skeleton className='absolute inset-0 z-10' />
               )}
               <Image
-                src={subImages[1].imageUrl}
+                src={subImage2.src}
                 alt={`${title} 서브 이미지 2`}
                 fill
                 sizes='(max-width: 768px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(2)}
-                onLoad={() => handleImageLoad('sub-1')}
+                onLoad={() => {
+                  handleImageLoad('sub-1');
+                  subImage2.onLoad();
+                }}
+                onError={subImage2.onError}
               />
 
               {/* 남은 개수 표시 */}
