@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { parse, isAfter, isValid } from 'date-fns';
+import { toApiDate } from '@/lib/utils/dateUtils';
 
 export const MyActivitySchema = z.object({
   title: z.string().min(1, { message: '제목을 입력해주세요.' }),
@@ -16,7 +17,11 @@ export const MyActivitySchema = z.object({
   schedules: z
     .array(
       z.object({
-        date: z.string(),
+        id: z.number().optional(),
+        date: z
+          .string()
+          .refine((val) => /^\d{2}\/\d{2}\/\d{2}$/.test(val), 'YY/MM/DD 형식이어야 해요')
+          .transform((val) => toApiDate(val)),
         startTime: z.string(),
         endTime: z.string(),
       }),
@@ -74,7 +79,13 @@ export const MyActivitySchema = z.object({
   bannerFiles: z.array(z.instanceof(File)).min(1, '배너 이미지를 업로드해주세요.'),
   subFiles: z.array(z.instanceof(File)).min(2, '소개 이미지를 2개 이상 업로드해주세요.'),
   bannerImageUrl: z.string(),
-  subImageUrls: z.array(z.string()),
+  subImageUrls: z.array(z.string()).optional(),
+  subImages: z.array(
+    z.object({
+      id: z.number().optional(),
+      imageUrl: z.string(),
+    }),
+  ),
 });
 
 export type MyActivityFormData = z.infer<typeof MyActivitySchema>;

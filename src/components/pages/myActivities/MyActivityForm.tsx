@@ -26,16 +26,21 @@ import {
   ActivityCreateRequest,
   ActivityCreateResponse,
   createActivity,
+  getActivityDetail,
   ImageUploadResponse,
   uploadActivityImage,
 } from '@/app/api/activities';
-import { ActivitiesCategoryType } from '@/types/activities.type';
+import { ActivitiesCategoryType, ActivityDetail } from '@/types/activities.type';
+import { useEffect } from 'react';
+import { toInputDate } from '@/lib/utils/dateUtils';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
+  activityId: string;
 }
 
-const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
+const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) => {
+  console.log(activityId);
   const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
     defaultValues: {
@@ -66,6 +71,18 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   } = useFieldArray({
     control,
     name: 'schedules',
+  });
+
+  const getDetailMutation = useMutation<ActivityDetail, Error, number>({
+    mutationFn: (activityId) => getActivityDetail(activityId),
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: (response) => {
+      console.log('상세 조회 성공', response);
+    },
+    onError: (error) => {
+      console.log('업로드 실패', error);
+    },
   });
 
   const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
@@ -131,6 +148,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
       ...methods.getValues(),
       category: methods.getValues('category') as ActivitiesCategoryType,
       price: Number(methods.getValues('price').replace(/,/g, '')),
+      subImageUrls: methods.getValues('subImageUrls') ?? [],
     };
 
     registerMutation.mutate(params);
@@ -144,6 +162,30 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
   const onError = (errors: FieldErrors<MyActivityFormData>) => {
     console.log('폼 에러 발생 ❌', errors);
   };
+
+  useEffect(() => {
+    if (mode === 'EDIT') {
+      getDetailMutation.mutate(7, {
+        onSuccess: (activity) => {
+          const formData: MyActivityFormData = {
+            ...activity,
+            price: String(activity.price),
+            schedules: activity.schedules.map((schedule) => ({
+              ...schedule,
+              date: toInputDate(schedule.date),
+            })),
+            subImages: activity.subImages ?? [],
+            subImageUrls: [] as string[],
+            bannerFiles: [],
+            subFiles: [],
+          };
+
+          methods.reset(formData);
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='flex flex-col'>
@@ -376,7 +418,7 @@ const MyActivityForm = ({ mode = 'REGISTER' }: MyActivityFormProps) => {
 
           <div className='flex justify-center w-full mt-6'>
             <Button type='submit' className='w-30'>
-              등록하기
+              {mode === 'REGISTER' ? '등록' : '수정'}하기
             </Button>
           </div>
         </form>
