@@ -19,6 +19,7 @@ type FormValues = {
   agree: boolean;
 };
 
+// 로그인 후 페이지 진입에 대해 ...
 const SignUp = () => {
   const router = useRouter();
 
@@ -46,6 +47,7 @@ const SignUp = () => {
   });
 
   // 제출 버튼 활성화/비활성화 제어, defaultValues으로 초기 값 false 설정
+  // isFilled: 제출 버튼 활성화 제어용
   const allFields = watch();
   const isFilled = Object.values(allFields).every(Boolean);
 
@@ -66,24 +68,36 @@ const SignUp = () => {
     mutationFn: signup,
     mutationKey: ['signup'],
     onSuccess: (data) => {
-      console.log('회원가입 성공', data);
+      console.log('회원가입 정보', data);
+
+      // alert => 모달로 변경 예정
+      alert('회원가입이 완료되었습니다.');
+
       goToLogin();
     },
     onError: (err: unknown) => {
       const error = err as AxiosError<{ message: string }>;
 
-      // 그외 에러 메세지 처리... 모달 추가 할 때..
+      // alert => 모달로 변경 예정, 리팩토링 때 훅으로 만들 예정
+      const { status, data } = error.response ?? {};
 
-      if (error.response?.status === 400 || error.response?.status === 409) {
-        const emailError = error.response?.data.message.includes('이메일');
+      const emailError = data?.message.includes('이메일');
+
+      let handled = false;
+
+      if (status === 400 || status === 409) {
         if (emailError) {
           setError('email', {
             type: 'server',
             message: error.response?.data.message,
           });
+
+          handled = true;
         }
 
-        // 예외 경우 모달 처리하기
+        if (!handled) alert(data?.message);
+      } else {
+        alert(data?.message);
       }
     },
     retry: 0,
@@ -109,7 +123,7 @@ const SignUp = () => {
       />
       <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1' noValidate>
         <FormInput
-          type='email'
+          type='text'
           id='email'
           label='이메일'
           placeholder='이메일을 입력해 주세요'
