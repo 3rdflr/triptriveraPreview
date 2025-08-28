@@ -20,6 +20,7 @@ import clsx from 'clsx';
  * - 이미지 로드 실패 시 대체 이미지를 표시
  * - 로딩 시 Skeleton 표시
  */
+
 interface ActivityImageViewerProps {
   bannerImageUrl: string;
   subImages: SubImage[];
@@ -32,7 +33,6 @@ export default function ActivityImageViewer({
   title,
 }: ActivityImageViewerProps) {
   const [imageLoadStates, setImageLoadStates] = useState<Record<string, boolean>>({});
-
   const overlay = useOverlay();
 
   // 각 이미지에 대한 fallback 처리
@@ -51,8 +51,10 @@ export default function ActivityImageViewer({
     if (index === 0) return true; // 메인 이미지는 항상 필요
     return subImages[index - 1]; // 서브 이미지는 존재할 때만
   });
+
   const allImagesLoaded = requiredImages.every((key) => imageLoadStates[key]);
 
+  // 이미지 로드 핸들러
   const handleImageLoad = (key: string) => {
     setImageLoadStates((prev) => ({ ...prev, [key]: true }));
   };
@@ -84,16 +86,14 @@ export default function ActivityImageViewer({
           className={clsx(
             'col-span-2 row-span-2 relative',
             'bg-gray-100 group cursor-pointer',
-            'rounded-s-3xl overflow-hidden',
+            'rounded-s-3xl overflow-hidden will-change-transform',
           )}
         >
           <motion.div
-            className={clsx(
-              'relative h-full w-full',
-              'transition-transform duration-300 ease-out transform-gpu group-hover:scale-105',
-              'rounded-s-3xl overflow-hidden',
-            )}
+            className='relative h-full w-full'
             layoutId='activity-image-0'
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
           >
             {!allImagesLoaded && !imageLoadStates['main'] && (
               <Skeleton className='absolute inset-0 z-10' />
@@ -115,7 +115,7 @@ export default function ActivityImageViewer({
             {/* 호버 시 확대 아이콘 */}
             <div
               className={clsx(
-                'absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors ',
+                'absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors',
                 'flex items-center justify-center pointer-events-none',
               )}
             >
@@ -126,7 +126,7 @@ export default function ActivityImageViewer({
           </motion.div>
         </div>
 
-        {/* 첫 번째 서브 이미지 (상단) */}
+        {/* 첫 번째 서브 이미지 */}
         {subImages[0] && (
           <div
             className={clsx(
@@ -137,12 +137,10 @@ export default function ActivityImageViewer({
             )}
           >
             <motion.div
-              className={clsx(
-                'relative h-full w-full ',
-                'transition-transform duration-300 ease-out transform-gpu group-hover:scale-105',
-                'overflow-hidden rounded-tr-3xl',
-              )}
+              className='relative h-full w-full '
               layoutId='activity-image-1'
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               {!allImagesLoaded && !imageLoadStates['sub-0'] && (
                 <Skeleton className='absolute inset-0 z-10' />
@@ -174,8 +172,10 @@ export default function ActivityImageViewer({
         {subImages[1] && (
           <div className='col-span-2 relative rounded-br-3xl overflow-hidden bg-gray-100 group cursor-pointer'>
             <motion.div
-              className='relative h-full w-full transition-transform duration-300 ease-out transform-gpu group-hover:scale-105'
+              className='relative h-full w-full '
               layoutId='activity-image-2'
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               {!allImagesLoaded && !imageLoadStates['sub-1'] && (
                 <Skeleton className='absolute inset-0 z-10' />
