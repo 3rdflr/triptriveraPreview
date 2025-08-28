@@ -48,7 +48,17 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         <Label htmlFor={id} className='mb-[10px]'>
           {label}
         </Label>
-        <Input type={type} id={id} ref={ref} {...props} />
+        <Input
+          type={type}
+          id={id}
+          ref={ref}
+          {...props}
+          className={
+            error
+              ? 'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50'
+              : ''
+          }
+        />
         <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px] min-h-[20px]'>
           {error}
         </small>

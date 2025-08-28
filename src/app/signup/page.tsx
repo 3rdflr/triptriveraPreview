@@ -3,12 +3,13 @@
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import FormInput from '@/components/common/FormInput';
-import { validations, confirmPassword } from '@/lib/utils/validations';
+import { validations } from '@/lib/utils/validations';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '../api/user';
 import { AxiosError } from 'axios';
+import { useEffect } from 'react';
 
 type FormValues = {
   email: string;
@@ -28,26 +29,50 @@ const SignUp = () => {
   const {
     register,
     handleSubmit,
-    getValues,
     watch,
     setError,
-    formState: { isSubmitted, isSubmitting, errors },
+    trigger,
+    formState: { isSubmitted, isSubmitting, isValid, errors },
   } = useForm<FormValues>({
-    mode: 'onChange',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+      nickname: '',
+      confirmPassword: '',
+      agree: false,
+    },
   });
 
-  const agree = watch('agree');
+  // 제출 버튼 활성화/비활성화 제어, defaultValues으로 초기 값 false 설정
+  const allFields = watch();
+  const isFilled = Object.values(allFields).every(Boolean);
 
-  // tanstack
+  // password 필드 값 구독
+  // 비밀번호 변경 시 confirmPassword 실시간 검증
+  const password = watch('password');
+
+  // 비밀번호가 바뀌면 confirmPassword 유효성 재검사
+  // 첫 제출 전에는 메시지 표시 안 함
+  useEffect(() => {
+    if (isSubmitted) {
+      trigger('confirmPassword');
+    }
+  }, [password, trigger, isSubmitted]);
+
+  // 회원가입 요청 mutation
   const mutation = useMutation({
     mutationFn: signup,
     mutationKey: ['signup'],
     onSuccess: (data) => {
       console.log('회원가입 성공', data);
+      goToLogin();
     },
     onError: (err: unknown) => {
       const error = err as AxiosError<{ message: string }>;
 
+      // 서버 에러 메시지가 이메일 관련이면 form에 에러 표시
       if (error.response?.data.message.includes('이메일')) {
         setError('email', {
           type: 'server',
@@ -58,6 +83,7 @@ const SignUp = () => {
     retry: 0,
   });
 
+  // 폼 제출
   const onSubmit = (data: FormValues) => {
     mutation.mutate({
       email: data.email,
@@ -75,7 +101,7 @@ const SignUp = () => {
         alt='Trivera'
         className='object-contain w-auto h-auto mb-[60px]'
       />
-      <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1'>
+      <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1' noValidate>
         <FormInput
           type='email'
           id='email'
@@ -110,20 +136,22 @@ const SignUp = () => {
           placeholder='비밀번호를 한 번 더 입력해 주세요'
           aria-invalid={isSubmitted ? (errors.confirmPassword ? 'true' : 'false') : undefined}
           error={errors.confirmPassword?.message}
-          {...register(
-            'confirmPassword',
-            confirmPassword(() => getValues('password')),
-          )}
+          {...register('confirmPassword', validations.confirmPassword(password))}
         />
 
         <div className='mb-2 flex items-center gap-1'>
-          <input type='checkbox' id='agree' {...register('agree')} />
+          <input type='checkbox' id='agree' {...register('agree', { required: true })} />
           <label htmlFor='agree' className='text-[14px]'>
             이용약관에 동의합니다.
           </label>
         </div>
 
-        <Button type='submit' size='lg' className='w-full mt-2' disabled={!agree || isSubmitting}>
+        <Button
+          type='submit'
+          size='lg'
+          className='w-full mt-2'
+          disabled={isSubmitted ? !isValid : !isFilled}
+        >
           {isSubmitting ? '회원가입하기 중...' : '회원가입하기'}
         </Button>
       </form>
