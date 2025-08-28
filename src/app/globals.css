@@ -234,12 +234,14 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
     @apply overflow-x-hidden;
     /* Firefox */
     scrollbar-width: thin;
     scrollbar-color: var(--color-primary-300) var(--color-primary-100);
   }
+
   body {
     @apply bg-background text-foreground;
     @apply !min-w-full;
