@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
  * - 이미지들을 모달로 확대하여 표시
  * - ActivityImageViewer 컴포넌트와 애니메이션 연동
  * - 이미지 로드 실패 시 대체 이미지 표시
+ * - 모바일용 UI 제공
  */
 interface ImageGalleryModalProps {
   isOpen: boolean; // 모달 열림 상태
@@ -68,12 +69,11 @@ export default function ImageGalleryModal({
   // 스크롤 잠금 처리
   useEffect(() => {
     if (isOpen) {
-      // 모바일에서는 body 스크롤을 완전히 막지 않고, 모달 외부만 막음
       const isMobile = window.innerWidth < 768;
       if (!isMobile) {
         document.body.style.overflow = 'hidden';
       }
-      // 모바일에서는 body 스크롤은 유지하되, 배경 터치 방지를 위해 touchmove 이벤트만 막음
+
       const preventScroll = (e: TouchEvent) => {
         if (isMobile && e.target === document.body) {
           e.preventDefault();
@@ -156,7 +156,7 @@ export default function ImageGalleryModal({
                   {currentIndex + 1} / {allImages.length}
                 </div>
               )}
-              {/* 모바일에서는 빈 div로 공간 확보 */}
+
               <div className='md:hidden' />
               <h1 className='text-base md:text-lg font-semibold text-gray-800 text-center flex-1 md:flex-none'>
                 {title}
@@ -176,7 +176,7 @@ export default function ImageGalleryModal({
 
             {/*메인 이미지 영역 */}
             <div className='flex-1 px-4 py-6 md:py-12 min-h-0'>
-              {/* 모바일: 수직 스크롤 갤러리 */}
+              {/* 모바일 - 수직 스크롤 갤러리 */}
               <div
                 className='md:hidden h-full overflow-y-auto overscroll-contain'
                 style={{ WebkitOverflowScrolling: 'touch' }}
@@ -221,7 +221,7 @@ export default function ImageGalleryModal({
                 </motion.div>
               </div>
 
-              {/* 데스크톱: 기존 단일 이미지 + 네비게이션 */}
+              {/* 데스크톱 */}
               <div className='hidden md:flex items-center justify-center h-full relative'>
                 <motion.div
                   key={currentIndex}
