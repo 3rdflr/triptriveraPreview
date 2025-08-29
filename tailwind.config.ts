@@ -47,6 +47,11 @@ const config: Config = {
         '12-semibold': ['12px', { lineHeight: '20px', fontWeight: '600' }],
         '12-medium': ['12px', { lineHeight: '20px', fontWeight: '500' }],
         '12-regular': ['12px', { lineHeight: '20px', fontWeight: '400' }],
+
+        '11-bold': ['11px', { lineHeight: '13px', fontWeight: '700' }],
+        '11-semibold': ['11px', { lineHeight: '13px', fontWeight: '600' }],
+        '11-medium': ['11px', { lineHeight: '13px', fontWeight: '500' }],
+        '11-regular': ['11px', { lineHeight: '13px', fontWeight: '400' }],
       },
       boxShadow: {
         card: '0px 4px 24px rgba(0, 0, 0, 0.12)',
