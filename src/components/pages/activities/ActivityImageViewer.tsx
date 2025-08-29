@@ -90,7 +90,7 @@ export default function ActivityImageViewer({
           )}
         >
           <motion.div
-            className='relative h-full w-full'
+            className='relative h-full w-full rounded-s-3xl overflow-hidden'
             layoutId='activity-image-0'
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
