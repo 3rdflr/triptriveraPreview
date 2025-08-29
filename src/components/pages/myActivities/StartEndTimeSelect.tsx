@@ -26,7 +26,10 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
     <div className='flex items-end'>
       <div>
         {showLabel && <Label className='mb-2.5 hidden sm:block'>시작 시간</Label>}
-        <Select value={value.start} onValueChange={(start) => onChange({ ...value, start })}>
+        <Select
+          value={value.start === '' ? undefined : value.start}
+          onValueChange={(start) => onChange({ ...value, start })}
+        >
           <SelectTrigger className='w-[128.5px]'>
             <SelectValue placeholder='0:00' />
           </SelectTrigger>
@@ -44,7 +47,10 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
       <span className='flex items-center px-[10.5px] h-[3.375rem]'>-</span>
       <div>
         {showLabel && <Label className='px-1 mb-2.5 hidden sm:block'>종료 시간</Label>}
-        <Select value={value.end} onValueChange={(end) => onChange({ ...value, end })}>
+        <Select
+          value={value.end === '' ? undefined : value.end}
+          onValueChange={(end) => onChange({ ...value, end })}
+        >
           <SelectTrigger className='w-[128.5px]'>
             <SelectValue placeholder='0:00' />
           </SelectTrigger>
