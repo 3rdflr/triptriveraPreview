@@ -38,9 +38,12 @@ const axiosInstance = axios.create({
 // 요청 인터셉터 : Access Token 헤더 자동 첨부
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // 브라우저 환경일 때만 실행
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken');
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
