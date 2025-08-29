@@ -1,10 +1,12 @@
 import { forwardRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import clsx from 'clsx';
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  className?: string;
 }
 
 // 사용법 다시 적기
@@ -42,7 +44,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
  */
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
-  ({ type = 'text', id, label, error, ...props }, ref) => {
+  ({ type = 'text', id, label, error, className, ...props }, ref) => {
     return (
       <div className='flex flex-col w-full'>
         <Label htmlFor={id} className='mb-[10px]'>
@@ -53,10 +55,11 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           id={id}
           ref={ref}
           {...props}
-          className={
+          className={clsx(
+            className,
             error &&
-            'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50'
-          }
+              'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50',
+          )}
         />
         <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px] min-h-[20px]'>
           {error}
