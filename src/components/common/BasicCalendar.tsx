@@ -12,7 +12,7 @@ function BasicCalendar({
 }: React.ComponentProps<typeof DayPicker>) {
   return (
     <DayPicker
-      className='p-4'
+      className='p-1'
       showOutsideDays={showOutsideDays}
       formatters={{
         formatMonthDropdown: (date) => date.toLocaleString('default', { month: 'short' }),

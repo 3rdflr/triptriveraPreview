@@ -38,6 +38,31 @@ export interface ActivityCreateResponse extends Activity {
   }[];
 }
 
+export interface ActivityUpdateRequest {
+  title: string;
+  category: ActivitiesCategoryType;
+  description: string;
+  address: string;
+  price: number;
+  bannerImageUrl: string;
+  subImageIdsToRemove: number[];
+  subImageUrlsToAdd: string[];
+  scheduleIdsToRemove: number[];
+  schedulesToAdd: {
+    date: string;
+    startTime: string;
+    endTime: string;
+  }[];
+}
+
+export interface ActivityUpdateResponse extends Activity {
+  subImages: SubImage[];
+  schedules: {
+    date: string;
+    times: ScheduleTime[];
+  }[];
+}
+
 // API 리스트 타입
 export interface ActivitiesListRequest {
   method: MethodType;
@@ -139,17 +164,19 @@ export const createActivity = async (
  * 체험 상세 조회
  */
 export const getActivityDetail = async (activityId: number): Promise<ActivityDetail> => {
-  // 목업 데이터 사용 (개발 단계)
-  const { getMockActivityDetail } = await import('@/mocks/activities.mock');
+  const response = await axiosInstance.get(`/activities/${activityId}`);
+  return response.data;
+};
 
-  // 실제 API 호출 시뮬레이션을 위한 지연
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  return getMockActivityDetail(activityId);
-
-  // 실제 API 호출 (추후 활성화)
-  // const response = await axiosInstance.get(`/activities/${activityId}`);
-  // return response.data;
+/**
+ * 체험 수정
+ */
+export const updateActivity = async (
+  activityId: number,
+  data: ActivityUpdateRequest,
+): Promise<ActivityUpdateResponse> => {
+  const response = await axiosInstance.patch(`/my-activities/${activityId}`, data);
+  return response.data;
 };
 
 /**
