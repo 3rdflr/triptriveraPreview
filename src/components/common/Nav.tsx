@@ -57,8 +57,6 @@ export default function Nav() {
   const frozenCategoryOpacity = 1;
   const frozenSearchY = 87;
 
-  const showNav = pathname !== '/profile';
-  if (!showNav) return null;
   if (isMobile) return <NavMobileView />;
 
   return (
