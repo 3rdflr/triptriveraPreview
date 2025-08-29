@@ -1,6 +1,6 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MyActivitySchema } from '@/types/myActivitySchema';
+import { MyActivitySchema } from '@/lib/utils/myActivitySchema';
 import { useMutation } from '@tanstack/react-query';
 import {
   ActivityCreateRequest,
@@ -13,21 +13,10 @@ import {
   updateActivity,
   uploadActivityImage,
 } from '@/app/api/activities';
-import { createToast } from 'react-simplified-package';
-import { FaCheckCircle } from 'react-icons/fa';
 import { ActivityDetail } from '@/types/activities.type';
+import { errorToast, successToast } from '@/lib/utils/toastUtils';
 
 const useMyActivityForm = () => {
-  const successToast = createToast(
-    (str) => (
-      <div className='flex items-center text-green-500 border border-green-500 p-4 rounded-lg bg-white shadow-md'>
-        <FaCheckCircle className='mr-1' />
-        <span className='text-xs'>{str}이 완료되었습니다.</span>
-      </div>
-    ),
-    { duration: 3000 },
-  );
-
   const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
     defaultValues: {
@@ -95,7 +84,7 @@ const useMyActivityForm = () => {
     retry: 1,
     retryDelay: 300,
     onSuccess: () => {
-      successToast.run('등록');
+      successToast.run('등록이 완료되었습니다.');
     },
     onError: (error) => {
       console.log('업로드 실패', error);
@@ -111,7 +100,7 @@ const useMyActivityForm = () => {
     retry: 1,
     retryDelay: 300,
     onSuccess: () => {
-      successToast.run('수정');
+      successToast.run('수정이 완료되었습니다.');
     },
     onError: (error) => {
       console.log('업로드 실패', error);
@@ -135,6 +124,8 @@ const useMyActivityForm = () => {
     uploadImageMutation,
     registerMutation,
     updateMutation,
+    successToast,
+    errorToast,
   };
 };
 

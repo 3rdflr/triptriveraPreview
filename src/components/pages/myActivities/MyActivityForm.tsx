@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import CategorySelect from './CategorySelect';
 import Script from 'next/script';
-import { MyActivityFormData } from '@/types/myActivitySchema';
+import { MyActivityFormData } from '@/lib/utils/myActivitySchema';
 import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.types';
@@ -214,6 +214,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                 label='제목'
                 placeholder='제목을 입력해 주세요'
                 error={errors.title?.message}
+                maxLength={20}
                 {...register('title')}
               />
             </div>
@@ -229,11 +230,16 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                   <div>
                     <CategorySelect
                       value={field.value ?? undefined}
+                      error={fieldState.error}
                       onChange={field.onChange}
                       onBlur={() => {
                         field.onBlur();
                         trigger('category');
                       }}
+                      className={
+                        fieldState.error &&
+                        'border-destructive/20 bg-destructive/10 dark:bg-destructive/20'
+                      }
                     />
                     {fieldState.error && (
                       <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px]'>
