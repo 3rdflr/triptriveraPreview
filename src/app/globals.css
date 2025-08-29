@@ -93,6 +93,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --input-bg: oklch(100% 0 0);
 }
 
 @theme inline {
@@ -230,6 +231,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --input-bg: var(--input);
 }
 
 @layer base {
@@ -287,4 +289,36 @@
     justify-content: center;
     align-items: center;
   }
+}
+
+/* 자동완성 제외하고 검증 스타일 제거 */
+input:valid:not(:focus):not(:focus-visible):not(:-webkit-autofill),
+input:invalid:not(:focus):not(:focus-visible):not(:-webkit-autofill) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* 브라우저 자동완성 배경색 제어  */
+input:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0 30px var(--input-bg);
+  -webkit-text-fill-color: var(--foreground);
+}
+
+/* 브라우저 자동완성 배경색 제어 : focus */
+input:-webkit-autofill:focus {
+  -webkit-box-shadow:
+    inset 0 0 0 30px var(--input-bg),
+    0 0 0 3px rgba(249, 127, 180, 0.3);
+}
+
+/* 브라우저 자동완성 배경색 제어 : 에러 상태  */
+input[aria-invalid='true']:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0 30px #fde6e7;
+}
+
+/* 브라우저 자동완성 배경색 제어 : 에러 상태 focus */
+input[aria-invalid='true']:focus:-webkit-autofill {
+  -webkit-box-shadow:
+    inset 0 0 0 30px #fde6e7,
+    0 0 0 3px rgba(249, 127, 180, 0.3);
 }
