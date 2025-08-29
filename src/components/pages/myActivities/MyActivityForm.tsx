@@ -228,7 +228,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                 render={({ field, fieldState }) => (
                   <div>
                     <CategorySelect
-                      value={field.value || ''}
+                      value={field.value ?? undefined}
                       onChange={field.onChange}
                       onBlur={() => {
                         field.onBlur();
