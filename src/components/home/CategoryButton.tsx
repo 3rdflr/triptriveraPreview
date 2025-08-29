@@ -39,7 +39,7 @@ export default function CategoryButton({
 
   return (
     <motion.button
-      className={`${isSelected ? 'text-gray-800 dark:text-gray-200 border-b lg:border-b-2 border-gray-800 ' : 'text-gray-500'} flex flex-col items-center gap-[4px] min-w-[50px] lg:min-w-[80px] h-full pt-[20px] cursor-pointer pb-[8px] rounded-t-[8px] hover:bg-gray-100 transition-soft z-50`}
+      className={`${isSelected ? 'text-gray-800 border-b-2 border-gray-800 ' : 'text-gray-500'} flex flex-col items-center gap-[4px] min-w-[50px] lg:min-w-[80px] h-full pt-[20px] cursor-pointer pb-[8px] rounded-t-[8px] hover:bg-gray-100 transition-soft z-50`}
       onClick={() => {
         updateQuery('category', value);
       }}
@@ -50,7 +50,7 @@ export default function CategoryButton({
       }}
     >
       {icon}
-      <span className='text-xs lg:text-md'>{category}</span>
+      <span className='text-12-medium'>{category}</span>
     </motion.button>
   );
 }
