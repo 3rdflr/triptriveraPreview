@@ -18,13 +18,27 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
           data-slot='input'
           onInvalid={(e) => e.preventDefault()}
           className={cn(
-            'file:text-foreground placeholder:text-muted-foreground selection:bg-[var(--primary-300)] selection:text-primary-foreground dark:bg-input/30 border-[var(--grayscale-100)] flex w-full min-w-0 rounded-[16px] border bg-transparent px-[20px] py-[17px] text-sm transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+            // 기본 스타일
+            'file:text-foreground placeholder:text-muted-foreground selection:bg-[var(--primary-500)] selection:text-primary-foreground dark:bg-input/30 border-[var(--grayscale-100)] flex w-full min-w-0 rounded-[16px] border bg-transparent px-[20px] py-[17px] text-base transition-[color,box-shadow] file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
 
-            'focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]',
+            // 배경색과 테두리
+            'bg-[var(--input-bg)] border-[var(--border)]',
 
-            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+            // 브라우저 기본 스타일 제거
+            'outline-none',
+            'valid:outline-none valid:shadow-none',
+            'invalid:outline-none invalid:shadow-none',
 
+            // 포커스 스타일
+            'focus:outline-none focus:border-[var(--primary-500)] focus:ring-[3px] focus:ring-[var(--primary-300)]/30',
+            'focus-visible:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[3px] focus-visible:ring-[var(--primary-300)]/30',
+
+            // 에러 스타일
+            'aria-invalid:bg-destructive/10 dark:aria-invalid:bg-destructive/20 aria-invalid:placeholder:text-destructive/50',
+
+            // 패스워드 필드 여백
             isPassword && 'pr-[50px]',
+
             className,
           )}
           {...props}
