@@ -17,6 +17,7 @@ import { ActivitiesCategoryType, ActivityDetail } from '@/types/activities.type'
 import { successToast } from '@/lib/utils/toastUtils';
 import { toApiDate } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface useMyActivityForm {
   mode?: 'EDIT' | 'REGISTER';
@@ -24,6 +25,7 @@ interface useMyActivityForm {
 }
 
 const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm) => {
+  const router = useRouter();
   const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
 
   const methods = useForm({
@@ -92,7 +94,8 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     mutationFn: (data: ActivityCreateRequest) => createActivity(data),
     retry: 1,
     retryDelay: 300,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      router.push(`/activities/${response.id}`);
       successToast.run('등록이 완료되었습니다.');
     },
     onError: (error) => {
@@ -108,7 +111,8 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     mutationFn: ({ activityId, data }) => updateActivity(activityId, data),
     retry: 1,
     retryDelay: 300,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      router.push(`/activities/${response.id}`);
       successToast.run('수정이 완료되었습니다.');
     },
     onError: (error) => {

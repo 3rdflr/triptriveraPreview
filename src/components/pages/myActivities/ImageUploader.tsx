@@ -27,7 +27,6 @@ const ImageUploader = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('파일 change');
     if (!e.target.files) return;
 
     const fileList = Array.from(e.target.files);
