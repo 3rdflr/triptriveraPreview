@@ -14,7 +14,9 @@ const toastIconMap = {
 const createToastWithType = (type: 'success' | 'error') => {
   return createToast(
     (str) => (
-      <div className={`flex items-center p-4 rounded-lg bg-white shadow-md ${toastTypeMap[type]}`}>
+      <div
+        className={`flex items-center p-4 rounded-lg bg-white shadow-md border ${toastTypeMap[type]}`}
+      >
         {toastIconMap[type]}
         <span className='text-xs'>{str}</span>
       </div>
