@@ -65,7 +65,9 @@ export default function Nav() {
     <>
       <div className='sticky top-0 left-0 w-full bg-gradient-to-b from-white to-gray-50 items-center border-b z-50 shadow-md'>
         {/* 상단 로고 + 로그인 */}
-        <div className='absolute top-[15px] w-full flex items-center justify-between h-[64px] px-10 pointer-events-auto'>
+        <div
+          className={`top-[15px] w-full flex items-center justify-between h-[64px] px-10 pointer-events-auto ${pathname === '/' ? 'absolute' : 'h-[97px]'}`}
+        >
           <Link href='/' className='z-60'>
             {isTablet ? (
               <Image src={'/images/icons/small_logo.svg'} alt='Logo' width={40} height={40} />
