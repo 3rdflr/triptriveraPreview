@@ -4,12 +4,12 @@ import Image from 'next/image';
 import { Activity } from '@/types/activities.types';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import ActivityLike from './ActivityLike';
+import ActivityLike from './ActivityLike';
 import { FaStar as StarIcon } from 'react-icons/fa';
 
 export default function ActivityCard({ activity }: { activity: Activity }) {
   const router = useRouter();
-  // const [showLikeButton, setShowLikeButton] = useState(true); // 로그인 상태에 따라 변경 예정
+  // 로그인 상태에 따라 변경 예정
   const [isError, setIsError] = useState(false);
   const [] = useState(false);
   const baseImageUrl = '/images/icons/_empty.png';
@@ -18,7 +18,7 @@ export default function ActivityCard({ activity }: { activity: Activity }) {
   return (
     <article>
       <div className='relative'>
-        <div className='w-full aspect-square rounded-[20px] overflow-hidden'>
+        <div className='w-full aspect-square rounded-[20px] overflow-hidden bg-grayscale-25'>
           <Image
             src={bannerImg}
             alt={activity.title}
@@ -44,7 +44,7 @@ export default function ActivityCard({ activity }: { activity: Activity }) {
             )}
           </div>
         </div>
-        {/* {showLikeButton && <ActivityLike activity={activity} userId={activity.id} />} */}
+        <ActivityLike activity={activity} userId={activity.id} />
       </div>
 
       <div className='p-[8px] gap-[6px] flex flex-col'>

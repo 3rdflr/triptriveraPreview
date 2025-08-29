@@ -55,10 +55,10 @@ export default async function Home({
   );
 
   return (
-    <div>
-      <div className='h-screen'>
+    <div className='h-auto'>
+      <div>
         {hasParams && <Spinner />}
-        <Spinner />
+        <ActivityList activities={activities} />
       </div>
       <ActivitySheet totalCount={totalCount}>
         <ActivityList activities={activities} />
