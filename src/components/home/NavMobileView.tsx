@@ -52,16 +52,16 @@ export default function NavMobileView() {
 
   if (otherPage)
     return (
-      <div className='w-full flex justify-between items-center py-4 px-6 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-50 shadow-lg'>
+      <div className='w-full flex justify-between items-center py-4 px-6'>
         <button
-          className='w-[40px] h-[40px]  flex items-center justify-center text-title'
+          className='w-[40px] h-[40px]  flex items-center justify-center text-title bg-gray-100 rounded-full shadow-lg'
           onClick={() => router.back()}
         >
           <ArrowLeft strokeWidth={2} width={16} height={16} />
         </button>
         {share && (
           <button
-            className='w-[40px] h-[40px] flex items-center justify-center text-title'
+            className='w-[40px] h-[40px] flex items-center justify-center text-title bg-gray-100 rounded-full shadow-lg'
             onClick={handleShare}
           >
             <Share strokeWidth={2} width={16} height={16} />
