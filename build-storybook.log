@@ -1,0 +1,39 @@
+
+> globalnomad@0.1.0 build-storybook
+> storybook build --output-dir=C:\Users\배수민\AppData\Local\Temp\chromatic--44596-l7cX7g4Z12QN
+
+@storybook/cli v7.6.20
+
+info => Cleaning outputDir: C:\Users\배수민\AppData\Local\Temp\chromatic--44596-l7cX7g4Z12QN
+info => Loading presets
+info => Building manager..
+info => Manager built (789 ms)
+info => Building preview..
+info => Copying static files: C:\Users\배수민\Desktop\codeit\project\part4-team2\node_modules\@storybook\manager\static at C:\Users\배수민\AppData\Local\Temp\chromatic--44596-l7cX7g4Z12QN\sb-common-assets
+info Using Babel compiler
+info Addon-docs: using MDX2
+info => Using implicit CSS loaders
+info => Using default Webpack5 setup
+WARN asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+WARN This can impact web performance.
+WARN Assets: 
+WARN   static/media/addon-library.7d60eaf1.png (456 KiB)
+WARN   71.4d41313e.iframe.bundle.js (581 KiB)
+WARN   797.e9fc52a4.iframe.bundle.js (718 KiB)
+WARN   22.455877d2.iframe.bundle.js (926 KiB)
+WARN   203.3f8e14b1.iframe.bundle.js (822 KiB)
+WARN entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+WARN Entrypoints:
+WARN   main (940 KiB)
+WARN       runtime~main.51f2da21.iframe.bundle.js
+WARN       22.455877d2.iframe.bundle.js
+WARN       main.f3d5ec60.iframe.bundle.js
+WARN 
+info => Preview built (28 s)
+info => Output directory: C:\Users\배수민\AppData\Local\Temp\chromatic--44596-l7cX7g4Z12QN
+
+attention => Storybook now collects completely anonymous telemetry regarding usage.
+This information is used to shape Storybook's roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://storybook.js.org/telemetry
+

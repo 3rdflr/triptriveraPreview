@@ -8,22 +8,24 @@ interface RoundButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   mode?: 'plus' | 'minus' | 'close';
   children?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-const RoundButton = ({ mode = 'close', children, className }: RoundButtonProps) => {
-  const baseClass = 'rounded-full';
+const RoundButton = ({ mode = 'close', children, className, onClick }: RoundButtonProps) => {
+  const baseClass =
+    'cursor-pointer rounded-full flex items-center justify-center border border-transparent focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]';
 
   const getModeClass = (): string => {
     const modeClassMap: Record<string, string> = {
-      plus: 'p-3.5 bg-primary-500',
-      minus: 'p-3.5 bg-grayscale-50',
-      close: 'p-1.5 bg-grayscale-950',
+      plus: 'w-[28px] h-[28px] sm:w-[42px] sm:h-[42px] bg-primary-500 hover:bg-[var(--primary-400)]',
+      minus: 'w-[28px] h-[28px] sm:w-[42px] sm:h-[42px] bg-grayscale-50 hover:bg-grayscale-25',
+      close: 'w-[20px] h-[20px] sm:w-[26px] sm:h-[26px] bg-grayscale-950 hover:bg-grayscale-800',
     };
     return modeClassMap[mode];
   };
 
   return (
-    <button className={clsx(baseClass, getModeClass(), className)}>
+    <button type='button' className={clsx(baseClass, getModeClass(), className)} onClick={onClick}>
       {mode === 'plus' && <FaPlus size={12} className='text-white' />}
       {mode === 'minus' && <FaMinus size={12} className='text-black' />}
       {mode === 'close' && <FaTimes size={10} className='text-white' />}
