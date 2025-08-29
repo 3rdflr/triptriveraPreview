@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 import { login } from '../api/auth';
 import { getUserInfo } from '../api/user';
 
-type FormValues = {
+type loginFormValues = {
   email: string;
   password: string;
 };
@@ -25,48 +25,78 @@ const Login = () => {
 
   const router = useRouter();
 
-  const goToSignup = () => {
-    router.push('/signup');
-  };
-
   const {
     register,
     handleSubmit,
+    watch,
     setError,
-    formState: { isSubmitted, isSubmitting, errors },
-  } = useForm<FormValues>({
-    mode: 'onBlur',
+    formState: { isSubmitted, isSubmitting, isValid, errors },
+  } = useForm<loginFormValues>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
-  // tanstack
+  // 제출 버튼 활성화/비활성화 제어, defaultValues으로 초기 값 false 설정
+  // isFilled: 제출 버튼 활성화 제어용
+  const allFields = watch();
+  const isFilled = Object.values(allFields).every(Boolean);
+
+  // 로그인 요청 mutation
   const mutation = useMutation({
     mutationFn: login,
     mutationKey: ['login'],
     onSuccess: async (data) => {
       localStorage.setItem('accessToken', data.accessToken);
 
-      // 상태관리 저장
+      // 유저 정보 Store 저장
       const user = await getUserInfo();
       setUser(user);
 
       alert(`login 성공`);
+
+      router.push('/');
     },
     onError: (err: unknown) => {
       const error = err as AxiosError<{ message: string }>;
-      if (error) {
-        alert(error.response?.data.message);
-      }
-      if (error.response?.data.message.includes('이메일')) {
-        setError('email', {
-          type: 'server',
-          message: error.response?.data.message,
-        });
+
+      // alert => 모달로 변경 예정, 리팩토링 때 훅으로 만들 예정
+      const { status, data } = error.response ?? {};
+
+      if (status === 400 || status === 409) {
+        const fieldMap: Record<string, string> = {
+          email: '이메일',
+          password: '비밀번호',
+        };
+
+        let handled = false;
+
+        for (const [field, keyword] of Object.entries(fieldMap)) {
+          if (data?.message.includes(keyword)) {
+            setError(field as keyof loginFormValues, {
+              type: 'server',
+              message: data.message,
+            });
+
+            handled = true;
+
+            break;
+          }
+        }
+
+        if (!handled) alert(data?.message);
+      } else {
+        alert(data?.message);
       }
     },
     retry: 0,
   });
 
-  const onSubmit = (data: FormValues) => {
+  // 폼 제출
+  const onSubmit = (data: loginFormValues) => {
     mutation.mutate({
       email: data.email,
       password: data.password,
@@ -80,11 +110,14 @@ const Login = () => {
         width={150}
         height={200}
         alt='Trivera'
-        className='object-contain w-auto h-auto mb-[60px]'
+        className='object-contain w-auto h-auto mb-[60px] cursor-pointer'
+        onClick={() => {
+          router.push('/');
+        }}
       />
       <form onSubmit={handleSubmit(onSubmit)} className='w-full grid gap-1'>
         <FormInput
-          type='email'
+          type='text'
           id='email'
           label='이메일'
           placeholder='이메일을 입력해 주세요'
@@ -103,7 +136,12 @@ const Login = () => {
           {...register('password', validations.password)}
         />
 
-        <Button type='submit' size='lg' className='w-full mt-2' disabled={isSubmitting}>
+        <Button
+          type='submit'
+          size='lg'
+          className='w-full mt-2'
+          disabled={isSubmitted ? !isValid : !isFilled}
+        >
           {isSubmitting ? '로그인 중...' : '로그인하기'}
         </Button>
       </form>
@@ -132,7 +170,12 @@ const Login = () => {
       </Button>
       <p className='text-[var(--grayscale-400)] mt-[30px] cursor-default'>
         회원이 아니신가요?
-        <span onClick={goToSignup} className='underline cursor-pointer ml-1'>
+        <span
+          onClick={() => {
+            router.push('/signup');
+          }}
+          className='underline cursor-pointer ml-1'
+        >
           회원가입하기
         </span>
       </p>

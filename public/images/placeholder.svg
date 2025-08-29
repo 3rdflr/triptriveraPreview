@@ -1,0 +1,21 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#F7F7F7"/>
+  <rect x="1" y="1" width="398" height="298" stroke="#E0E0E5" stroke-width="2" stroke-dasharray="8,8"/>
+  
+  <!-- 이미지 아이콘 -->
+  <g transform="translate(170, 120)">
+    <rect x="10" y="15" width="40" height="30" rx="4" fill="none" stroke="#9FA0A7" stroke-width="2"/>
+    <circle cx="20" cy="25" r="3" fill="#9FA0A7"/>
+    <path d="M15 35L25 28L35 32L45 25V40H15V35Z" fill="#9FA0A7"/>
+  </g>
+  
+  <!-- 텍스트 -->
+  <text x="200" y="170" text-anchor="middle" fill="#84858C" font-family="system-ui, sans-serif" font-size="14" font-weight="500">
+    이미지를 불러올 수 없습니다
+  </text>
+  
+  <!-- 작은 로고/브랜딩 (선택사항) -->
+  <text x="200" y="190" text-anchor="middle" fill="#C6C8CF" font-family="system-ui, sans-serif" font-size="12">
+    Trivera
+  </text>
+</svg>
