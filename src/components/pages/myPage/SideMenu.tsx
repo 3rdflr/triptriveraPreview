@@ -15,11 +15,11 @@ export default function SideMenu({ className }: SideMenuProps) {
   return (
     <Card
       className={clsx(
-        'w-80 md:w-44 lg:w-72 sm:h-[450px] md:h-[342px] lg:h-[450px] px-4 py-6 shadow-lg',
+        'w-80 md:w-44 lg:w-72 sm:h-[450px] md:h-[342px] lg:h-[450px] px-4 py-6 md:px-3.5 md:py-2 lg:px-4 lg:py-6 shadow-lg',
         className,
       )}
     >
-      <div className='flex flex-col gap-6'>
+      <div className='flex flex-col gap-6 md:gap-3 lg:gap-6'>
         {/* 프로필 영역 */}
         <div className='relative flex justify-center mt-4 w-[120px] h-[120px] md:w-[70px] md:h-[70px] lg:w-[120px] lg:h-[120px] mx-auto'>
           <Image src='/images/icons/default_profile.svg' alt='Profile' width={120} height={120} />
@@ -30,7 +30,7 @@ export default function SideMenu({ className }: SideMenuProps) {
         </div>
 
         {/* 메뉴 리스트 */}
-        <nav className='flex flex-col gap-3 md:gap-1'>
+        <nav className='flex flex-col gap-2.5 md:gap-1 lg:gap-2.5'>
           <Button
             asChild
             variant='ghost'
