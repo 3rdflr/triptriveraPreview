@@ -6,6 +6,7 @@ import ActivityImageViewer from '@/components/pages/activities/ActivityImageView
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
 import { activityQueryKeys } from './queryClients';
 import { useEffect } from 'react';
+import NaverMap from '@/components/common/NaverMap';
 
 interface ActivityClientProps {
   activityId: string;
@@ -198,9 +199,13 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
         <div className='mt-12 space-y-8'>
           <section className='border-t pt-8'>
             <h2 className='text-lg font-semibold mb-4'>오시는 길</h2>
-            <div className='h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500'>
-              지도 컴포넌트 (추후 구현)
-            </div>
+            <NaverMap
+              address='제주특별자치도 제주시 첨단로 242'
+              showInfoWindow={true}
+              infoContent='제주컨벤션센터'
+              height='256px'
+              className='rounded-lg'
+            />
           </section>
 
           <section className='border-t pt-8'>
