@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ApiResponse } from '@/types/myActivity.type';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const MyExperiencePage = () => {
@@ -34,6 +35,45 @@ const MyExperiencePage = () => {
     },
   });
 
+  const MyExperienceList = () => {
+    if (isLoading) {
+      return (
+        <div className='flex flex-col gap-6'>
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <MyExperienceCardSkeleton key={idx} />
+          ))}
+        </div>
+      );
+    }
+
+    if (!data?.activities || data?.activities.length === 0) {
+      return (
+        <div className='flex flex-col mx-auto'>
+          <Image
+            src={'/images/icons/_empty.png'}
+            width={182}
+            height={182}
+            alt='체험 관리 디폴트 이미지'
+          />
+          <span className='text-18-medium text-grayscale-600'>아직 등록한 체험이 없어요</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className='flex flex-col gap-6'>
+        {data?.activities.map((activity) => (
+          <MyExperienceCard
+            key={activity.id}
+            data={activity}
+            onEdit={(id) => onClickEdit(id)}
+            onDelete={(id) => onClickDelete(id)}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
@@ -49,19 +89,8 @@ const MyExperiencePage = () => {
         </Button>
       </div>
 
-      {/* 리스트 */}
-      <div className='flex flex-col gap-6'>
-        {isLoading
-          ? Array.from({ length: 3 }).map((_, idx) => <MyExperienceCardSkeleton key={idx} />)
-          : data?.activities.map((activity) => (
-              <MyExperienceCard
-                key={activity.id}
-                data={activity}
-                onEdit={(id) => onClickEdit(id)}
-                onDelete={(id) => onClickDelete(id)}
-              />
-            ))}
-      </div>
+      {/* 체험 관리 카드 목록 */}
+      <MyExperienceList />
     </div>
   );
 };
