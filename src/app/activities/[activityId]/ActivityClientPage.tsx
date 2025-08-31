@@ -199,10 +199,10 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
             <h2 className='text-lg font-semibold mb-4'>오시는 길</h2>
 
             <NaverMap
-              address='서울시'
+              address='전주시 완산구 척동 3길 6-6'
               height='256px'
               showInfoWindow={true}
-              infoContent='서울시 관광지'
+              infoContent='전주시 완산구 척동 3길 6-6'
               zoom={12}
             />
           </section>
