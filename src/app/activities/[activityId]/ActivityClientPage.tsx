@@ -6,7 +6,7 @@ import ActivityImageViewer from '@/components/pages/activities/ActivityImageView
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
 import { activityQueryKeys } from './queryClients';
 import { useEffect } from 'react';
-import NaverMap from '@/components/common/NaverMap';
+import NaverMap from '@/components/common/naverMaps/NaverMap';
 
 interface ActivityClientProps {
   activityId: string;
@@ -17,15 +17,13 @@ interface ActivityClientProps {
  * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
  *
  */
+/**
+ * ActivityClient 컴포넌트
+ * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
+ * - Suspense와 ErrorBoundary를 통한 선언적 UI 상태 관리
+ */
 export default function ActivityClient({ activityId }: ActivityClientProps) {
-  useEffect(() => {
-    console.log('🎯 [CSR] ActivityClient 마운트 시작', { activityId });
-    console.log('💧 [HYDRATION] 클라이언트 Hydration 시작');
-
-    return () => {
-      console.log('🎯 [CSR] ActivityClient 언마운트', { activityId });
-    };
-  }, [activityId]);
+  //todo: useTransition을 활용해 필요한 거를 지연 로딩을 시도해보자
 
   // 기본 체험 정보 조회 (서버에서 prefetch된 데이터 사용)
   const { data: activity } = useSuspenseQuery({
@@ -199,12 +197,13 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
         <div className='mt-12 space-y-8'>
           <section className='border-t pt-8'>
             <h2 className='text-lg font-semibold mb-4'>오시는 길</h2>
+
             <NaverMap
-              address='제주특별자치도 제주시 첨단로 242'
-              showInfoWindow={true}
-              infoContent='제주컨벤션센터'
+              address='서울시'
               height='256px'
-              className='rounded-lg'
+              showInfoWindow={true}
+              infoContent='서울시 관광지'
+              zoom={12}
             />
           </section>
 

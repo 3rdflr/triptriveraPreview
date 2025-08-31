@@ -80,16 +80,12 @@ declare global {
   }
 
   interface GeocodeCallback {
-    (status: string, response: GeocodeResponse): void;
+    (status: number, response: GeocodeResponse): void;
   }
 
   interface GeocodeResponse {
     v2: {
-      status: {
-        code: number;
-        name: string;
-        message: string;
-      };
+      status: string;
       meta: {
         totalCount: number;
         page: number;
