@@ -64,7 +64,7 @@ const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => 
               src={image}
               alt='체험 관리 썸네일'
               layout='fill'
-              className='lg:rounded-4xl rounded-2xl  bg-grayscale-50 object-cover'
+              className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
               onError={() => {
                 setIsError(true);
               }}

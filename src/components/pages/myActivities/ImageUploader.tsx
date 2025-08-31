@@ -31,7 +31,7 @@ const ImageUploader = ({
     if (!e.target.files) return;
 
     // 파일 용량 체크 (5MB 제한)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     const fileList = Array.from(e.target.files);
 
     if (fileList.some((file) => file.size > maxSize)) {
