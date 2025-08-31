@@ -3,6 +3,7 @@ import { ImagePlus } from 'lucide-react';
 import { useRef } from 'react';
 import RoundButton from './RoundButton';
 import clsx from 'clsx';
+import { errorToast } from '@/lib/utils/toastUtils';
 
 interface FetchImage {
   id?: number;
@@ -29,8 +30,17 @@ const ImageUploader = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
+    // 파일 용량 체크 (5MB 제한)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     const fileList = Array.from(e.target.files);
-    const newImages = [...fileList, ...files].slice(0, maxImages);
+
+    if (fileList.some((file) => file.size > maxSize)) {
+      errorToast.run('5MB를 초과하는 파일은 등록이 불가합니다.');
+    }
+
+    const validFiles = fileList.filter((file) => file.size <= maxSize);
+
+    const newImages = [...files, ...validFiles].slice(0, maxImages);
     onChange?.(newImages);
     e.target.value = '';
   };
