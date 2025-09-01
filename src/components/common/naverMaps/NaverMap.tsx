@@ -27,12 +27,10 @@ interface NaverMapProps {
   height?: string;
   /** 지도 줌 레벨 (기본값: 15) */
   zoom?: number;
-  /** 정보창 표시 여부 (기본값: false) */
-  showInfoWindow?: boolean;
-  /** 정보창에 표시할 내용 */
-  infoContent?: string;
   /** 에러 재시도 콜백 함수 (선택적) */
   onRetry?: () => void;
+  /** 마커 등의 자식 요소 */
+  children?: React.ReactNode;
 }
 
 export default function NaverMap({
@@ -41,19 +39,10 @@ export default function NaverMap({
   width = '100%',
   height = '256px',
   zoom = 15,
-  showInfoWindow = false,
-  infoContent,
   onRetry,
+  children,
 }: NaverMapProps) {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-
-  console.log('🛡️ [BOUNDARY] NaverMap 렌더링 시작', {
-    address,
-    width,
-    height,
-    showInfoWindow,
-    isScriptLoaded,
-  });
 
   // 스크립트가 로드되지 않은 경우 스켈레톤 표시
   if (!isScriptLoaded) {
@@ -63,7 +52,6 @@ export default function NaverMap({
           src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}&submodules=geocoder`}
           strategy='afterInteractive'
           onLoad={() => {
-            console.log('📜 [SCRIPT] 네이버 지도 스크립트 로드 완료');
             setIsScriptLoaded(true);
           }}
           onError={() => {
@@ -88,9 +76,9 @@ export default function NaverMap({
           height={height}
           className={className}
           zoom={zoom}
-          showInfoWindow={showInfoWindow}
-          infoContent={infoContent}
-        />
+        >
+          {children}
+        </NaverMapCore>
       </Suspense>
     </ErrorBoundary>
   );

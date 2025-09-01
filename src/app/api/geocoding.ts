@@ -27,7 +27,7 @@ export function geocodeAddress(address: string): Promise<GeocodeResult> {
         reject(new Error('주소를 찾을 수 없습니다.'));
         return;
       }
-      console.log('📍 [GEOCODE] 지오코딩 성공', { response });
+
       const { x, y } = response.v2.addresses[0];
       resolve({
         x: Number(x),
