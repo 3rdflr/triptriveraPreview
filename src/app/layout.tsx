@@ -21,7 +21,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
-      <head></head>
       <body suppressHydrationWarning={true}>
         <Suspense fallback={<div>Loading...</div>}>
           <QueryProvider>
