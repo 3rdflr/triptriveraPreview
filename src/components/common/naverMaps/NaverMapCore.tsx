@@ -195,8 +195,6 @@ export default function NaverMapCore({
     // 클린업 시 취소 플래그 설정
     return () => {
       cancelled = true;
-      console.log('🧹 [MAP] 지도 인스턴스 정리');
-
       // 모든 마커들 정리
       naverMarkers.forEach((marker) => {
         marker.setMap(null);
@@ -218,7 +216,7 @@ export default function NaverMapCore({
     );
   }
 
-  // Suspense가 coordinates를 보장하므로 바로 지도 렌더링
+  // 지도 렌더링
   return (
     <div className={`w-full relative ${className}`} style={{ width, height }}>
       <div ref={mapRef} className='w-full h-full rounded-lg overflow-hidden' />

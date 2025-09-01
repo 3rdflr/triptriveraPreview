@@ -30,17 +30,27 @@ export interface ImageMarkerProps {
 export default function ImageMarker({
   src,
   alt = '마커',
-  size = 32,
-  className = '',
+  size = 20,
+  className: _className = '',
 }: ImageMarkerProps) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div
+      style={{
+        width: size,
+        height: size,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <img
         src={src}
         alt={alt}
-        width={size}
-        height={size}
-        className='rounded-full border-2 border-white shadow-lg object-cover'
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+        className='rounded-full border-2 border-white shadow-lg object-cover hover:scale-110 transition-transform duration-200'
       />
     </div>
   );
