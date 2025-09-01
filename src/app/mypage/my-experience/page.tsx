@@ -1,19 +1,20 @@
 'use client';
 import { deleteActivity, getMyActivitiesList } from '@/app/api/myActivities';
+import ConfirmActionModal from '@/components/common/ConfirmActionModal';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import MyExperienceCard from '@/components/pages/myPage/MyExperienceCard';
 import MyExperienceCardSkeleton from '@/components/pages/myPage/MyExperienceSkeleton';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useOverlay } from '@/hooks/useOverlay';
 import { ApiResponse } from '@/types/myActivity.type';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Modal } from 'react-simplified-package';
 
 const MyExperiencePage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const buttonClass = 'px-9.5 py-3 sm:px-12 sm:py-3.5';
+  const overlay = useOverlay();
   const queryClient = useQueryClient();
 
   const router = useRouter();
@@ -26,16 +27,45 @@ const MyExperiencePage = () => {
   const onClickEdit = (id: number) => {
     router.push(`/my-activities/activity/${id}`);
   };
+
+  const onClickShowDeleteModal = (id: number) => {
+    overlay.open(({ isOpen, close }) => (
+      <ConfirmActionModal
+        title='체험을 삭제하시겠어요?'
+        actionText='삭제하기'
+        isOpen={isOpen}
+        onClose={close}
+        onAction={() => {
+          close();
+          onClickDelete(id);
+        }}
+      />
+    ));
+  };
   const onClickDelete = (id: number) => {
     deleteMyActivityMutation.mutate(id);
   };
 
-  const deleteMyActivityMutation = useMutation<ApiResponse, Error, number>({
+  const deleteMyActivityMutation = useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    number
+  >({
     mutationFn: (activityId) => deleteActivity(activityId),
     retry: 1,
     retryDelay: 300,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
+    },
+    onError: (error) => {
+      overlay.open(({ isOpen, close }) => (
+        <ConfirmModal
+          title={error.response?.data?.message}
+          isOpen={isOpen}
+          onClose={close}
+          onAction={close}
+        />
+      ));
     },
   });
 
@@ -71,7 +101,7 @@ const MyExperiencePage = () => {
             key={activity.id}
             data={activity}
             onEdit={(id) => onClickEdit(id)}
-            onDelete={(id) => onClickDelete(id)}
+            onDelete={(id) => onClickShowDeleteModal(id)}
           />
         ))}
       </div>
@@ -95,25 +125,6 @@ const MyExperiencePage = () => {
 
       {/* 체험 관리 카드 목록 */}
       <MyExperienceList />
-      <button onClick={() => setIsModalOpen(true)}>첫번째</button>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        modalClassName=''
-        buttonClassName='!hidden'
-      >
-        <div className='flex flex-col items-center gap-6 w-72 h-24 sm:w-90 sm:h-28 py-2.5'>
-          <span className='text-18-bold'>체험을 삭제하시겠어요?</span>
-          <div className='flex gap-3'>
-            <Button size='md' variant={'secondary'} className={buttonClass}>
-              아니오
-            </Button>
-            <Button size='md' className={buttonClass}>
-              삭제하기
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };
