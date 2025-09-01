@@ -23,7 +23,7 @@ export default function NaverMapSkeleton({
 }: NaverMapSkeletonProps) {
   return (
     <div
-      className={`w-full relative bg-gray-100 flex justify-center items-center rounded-lg ${className}`}
+      className={`w-full relative bg-gray-100 flex justify-center items-center rounded-3xl ${className}`}
       style={{ width, height }}
     >
       <div className='flex'>

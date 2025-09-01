@@ -210,16 +210,15 @@ export default function NaverMapCore({
   if (!isMounted) {
     return (
       <div
-        className={`w-full relative bg-gray-100 rounded-lg ${className}`}
+        className={`w-full relative bg-gray-100 rounded-3xl ${className}`}
         style={{ width, height }}
       />
     );
   }
-
   // 지도 렌더링
   return (
     <div className={`w-full relative ${className}`} style={{ width, height }}>
-      <div ref={mapRef} className='w-full h-full rounded-lg overflow-hidden' />
+      <div ref={mapRef} className='w-full h-full rounded-3xl overflow-hidden' />
     </div>
   );
 }

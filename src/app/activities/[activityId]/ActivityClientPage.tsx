@@ -195,52 +195,27 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
           </div>
         </div>
 
-        {/* 하단: 추후 구현할 섹션들 */}
+        {/* 지도 섹션 */}
         <div className='mt-12 space-y-8'>
-          <section className='border-t pt-8'>
-            <h2 className='text-lg font-semibold mb-4'>오시는 길</h2>
+          <section className='border-t pt-8 flex flex-col gap-2'>
+            <h2 className='text-lg font-semibold'>오시는 길</h2>
+            <p className='text-sm text-gray-600'>{activity.address}</p>
 
-            <NaverMap address='전주시 완산구 척동 3길 6-6' height='256px' zoom={12}>
-              <Marker
-                position={{ lat: 35.8242, lng: 127.1486 }}
-                onClick={(position) => {
-                  console.log('마커 1 클릭!', position);
-                  alert(`마커 1 클릭! 위치: ${position.lat}, ${position.lng}`);
-                }}
-                id='marker-1'
-              >
+            <NaverMap address={activity.address} height='256px' zoom={12}>
+              <Marker position={{ lat: 35.8242, lng: 127.1486 }} id='marker-default'>
                 <ImageMarker src={activity.bannerImageUrl} alt='마커 1' size={40} />
               </Marker>
 
               <Marker
-                address='전주시 완산구 효자동'
+                address={activity.address}
                 onClick={(position) => {
                   console.log('주소 기반 마커 클릭!', position);
                   alert(`주소 기반 마커! 위치: ${position.lat}, ${position.lng}`);
                 }}
-                id='address-marker'
+                id='image-marker'
               >
                 <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
               </Marker>
-
-              {/* 배열로 다중 마커 테스트 */}
-              {[
-                { position: { lat: 35.8262, lng: 127.1506 }, text: '3' },
-                { position: { lat: 35.8272, lng: 127.1516 }, text: '4' },
-              ].map((marker, index) => (
-                <Marker
-                  key={`array-marker-${index}`}
-                  position={marker.position}
-                  onClick={(pos) => alert(`배열 마커 ${marker.text}: ${pos.lat}, ${pos.lng}`)}
-                  id={`array-marker-${index}`}
-                >
-                  <ImageMarker
-                    src={activity.bannerImageUrl}
-                    alt={`배열 마커 ${marker.text}`}
-                    size={35}
-                  />
-                </Marker>
-              ))}
             </NaverMap>
           </section>
 
