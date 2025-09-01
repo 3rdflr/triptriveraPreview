@@ -55,24 +55,31 @@ export async function generateStaticParams(): Promise<ActivityStaticParams[]> {
   const startTime = performance.now();
   console.log('🏗️ [SSG] generateStaticParams 시작 - 인기 체험 20개 선정');
 
-  const activities = await getActivitiesList({
-    method: 'offset',
-    page: 1,
-    size: 20,
-    sort: 'most_reviewed',
-  });
+  try {
+    const activities = await getActivitiesList({
+      method: 'offset',
+      page: 1,
+      size: 20,
+      sort: 'most_reviewed',
+    });
 
-  const staticParams: ActivityStaticParams[] = activities.activities.map((activity) => ({
-    activityId: activity.id.toString(),
-  }));
+    const staticParams: ActivityStaticParams[] = activities.activities.map((activity) => ({
+      activityId: activity.id.toString(),
+    }));
 
-  const duration = performance.now() - startTime;
-  console.log(`⏱️ [SSG] generateStaticParams 완료: ${duration.toFixed(2)}ms`, {
-    count: staticParams.length,
-    activityIds: staticParams.map((p) => p.activityId),
-  });
+    const duration = performance.now() - startTime;
+    console.log(`⏱️ [SSG] generateStaticParams 완료: ${duration.toFixed(2)}ms`, {
+      count: staticParams.length,
+      activityIds: staticParams.map((p) => p.activityId),
+    });
 
-  return staticParams;
+    return staticParams;
+  } catch (error) {
+    console.error('❌ [SSG] generateStaticParams 실패 - 빈 배열 반환', error);
+
+    // 빌드 실패를 방지하기 위해 빈 배열 반환 (모든 페이지는 ISR로 처리됨)
+    return [];
+  }
 }
 
 export const dynamicParams = true;
