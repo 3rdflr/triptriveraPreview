@@ -10,7 +10,6 @@ import {
   createActivity,
   getActivityDetail,
   ImageUploadResponse,
-  updateActivity,
   uploadActivityImage,
 } from '@/app/api/activities';
 import { ActivitiesCategoryType } from '@/types/activities.type';
@@ -19,6 +18,7 @@ import { toApiDate } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityQueryKeys } from '@/app/activities/[activityId]/queryClients';
+import { updateActivity } from '@/app/api/myActivities';
 
 interface useMyActivityForm {
   mode?: 'EDIT' | 'REGISTER';
