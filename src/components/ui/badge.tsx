@@ -21,7 +21,7 @@ const badgeVariants = cva(
         true: 'bg-[var(--primary-500)] text-white border-none',
       },
       size: {
-        xs: 'text-[13px] font-bold px-2 py-1',
+        xs: 'text-[13px] font-bold px-2 py-0.5',
         sm: 'text-base px-3.5 py-1.5',
       },
     },

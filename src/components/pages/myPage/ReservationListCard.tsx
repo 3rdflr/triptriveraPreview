@@ -10,17 +10,18 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { reservationStatus } from '@/lib/constants/reservation';
+import { ReservationStatus } from '@/types/activities.type';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
 import { useState } from 'react';
 
 interface MyExperienceCardProps {
   data: Reservation;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
+  onCancel: (id: number) => void;
+  onReview: (id: number) => void;
 }
 
-const ReservationListCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => {
+const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps) => {
   const { id, activity, status, totalPrice, headCount, date, startTime, endTime } = data;
 
   const { bannerImageUrl, title } = activity;
@@ -28,13 +29,13 @@ const ReservationListCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) 
   const baseImageUrl = '/images/icons/_empty.png';
   const image = isError ? baseImageUrl : bannerImageUrl;
 
-  // const badgeStatusColor: Record<ReservationStatus, string> = {
-  //   pending: 'bg-yellow-100 text-yellow-800',
-  //   confirmed: 'bg-green-100 text-green-800',
-  //   declined: 'bg-red-100 text-red-800',
-  //   canceled: 'bg-gray-100 text-gray-600',
-  //   completed: 'bg-blue-100 text-blue-800',
-  // };
+  const badgeStatusColor: Record<ReservationStatus, string> = {
+    pending: 'bg-primary-100 text-primary-500',
+    confirmed: 'bg-[var(--badge-green-light)] text-[var(--badge-green-dark)]',
+    declined: 'bg-[var(--badge-coral-light)] text-[var(--badge-coral-dark)]',
+    canceled: 'bg-gray-100 text-gray-600',
+    completed: 'bg-[var(--badge-blue-light)] text-bg-[var(--badge-blue-dark)]',
+  };
 
   return (
     <Card className='shadow-xl'>
@@ -42,7 +43,9 @@ const ReservationListCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) 
         {/* 예약 내역 내용 */}
         <div>
           <CardHeader>
-            <Badge>{reservationStatus[status]}</Badge>
+            <Badge size='xs' className={badgeStatusColor[status]}>
+              {reservationStatus[status]}
+            </Badge>
             <CardTitle>{title}</CardTitle>
             <CardDescription>
               <div className='flex items-center gap-0.5'>
@@ -57,17 +60,15 @@ const ReservationListCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) 
             </p>
           </CardContent>
           <CardFooter className='flex gap-2'>
-            {/* status: completed인 경우 => 이용을 완료한 체험(체험 시간이 지나간)은 '후기 작성' 버튼이 보입니다. */}
-            <Button variant='secondary' size='xs' onClick={() => onEdit(id)}>
-              예약 변경
-            </Button>
-            <Button size='xs' onClick={() => onDelete(id)}>
-              예약 취소
-            </Button>
-            {/* status: completed인 경우 => 이용을 완료한 체험(체험 시간이 지나간)은 '후기 작성' 버튼이 보입니다. */}
-            <Button size='xs' onClick={() => onDelete(id)}>
-              후기 작성
-            </Button>
+            {status === 'completed' ? (
+              <Button size='xs' onClick={() => onReview(id)}>
+                후기 작성
+              </Button>
+            ) : (
+              <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
+                예약 취소
+              </Button>
+            )}
           </CardFooter>
         </div>
 
