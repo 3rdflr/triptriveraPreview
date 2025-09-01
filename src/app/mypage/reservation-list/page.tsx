@@ -82,8 +82,8 @@ const ReservationListPage = () => {
           <ReservationListCard
             key={reservation.id}
             data={reservation}
-            onEdit={(id) => onClickEdit()}
-            onDelete={(id) => onClickDelete()}
+            onEdit={() => onClickEdit()}
+            onDelete={() => onClickDelete()}
           />
         ))}
       </div>
