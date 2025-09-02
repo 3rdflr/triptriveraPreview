@@ -11,10 +11,10 @@ type Props = {
 
 export default function PriceFilter({ priceRange, setPriceRange }: Props) {
   const initialMinPrice = 0;
-  const initialMaxPrice = 300_000;
+  const initialMaxPrice = 300_000; // 슬라이더 최대값
   const step = 1000;
 
-  // 데이터 생성
+  // 그래프 데이터 생성 (부드러운 곡선)
   const rawData = useMemo(() => {
     return Array.from({ length: Math.floor(initialMaxPrice / step) + 1 }, (_, i) => {
       const price = i * step;
@@ -43,8 +43,6 @@ export default function PriceFilter({ priceRange, setPriceRange }: Props) {
           <AreaChart data={rawData}>
             <XAxis dataKey='price' hide domain={[chartDomainMin, chartDomainMax]} />
             <YAxis hide />
-
-            {/* 선택 범위 강조용 gradient */}
             <defs>
               <linearGradient id='colorRange' x1='0' y1='0' x2='1' y2='0'>
                 <stop offset='0%' stopColor='#cbd5e1' stopOpacity={0.3} />
@@ -73,7 +71,7 @@ export default function PriceFilter({ priceRange, setPriceRange }: Props) {
             </defs>
 
             <Area
-              type='monotone'
+              type='monotone' // 부드러운 곡선
               dataKey='search'
               stroke='var(#colorRange)'
               fill='url(#colorRange)'
@@ -122,7 +120,11 @@ export default function PriceFilter({ priceRange, setPriceRange }: Props) {
       {/* 선택 범위 텍스트 */}
       <div className='flex justify-between text-xs text-gray-600'>
         <span>{priceRange[0].toLocaleString()}원~</span>
-        <span>{priceRange[1].toLocaleString()}원</span>
+        <span>
+          {priceRange[1] >= initialMaxPrice
+            ? `${initialMaxPrice.toLocaleString()}원 이상`
+            : `${priceRange[1].toLocaleString()}원`}
+        </span>
       </div>
     </div>
   );
