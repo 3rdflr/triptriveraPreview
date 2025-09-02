@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion, useMotionValue, animate, AnimatePresence } from 'framer-motion';
 import { FaMapMarkedAlt as MapIcon } from 'react-icons/fa';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 export default function ActivitySheet({
   totalCount,
@@ -11,13 +12,49 @@ export default function ActivitySheet({
   totalCount: number;
   children?: React.ReactNode;
 }) {
-  const sheetRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const CLOSED_HEIGHT = 120;
-
-  const y = useMotionValue(0);
+  const { isMobile } = useScreenSize();
   const [fullHeight, setFullHeight] = useState(0);
   const [isFullyOpen, setIsFullyOpen] = useState(false);
+  const [scrollingDown, setScrollingDown] = useState(false);
+
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const CLOSED_HEIGHT = !isMobile ? 44 : 120;
+
+  const y = useMotionValue(0);
+  useEffect(() => {
+    let sheet: HTMLElement | null = contentRef.current;
+    let lastScrollTop = 0;
+
+    const handleScroll = () => {
+      if (!sheet) return;
+      const scrollTop = sheet.scrollTop;
+      setScrollingDown(scrollTop > lastScrollTop);
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    };
+
+    const attachScroll = () => {
+      sheet = contentRef.current;
+      if (sheet) {
+        sheet.removeEventListener('scroll', handleScroll);
+        sheet.addEventListener('scroll', handleScroll);
+      }
+    };
+
+    attachScroll();
+
+    // DOM이 생기면 이벤트 다시 연결
+    const observer = new MutationObserver(() => {
+      attachScroll();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      sheet?.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,7 +78,7 @@ export default function ActivitySheet({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [y, isFullyOpen]);
+  }, [y, isFullyOpen, isMobile]);
 
   const handleDragEnd = (_: Event, info: { velocity: { y: number } }) => {
     if (!fullHeight) return;
@@ -75,14 +112,17 @@ export default function ActivitySheet({
         </div>
 
         <article
-          className='px-4 pt-2 pb-8 h-[calc(100%-40px)] overflow-y-auto overscroll-contain'
+          className='activity-sheet-content px-4 pt-2 pb-8 h-[calc(100%-40px)] overflow-y-auto overscroll-contain'
           ref={contentRef}
           style={{
             pointerEvents: 'auto',
             WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-y',
           }}
         >
-          <h2 className='text-[15px] text-center mb-6'>지도 표시 지역의 체험 {totalCount}개</h2>
+          <h2 className='text-14-regular text-title text-center mt-6'>
+            지도 표시 지역의 체험 {totalCount}개
+          </h2>
           {children}
         </article>
       </motion.div>
@@ -90,11 +130,15 @@ export default function ActivitySheet({
         {isFullyOpen && (
           <motion.button
             key='map-button'
-            className='fixed bottom-28 bg-title text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg'
+            className='fixed bg-title text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg bottom-24'
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              bottom: isMobile ? (scrollingDown ? 48 : 96) : 48, // bottom 값도 motion으로 제어
+            }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }} // 이동도 부드럽게
             onClick={() => {
               animate(y, fullHeight - CLOSED_HEIGHT, {
                 type: 'spring',
