@@ -1,4 +1,4 @@
-import { useUserStore } from '@/store/userStore';
+// import { useUserStore } from '@/store/userStore';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 interface FailedRequest {
@@ -19,9 +19,11 @@ const processQueue = (error: AxiosError | null) => {
 };
 
 // 기본 URL 설정 - 빌드 환경에서는 절대 URL 사용
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== 'undefined' ? '/api/proxy' : 'http://localhost:3000/api/proxy');
+// const BASE_URL =
+//   process.env.NEXT_PUBLIC_API_URL ||
+//   (typeof window !== 'undefined' ? '/api/proxy' : 'http://localhost:3000/api/proxy');
+
+const BASE_URL = '/api/proxy';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -59,6 +61,7 @@ axiosInstance.interceptors.response.use(
         // refreshToken은 HttpOnly라서 클라이언트에서 못 읽음
         // 프록시 서버에서 처리하도록 요청
         await axiosInstance.post('/auth/refresh-token');
+        // await axiosInstance.post('/auth/tokens');
 
         processQueue(null);
 
@@ -69,14 +72,14 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError);
 
         // 쿠키 삭제 + 유저 정보 삭제
-        fetch('/api/logout', { method: 'POST' });
-        useUserStore.getState().clearUser();
+        // fetch('/api/logout', { method: 'POST' });
+        // useUserStore.getState().clearUser();
 
         failedQueue = []; // 큐 초기화
 
         // sessionStorage에 메시지 저장하고 즉시 페이지 이동
         sessionStorage.setItem('loginMessage', '세션이 만료되었습니다.');
-        window.location.href = '/login';
+        // window.location.href = '/login';
 
         return Promise.reject(refreshError);
       } finally {
