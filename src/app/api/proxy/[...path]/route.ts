@@ -15,6 +15,23 @@ export const PUT = makeHandler('PUT');
 export const DELETE = makeHandler('DELETE');
 export const PATCH = makeHandler('PATCH');
 
+// CORS 요청처리
+export async function OPTIONS() {
+  const headers = new Headers();
+
+  headers.set(
+    'Access-Control-Allow-Origin',
+    process.env.NODE_ENV === 'production'
+      ? 'https://part4-team2.vercel.app'
+      : 'http://localhost:3000',
+  );
+  headers.set('Access-Control-Allow-Credentials', 'true');
+  headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  return new NextResponse(null, { status: 204, headers });
+}
+
 // 클라이언트 요청을 처리하는 비동기 함수
 async function handleRequest(method: string, req: Request, path: string[]) {
   try {
@@ -86,6 +103,13 @@ async function handleRequest(method: string, req: Request, path: string[]) {
     }
 
     // CORS 헤더
+    // resHeaders.set('Access-Control-Allow-Credentials', 'true');
+    resHeaders.set(
+      'Access-Control-Allow-Origin',
+      process.env.NODE_ENV === 'production'
+        ? 'https://part4-team2.vercel.app'
+        : 'http://localhost:3000',
+    );
     resHeaders.set('Access-Control-Allow-Credentials', 'true');
 
     return new NextResponse(JSON.stringify(response.data), {
