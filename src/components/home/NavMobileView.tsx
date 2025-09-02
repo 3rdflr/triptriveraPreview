@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Search, SearchIcon, X, ArrowLeft, Share } from 'lucide-react';
-import MobileCategoryList from './MobileCategoryList';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PLACES } from './Constants';
-import { usePathname, useRouter } from 'next/navigation';
+import MobileCategoryList from './MobileCategoryList';
 import PriceFilter from './PriceFilter';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type Place = {
   src: string;
@@ -26,16 +27,16 @@ export default function NavMobileView() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const showNav = pathname !== '/profile';
   const otherPage = pathname !== '/';
+  const showNav = pathname.startsWith('/profile');
   const share = pathname.startsWith('/activities');
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: '내 사이트 제목',
-          text: '여기 재미있는 컨텐츠가 있어요!',
+          title: 'Trivera',
+          text: '이 체험 어때요?',
           url: window.location.href,
         });
       } catch (err) {
@@ -84,14 +85,14 @@ export default function NavMobileView() {
   return (
     <>
       {!isSearching ? (
-        <div className='fixed top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-50'>
-          <div className='px-10'>
+        <div className='sticky top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-50'>
+          <div className='px-10 pt-6'>
             <button
-              className='flex items-center justify-center gap-2 min-w-[275px] w-full bg-white h-[55px] rounded-full shadow-lg mt-6 mb-2'
+              className='flex items-center justify-center gap-2 min-w-[275px] w-full bg-white h-[55px] rounded-full shadow-lg mb-2'
               onClick={() => setIsSearching(true)}
             >
-              <Search width={12} height={12} className='text-title' />
-              <span className='text-title text-12-medium'>검색을 시작해 보세요</span>
+              <Search width={14} height={14} className='text-title' />
+              <span className='text-title text-14-regular'>검색을 시작해 보세요</span>
             </button>
           </div>
           <div className='relative flex justify-center z-50'>
@@ -100,36 +101,39 @@ export default function NavMobileView() {
         </div>
       ) : (
         <motion.div
-          className='fixed top-0 left-0 w-full h-full bg-grayscale-25 z-50 overflow-y-scroll scrollbar-hide'
+          className='fixed top-0 left-0 w-full h-full bg-grayscale-25 z-70 overflow-y-scroll scrollbar-hide'
           initial={{ y: '-100%' }}
           animate={{ y: 0 }}
           exit={{ y: '-100%' }}
           transition={{ ease: [0.25, 0.8, 0.25, 1], duration: 0.6 }}
         >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch();
-            }}
-            className='px-18'
-          >
-            <input
-              type='text'
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              className='flex items-center justify-center gap-2 min-w-[190px] w-full bg-white h-[55px] rounded-full shadow-lg mt-6 mb-2
-              text-center text-12-medium text-title focus:outline-none placeholder:text-13-regular placeholder:text-subtitle truncate'
-              placeholder='원하는 체험을 검색해 보세요'
-            />
-          </form>
+          <Link href='/' className='flex items-center justify-center gap-2 py-9'>
+            <Image src='/images/icons/logo.svg' alt='기본로고' width={146} height={55} />
+          </Link>
           <button
-            className='w-[40px] h-[40px] rounded-full bg-white shadow-lg flex items-center justify-center absolute top-[31.5px] right-4 z-50'
+            className='w-[40px] h-[40px] rounded-full bg-white shadow-lg flex items-center justify-center absolute top-9 right-4 z-50'
             onClick={() => setIsSearching(false)}
           >
             <X width={16} height={16} />
           </button>
 
           <div className='grid grid-rows-[minmax(56px,min-content)_minmax(56px,min-content)] gap-3 p-5 w-full'>
+            <motion.form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+              }}
+              className='rounded-xl bg-white shadow-lg'
+              layout
+            >
+              <input
+                type='text'
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                className='w-full bg-white h-[55px] rounded-xl px-4 text-12-medium text-title focus:outline-none placeholder:text-13-regular placeholder:text-subtitle'
+                placeholder='원하는 체험을 검색해 보세요'
+              />
+            </motion.form>
             {/* PLACE SECTION */}
             <motion.div
               className='rounded-xl bg-white shadow-lg p-4 overflow-visible'
