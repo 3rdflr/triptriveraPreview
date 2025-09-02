@@ -1,18 +1,55 @@
 'use client';
 
-import { Activity } from '@/types/activities.types';
-import ActivityCard from './ActivityCard';
+import { useEffect } from 'react';
+import { Activity } from '@/types/activities.type';
 import { useUserStore } from '@/store/userStore';
+import { useElementInView } from '@/hooks/useElemetInView';
+import { useInfiniteList } from '@/hooks/useInfiniteList';
+import Spinner from '../common/Spinner';
+import ActivityCard from './ActivityCard';
 
-export default function ActivityList({ activities }: { activities: Activity[] }) {
+export default function ActivityList({
+  initialActivities,
+  initalCursorId,
+}: {
+  initialActivities: Activity[];
+  initalCursorId: number;
+}) {
+  // 유저 확인
   const user = useUserStore((state) => state.user);
+
+  const [targetRef, isInView] = useElementInView();
+
+  const { allActivities, isFetchingNextPage, fetchNextPage, hasNextPage, isLoading, searchParams } =
+    useInfiniteList(initialActivities, initalCursorId);
+
+  useEffect(() => {
+    if (isInView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [isInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const hasFilters = (() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('category');
+    return params.toString() !== '';
+  })();
+
   return (
-    <div
-      className={`${activities ? 'xl:grid-cols-5 2xl:grid-cols-7 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-[12px] lg:gap-y-[80px]' : 'lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 lg:gap-x-[12px] lg:gap-y-[80px]'} grid mt-6 p-[24px] lg:px-[86px] gap-[24px]`}
-    >
-      {activities.map((activity: Activity) => (
-        <ActivityCard key={activity.id} userId={user?.id} activity={activity} />
-      ))}
-    </div>
+    <>
+      <div
+        className={`${!hasFilters ? 'xl:grid-cols-5 2xl:grid-cols-7 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-[12px] lg:gap-y-[80px]' : 'lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 lg:gap-x-[12px] lg:gap-y-[80px]'} grid p-[24px] lg:px-[86px] gap-[24px]`}
+      >
+        {allActivities.map((activity: Activity) => (
+          <ActivityCard key={activity.id} userId={user?.id} activity={activity} />
+        ))}
+      </div>
+      <div className='flex items-center justify-center w-full'>
+        {isLoading && <Spinner />}
+        {isFetchingNextPage && <Spinner />}
+      </div>
+
+      <div ref={targetRef} className='h-[1px]' />
+    </>
   );
 }
