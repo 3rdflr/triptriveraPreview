@@ -1,15 +1,20 @@
 'use client';
 import { deleteActivity, getMyActivitiesList } from '@/app/api/myActivities';
+import ConfirmActionModal from '@/components/common/ConfirmActionModal';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import MyExperienceCard from '@/components/pages/myPage/MyExperienceCard';
 import MyExperienceCardSkeleton from '@/components/pages/myPage/MyExperienceSkeleton';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useOverlay } from '@/hooks/useOverlay';
 import { ApiResponse } from '@/types/myActivity.type';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const MyExperiencePage = () => {
+  const overlay = useOverlay();
   const queryClient = useQueryClient();
 
   const router = useRouter();
@@ -22,16 +27,45 @@ const MyExperiencePage = () => {
   const onClickEdit = (id: number) => {
     router.push(`/my-activities/activity/${id}`);
   };
+
+  const onClickShowDeleteModal = (id: number) => {
+    overlay.open(({ isOpen, close }) => (
+      <ConfirmActionModal
+        title='체험을 삭제하시겠어요?'
+        actionText='삭제하기'
+        isOpen={isOpen}
+        onClose={close}
+        onAction={() => {
+          close();
+          onClickDelete(id);
+        }}
+      />
+    ));
+  };
   const onClickDelete = (id: number) => {
     deleteMyActivityMutation.mutate(id);
   };
 
-  const deleteMyActivityMutation = useMutation<ApiResponse, Error, number>({
+  const deleteMyActivityMutation = useMutation<
+    ApiResponse,
+    AxiosError<{ message: string }>,
+    number
+  >({
     mutationFn: (activityId) => deleteActivity(activityId),
     retry: 1,
     retryDelay: 300,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
+    },
+    onError: (error) => {
+      overlay.open(({ isOpen, close }) => (
+        <ConfirmModal
+          title={error.response?.data?.message}
+          isOpen={isOpen}
+          onClose={close}
+          onAction={close}
+        />
+      ));
     },
   });
 
@@ -67,7 +101,7 @@ const MyExperiencePage = () => {
             key={activity.id}
             data={activity}
             onEdit={(id) => onClickEdit(id)}
-            onDelete={(id) => onClickDelete(id)}
+            onDelete={(id) => onClickShowDeleteModal(id)}
           />
         ))}
       </div>

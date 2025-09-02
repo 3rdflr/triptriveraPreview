@@ -1,5 +1,6 @@
-import { useUserStore } from '@/store/userStore';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { useUserStore } from '@/store/userStore';
+import { BASE_URL } from './config';
 
 interface FailedRequest {
   resolve: (value?: unknown) => void;
@@ -17,9 +18,6 @@ const processQueue = (error: AxiosError | null) => {
   failedQueue.forEach(({ resolve, reject }) => (error ? reject(error) : resolve()));
   failedQueue = [];
 };
-
-// 기본 URL 설정
-const BASE_URL = '/api/proxy';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

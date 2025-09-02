@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Activity } from '@/types/activities.types';
+import { Activity } from '@/types/activities.type';
 
 interface FavoritesState {
   favorites: Activity[];

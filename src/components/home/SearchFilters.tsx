@@ -248,7 +248,8 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
               )}
               {!isShrunk && sec === 'price' && (
                 <span className='text-14-regular text-subtitle truncate' style={{ minWidth: 0 }}>
-                  {price[0].toLocaleString()}원~{price[1].toLocaleString()}원
+                  {price[0].toLocaleString()}원~
+                  {price[1] >= 300_000 ? '30만 원 이상' : `${price[1].toLocaleString()}원`}
                 </span>
               )}
 
@@ -301,7 +302,7 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.18 }}
-            className={`relative top-0 mt-3 bg-white rounded-2xl shadow-xl p-9 z-40 ${openedSection === 'place' ? 'w-[425px] h-[344px] overflow-y-scroll' : 'left-[275px] w-[540px]'}`}
+            className={`relative top-0 mt-3 bg-white rounded-2xl shadow-xl py-9 z-40 ${openedSection === 'place' ? 'w-[425px] h-[344px] overflow-y-scroll pl-3' : 'left-[275px] w-[540px] px-10'}`}
           >
             <button
               className='absolute top-3 right-3 text-gray-400 hover:text-gray-600'
