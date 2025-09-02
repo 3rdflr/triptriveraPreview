@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Heart } from 'lucide-react';
+import { Activity } from '@/types/activities.type';
 import { useFavoritesStore } from '@/store/likeStore';
-import { Activity } from '@/types/activities.types';
 
 interface FavoriteButtonProps {
   activity: Activity;
@@ -19,7 +19,7 @@ export default function ActivityLike({ activity, userId, size = 28 }: FavoriteBu
     initializeUser(userId);
   }, [userId, initializeUser]);
 
-  const isLiked = isFavorite(userId);
+  const isLiked = isFavorite(activity.id);
 
   return (
     <button
@@ -30,13 +30,13 @@ export default function ActivityLike({ activity, userId, size = 28 }: FavoriteBu
       <Heart
         size={size}
         fill={isLiked ? 'var(--primary-400)' : 'rgba(0, 0, 0, 0.8)'}
-        stroke='white' // ✅ 외곽선 색상
+        stroke='white'
         strokeWidth={1.5}
         strokeLinejoin='round'
         strokeLinecap='round'
         style={{
           vectorEffect: 'non-scaling-stroke',
-        }} // ✅ 외곽선 두께 유지
+        }}
       />
     </button>
   );

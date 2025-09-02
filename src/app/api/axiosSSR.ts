@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { parse } from 'cookie';
+import { BASE_URL } from './config';
 
 interface RequestOptions<T = unknown> {
   method?: string;
@@ -12,9 +13,6 @@ interface CustomError extends Error {
   status?: number;
   data?: unknown;
 }
-
-// 기본 URL 설정
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sp-globalnomad-api.vercel.app/16-2';
 
 /**
  * 서버 컴포넌트에서 API를 호출하는 비동기 함수.

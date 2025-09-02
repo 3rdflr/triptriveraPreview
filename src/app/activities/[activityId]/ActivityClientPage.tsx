@@ -6,6 +6,9 @@ import ActivityImageViewer from '@/components/pages/activities/ActivityImageView
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
 import { activityQueryKeys } from './queryClients';
 import { useEffect } from 'react';
+import NaverMap from '@/components/common/naverMaps/NaverMap';
+import Marker from '@/components/common/naverMaps/Marker';
+import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 
 interface ActivityClientProps {
   activityId: string;
@@ -16,15 +19,13 @@ interface ActivityClientProps {
  * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
  *
  */
+/**
+ * ActivityClient 컴포넌트
+ * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
+ * - Suspense와 ErrorBoundary를 통한 선언적 UI 상태 관리
+ */
 export default function ActivityClient({ activityId }: ActivityClientProps) {
-  useEffect(() => {
-    console.log('🎯 [CSR] ActivityClient 마운트 시작', { activityId });
-    console.log('💧 [HYDRATION] 클라이언트 Hydration 시작');
-
-    return () => {
-      console.log('🎯 [CSR] ActivityClient 언마운트', { activityId });
-    };
-  }, [activityId]);
+  //todo: useTransition을 활용해 필요한 거를 지연 로딩을 시도해보자
 
   // 기본 체험 정보 조회 (서버에서 prefetch된 데이터 사용)
   const { data: activity } = useSuspenseQuery({
@@ -194,13 +195,28 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
           </div>
         </div>
 
-        {/* 하단: 추후 구현할 섹션들 */}
+        {/* 지도 섹션 */}
         <div className='mt-12 space-y-8'>
-          <section className='border-t pt-8'>
-            <h2 className='text-lg font-semibold mb-4'>오시는 길</h2>
-            <div className='h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500'>
-              지도 컴포넌트 (추후 구현)
-            </div>
+          <section className='border-t pt-8 flex flex-col gap-2'>
+            <h2 className='text-lg font-semibold'>오시는 길</h2>
+            <p className='text-sm text-gray-600'>{activity.address}</p>
+
+            <NaverMap address={activity.address} height='256px' zoom={12}>
+              <Marker position={{ lat: 35.8242, lng: 127.1486 }} id='marker-default'>
+                <ImageMarker src={activity.bannerImageUrl} alt='마커 1' size={40} />
+              </Marker>
+
+              <Marker
+                address={activity.address}
+                onClick={(position) => {
+                  console.log('주소 기반 마커 클릭!', position);
+                  alert(`주소 기반 마커! 위치: ${position.lat}, ${position.lng}`);
+                }}
+                id='image-marker'
+              >
+                <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
+              </Marker>
+            </NaverMap>
           </section>
 
           <section className='border-t pt-8'>

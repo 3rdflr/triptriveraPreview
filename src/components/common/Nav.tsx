@@ -1,19 +1,16 @@
 'use client';
 
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import Image from 'next/image';
+import { CATEGORY_H, SEARCH_H, GAP } from '../home/Constants';
+import { useScreenSize } from '@/hooks/useScreenSize';
 import Link from 'next/link';
+import Image from 'next/image';
 import CategoryList from '../home/CategoryList';
 import SearchFilters from '../home/SearchFilters';
-import { useState } from 'react';
-import { useScreenSize } from '@/hooks/useScreenSize';
 import LoginSection from '../home/LoginSection';
 import NavMobileView from '../home/NavMobileView';
-import { usePathname } from 'next/navigation';
-
-const CATEGORY_H = 80;
-const SEARCH_H = 96;
-const GAP = 5;
 
 export default function Nav() {
   const pathname = usePathname();
@@ -21,7 +18,7 @@ export default function Nav() {
   const { isMobile, isTablet } = useScreenSize();
   const [isSearching, setIsSearching] = useState(false);
 
-  // transform
+  // 스크롤 위치에 따른 애니메이션 원본 값 (raw values)
   const rawStackHeight = useTransform(
     scrollY,
     [0, 40, 80],
@@ -31,13 +28,14 @@ export default function Nav() {
   const rawCategoryOpacity = useTransform(scrollY, [0, 40, 80], [1, 0, 0]);
   const rawSearchY = useTransform(scrollY, [0, 30, 80], [90, 10, 25]);
 
+  // spring easing 적용 (자연스러운 애니메이션)
   const springConfig = { stiffness: 300, damping: 35, mass: 0.5 };
   const stackHeight = useSpring(rawStackHeight, springConfig);
   const categoryY = useSpring(rawCategoryY, springConfig);
   const categoryOpacity = useSpring(rawCategoryOpacity, springConfig);
   const searchY = useSpring(rawSearchY, springConfig);
 
-  // 검색 중 freeze
+  // 검색창 focus 시 레이아웃을 고정(freeze)
   const frozenStackHeight = CATEGORY_H + GAP + SEARCH_H;
   const frozenCategoryY = 0;
   const frozenCategoryOpacity = 1;
@@ -45,32 +43,33 @@ export default function Nav() {
 
   if (isMobile) return <NavMobileView />;
 
-  const isLanding = pathname === '/';
+  const isLanding = pathname === '/'; // 메인페이지 여부
 
   return (
     <>
+      {/* 전체 네비게이션 wrapper */}
       <div
         className={`sticky top-0 left-0 w-full border-b z-50 
-        ${isLanding ? 'bg-gradient-to-b from-white to-gray-50 shadow-md' : 'bg-white'}`}
+        bg-gradient-to-b from-white to-gray-50 shadow-md`}
       >
         {/* 상단 로고 + 로그인 */}
         <div
           className={`w-full flex items-center justify-between px-10
           ${isLanding ? 'absolute top-[15px] h-[64px]' : 'h-[80px] relative'}`}
         >
-          <Link href='/'>
+          <Link href='/' className='z-60'>
             {isTablet ? (
               <Image src='/images/icons/small_logo.svg' alt='Logo' width={40} height={40} />
             ) : (
               <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
             )}
           </Link>
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-2 z-60'>
             <LoginSection />
           </div>
         </div>
 
-        {/* 랜딩 페이지에서만 스택 */}
+        {/* 랜딩 페이지에서만 노출되는 카테고리 + 검색창 */}
         {isLanding && (
           <motion.div
             style={{ height: isSearching ? frozenStackHeight : stackHeight }}

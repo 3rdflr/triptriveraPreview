@@ -39,7 +39,9 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     update,
     append,
     remove,
-    getDetailMutation,
+    detailData,
+    isDetailLoading,
+    isDetailFetching,
     uploadImageAndGetUrl,
     registerForm,
     updateForm,
@@ -72,31 +74,28 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
   useEffect(() => {
     if (mode === 'EDIT') {
-      getDetailMutation.mutate(Number(activityId), {
-        onSuccess: (activity) => {
-          const detailSchedules = activity.schedules.map((schedule) => ({
-            ...schedule,
-            date: toInputDate(schedule.date),
-          }));
+      if (!detailData || isDetailLoading || isDetailFetching) return;
 
-          setOriginalSchedules(detailSchedules);
-          const formData: MyActivityFormData = {
-            ...activity,
-            price: String(activity.price),
-            schedules: detailSchedules,
-            subImages: activity.subImages ?? [],
-            bannerImages: [{ imageUrl: activity.bannerImageUrl }],
-            subImageUrls: [] as string[],
-            bannerFiles: [],
-            subFiles: [],
-          };
+      const detailSchedules = detailData.schedules.map((schedule) => ({
+        ...schedule,
+        date: toInputDate(schedule.date),
+      }));
 
-          methods.reset(formData);
-        },
-      });
+      setOriginalSchedules(detailSchedules);
+      const formData: MyActivityFormData = {
+        ...detailData,
+        price: String(detailData.price),
+        schedules: detailSchedules,
+        subImages: detailData.subImages ?? [],
+        bannerImages: [{ imageUrl: detailData.bannerImageUrl }],
+        subImageUrls: [] as string[],
+        bannerFiles: [],
+        subFiles: [],
+      };
+
+      methods.reset(formData);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [detailData, isDetailLoading, isDetailFetching, mode]);
 
   return (
     <div className='flex flex-col'>
@@ -205,7 +204,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                       readOnly
                       className='w-full box-border bg-grayscale-25 text-muted-foreground !placeholder-grayscale-400 cursor-pointer'
                       onClick={handleOpenAddressSearch}
-                      onBlur={() => {}} // onBlur 비워서 validation 안 발생
+                      onBlur={() => {}}
                       error={fieldState.error?.message}
                     />
                   )}

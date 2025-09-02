@@ -22,7 +22,13 @@ export default function SideMenu({ className }: SideMenuProps) {
       <div className='flex flex-col gap-6 md:gap-3 lg:gap-6'>
         {/* 프로필 영역 */}
         <div className='relative flex justify-center mt-4 w-[120px] h-[120px] md:w-[70px] md:h-[70px] lg:w-[120px] lg:h-[120px] mx-auto'>
-          <Image src='/images/icons/default_profile.svg' alt='Profile' width={120} height={120} />
+          <Image
+            src='/images/icons/default_profile.svg'
+            priority
+            alt='Profile'
+            width={120}
+            height={120}
+          />
           <RoundButton
             mode='edit'
             className='absolute bottom-[8px] right-[4px] md:bottom-[4px] md:right-[0px] lg:bottom-[8px] lg:right-[4px]'

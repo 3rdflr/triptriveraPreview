@@ -1,17 +1,19 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Dropdown, Modal } from 'react-simplified-package';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useUserStore } from '@/store/userStore';
-import { Dropdown, Modal } from 'react-simplified-package';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Bell, Heart, CircleUser, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginSection() {
   const { isDesktop } = useScreenSize();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const router = useRouter();
 
   const user = useUserStore((state) => state.user);
@@ -44,7 +46,7 @@ export default function LoginSection() {
             style={{ width: '146px', borderRadius: '15px', borderBottom: '1px solid #e5e7eb' }}
           >
             <button
-              onClick={() => router.push('/profile')}
+              onClick={() => router.push('/mypage')}
               className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title hover:bg-gray-100 transition'
             >
               <CircleUser strokeWidth={1.5} width={20} height={20} /> 프로필
@@ -92,7 +94,7 @@ export default function LoginSection() {
         </Link>
       )}
       <Link href='/login' className='cursor-pointer'>
-        <Image src='/images/icons/default_profile.svg' alt='Profile' width={30} height={30} />
+        <Image src='/images/icons/default_profile_gray.svg' alt='Profile' width={30} height={30} />
       </Link>
     </>
   );

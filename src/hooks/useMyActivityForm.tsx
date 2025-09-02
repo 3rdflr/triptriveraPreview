@@ -1,7 +1,7 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MyActivityFormData, MyActivitySchema } from '@/lib/utils/myActivitySchema';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   ActivityCreateRequest,
   ActivityCreateResponse,
@@ -12,11 +12,12 @@ import {
   ImageUploadResponse,
   uploadActivityImage,
 } from '@/app/api/activities';
-import { ActivitiesCategoryType, ActivityDetail } from '@/types/activities.type';
+import { ActivitiesCategoryType } from '@/types/activities.type';
 import { successToast } from '@/lib/utils/toastUtils';
 import { toApiDate } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { activityQueryKeys } from '@/app/activities/[activityId]/queryClients';
 import { updateActivity } from '@/app/api/myActivities';
 
 interface useMyActivityForm {
@@ -66,10 +67,15 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     name: 'schedules',
   });
 
-  const getDetailMutation = useMutation<ActivityDetail, Error, number>({
-    mutationFn: (activityId) => getActivityDetail(activityId),
-    retry: 1,
-    retryDelay: 300,
+  const {
+    data: detailData,
+    isLoading: isDetailLoading,
+    isFetching: isDetailFetching,
+  } = useQuery({
+    queryKey: activityQueryKeys.detail(activityId!),
+    queryFn: () => getActivityDetail(Number(activityId)),
+    enabled: !!activityId,
+    refetchOnMount: 'always',
   });
 
   const uploadImageMutation = useMutation<ImageUploadResponse, Error, File>({
@@ -222,7 +228,9 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     update,
     append,
     remove,
-    getDetailMutation,
+    detailData,
+    isDetailLoading,
+    isDetailFetching,
     uploadImageMutation,
     registerMutation,
     updateMutation,
