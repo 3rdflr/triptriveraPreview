@@ -237,3 +237,9 @@ export const Categories = [
     value: '웰빙',
   },
 ] as const;
+
+export const CATEGORY_H = 80;
+export const SEARCH_H = 96;
+export const GAP = 5;
+
+export const BASE_IMG_URL = '/images/icons/_empty.png';
