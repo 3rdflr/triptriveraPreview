@@ -49,7 +49,7 @@ export default function NavMobileView() {
     }
   };
 
-  if (!showNav) return null;
+  if (showNav) return null;
 
   if (otherPage)
     return (
