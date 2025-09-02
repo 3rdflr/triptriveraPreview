@@ -15,22 +15,27 @@ export const PUT = makeHandler('PUT');
 export const DELETE = makeHandler('DELETE');
 export const PATCH = makeHandler('PATCH');
 
+// CORS Origin
+function getAllowedOrigin() {
+  return process.env.NODE_ENV === 'production'
+    ? 'https://part4-team2.vercel.app'
+    : process.env.FRONTEND_URL || 'http://localhost:3000';
+}
+
 // CORS 요청처리
 export async function OPTIONS() {
   const headers = new Headers();
 
-  headers.set(
-    'Access-Control-Allow-Origin',
-    process.env.NODE_ENV === 'production'
-      ? 'https://part4-team2.vercel.app'
-      : 'http://localhost:3000',
-  );
+  headers.set('Access-Control-Allow-Origin', getAllowedOrigin());
   headers.set('Access-Control-Allow-Credentials', 'true');
   headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   return new NextResponse(null, { status: 204, headers });
 }
+
+// 백엔드 서버
+const BACKEND_URL = process.env.SERVER_API_URL || 'https://sp-globalnomad-api.vercel.app/16-2';
 
 // 클라이언트 요청을 처리하는 비동기 함수
 async function handleRequest(method: string, req: Request, path: string[]) {
@@ -63,7 +68,7 @@ async function handleRequest(method: string, req: Request, path: string[]) {
     // 2. GET 요청이 아닐 경우 요청 본문을 파싱
     const body = method !== 'GET' ? await req.text() : undefined;
 
-    const backendUrl = new URL(`https://sp-globalnomad-api.vercel.app/16-2/${pathString}`);
+    const backendUrl = new URL(`${BACKEND_URL}/${pathString}`);
 
     // 3. Axios 요청 생성
     const response = await axios({
@@ -103,13 +108,7 @@ async function handleRequest(method: string, req: Request, path: string[]) {
     }
 
     // CORS 헤더
-    // resHeaders.set('Access-Control-Allow-Credentials', 'true');
-    resHeaders.set(
-      'Access-Control-Allow-Origin',
-      process.env.NODE_ENV === 'production'
-        ? 'https://part4-team2.vercel.app'
-        : 'http://localhost:3000',
-    );
+    resHeaders.set('Access-Control-Allow-Origin', getAllowedOrigin());
     resHeaders.set('Access-Control-Allow-Credentials', 'true');
 
     return new NextResponse(JSON.stringify(response.data), {
@@ -139,7 +138,7 @@ async function handleTokenRefresh(req: Request) {
 
     // 백엔드에 토큰 갱신 요청
     const response = await axios.post(
-      'https://sp-globalnomad-api.vercel.app/16-2/auth/tokens',
+      `${BACKEND_URL}/auth/tokens`,
       { refreshToken },
       { validateStatus: () => true },
     );
