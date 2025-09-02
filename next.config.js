@@ -32,14 +32,14 @@ const nextConfig = {
 
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/proxy/:path*',
-        destination: 'https://sp-globalnomad-api.vercel.app/16-2/:path*',
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/proxy/:path*',
+  //       destination: 'https://sp-globalnomad-api.vercel.app/16-2/:path*',
+  //     },
+  //   ];
+  // },
 };
 
 module.exports = nextConfig;
