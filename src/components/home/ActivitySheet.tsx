@@ -120,7 +120,7 @@ export default function ActivitySheet({
             touchAction: 'pan-y',
           }}
         >
-          <h2 className='text-14-regular text-title text-center mt-6'>
+          <h2 className='text-14-regular text-title text-center mt-5'>
             지도 표시 지역의 체험 {totalCount}개
           </h2>
           {children}
