@@ -19,11 +19,10 @@ import { useState } from 'react';
 interface MyExperienceCardProps {
   data: Reservation;
   onCancel: (id: number) => void;
-  onConfirm: (id: number) => void;
   onReview: (id: number) => void;
 }
 
-const ReservationListCard = ({ data, onCancel, onConfirm, onReview }: MyExperienceCardProps) => {
+const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps) => {
   const { id, activity, status, totalPrice, headCount, date, startTime, endTime } = data;
 
   const { bannerImageUrl, title } = activity;
@@ -36,7 +35,7 @@ const ReservationListCard = ({ data, onCancel, onConfirm, onReview }: MyExperien
     confirmed: 'bg-[var(--badge-green-light)] text-[var(--badge-green-dark)]',
     declined: 'bg-[var(--badge-coral-light)] text-[var(--badge-coral-dark)]',
     canceled: 'bg-gray-100 text-gray-600',
-    completed: 'bg-[var(--badge-blue-light)] text-bg-[var(--badge-blue-dark)]',
+    completed: 'bg-[var(--badge-blue-light)] text-[var(--badge-blue-dark)]',
   };
 
   return (
@@ -71,15 +70,10 @@ const ReservationListCard = ({ data, onCancel, onConfirm, onReview }: MyExperien
                   </Button>
                 )}
 
-                {status !== 'completed' && (
-                  <>
-                    <Button size='xs' onClick={() => onConfirm(id)}>
-                      예약 승인
-                    </Button>
-                    <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
-                      예약 취소
-                    </Button>
-                  </>
+                {(status === 'pending' || status === 'confirmed') && (
+                  <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
+                    예약 취소
+                  </Button>
                 )}
               </CardFooter>
             </div>
@@ -109,15 +103,10 @@ const ReservationListCard = ({ data, onCancel, onConfirm, onReview }: MyExperien
           </Button>
         )}
 
-        {status !== 'completed' && (
-          <>
-            <Button size='sm' className='flex-1' onClick={() => onConfirm(id)}>
-              예약 승인
-            </Button>
-            <Button variant='secondary' size='sm' className='flex-1' onClick={() => onCancel(id)}>
-              예약 취소
-            </Button>
-          </>
+        {(status === 'pending' || status === 'confirmed') && (
+          <Button variant='secondary' size='sm' className='flex-1' onClick={() => onCancel(id)}>
+            예약 취소
+          </Button>
         )}
       </div>
     </section>

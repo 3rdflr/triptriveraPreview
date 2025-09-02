@@ -12,11 +12,9 @@ export const reservationStatus: Record<ReservationStatus, ReservationStatusText>
   completed: '체험 완료',
 };
 
-// all을 포함한 객체
+// all을 포함한 객체: 전체, 예약 신청, 예약 승인, 예약 취소, 체험 완료
 export const reservationStatusAll: Record<ReservationStatusWithAll, ReservationStatusTextWithAll> =
   {
     all: '전체',
     ...reservationStatus,
   };
-
-// 전체, 예약 신청, 예약 승인, 예약 취소, 체험 완료
