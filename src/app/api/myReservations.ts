@@ -3,6 +3,7 @@ import {
   MyReservationCreateResponse,
   MyReservationListRequest,
   MyReservationListResponse,
+  MyReservationUpdateRequest,
   MyReservationUpdateResponse,
 } from '@/types/myReservation.type';
 import axiosInstance from '@/app/api/axiosInstance';
@@ -22,8 +23,9 @@ export const getMyReservationsList = async (
  */
 export const updateReservation = async (
   reservationId: number,
+  data: MyReservationUpdateRequest,
 ): Promise<MyReservationUpdateResponse> => {
-  const response = await axiosInstance.patch(`/my-reservations/${reservationId}`);
+  const response = await axiosInstance.patch(`/my-reservations/${reservationId}`, data);
   return response.data;
 };
 

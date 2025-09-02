@@ -35,6 +35,10 @@ export interface MyReservationListResponse {
   reservations: Reservation[];
 }
 
+export interface MyReservationUpdateRequest {
+  status: ReservationStatus;
+}
+
 export interface MyReservationUpdateResponse {
   id: number;
   teamId: string;

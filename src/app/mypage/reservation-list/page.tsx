@@ -1,16 +1,18 @@
 'use client';
-// import { deleteActivity, getMyActivitiesList } from '@/app/api/myActivities';
-import { getMyReservationsList } from '@/app/api/myReservations';
+import { getMyReservationsList, updateReservation } from '@/app/api/myReservations';
 import MyExperienceCardSkeleton from '@/components/pages/myPage/MyExperienceSkeleton';
 import ReservationListCard from '@/components/pages/myPage/ReservationListCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Label } from '@/components/ui/label';
-import { reservationStatus } from '@/lib/constants/reservation';
-// import { ReservationStatus } from '@/types/activities.type';
-// import { ApiResponse } from '@/types/myActivity.type';
-import { useQuery } from '@tanstack/react-query';
+import { reservationStatusAll } from '@/lib/constants/reservation';
+import {
+  MyReservationUpdateRequest,
+  MyReservationUpdateResponse,
+} from '@/types/myReservation.type';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -18,32 +20,45 @@ import { useState } from 'react';
 const ReservationListPage = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ['reservation-list'],
     queryFn: () => getMyReservationsList({}),
+    refetchOnMount: 'always',
   });
 
-  const onClickEdit = () => {
-    console.log('수정 버튼 클릭');
-    // router.push(`/my-activities/activity/${id}`);
-  };
-  const onClickDelete = () => {
-    console.log('삭제 버튼 클릭');
-    // deleteMyActivityMutation.mutate(id);
+  const updateReservationMutation = useMutation<
+    MyReservationUpdateResponse,
+    AxiosError,
+    { reservationId: number; data: MyReservationUpdateRequest }
+  >({
+    mutationFn: ({ reservationId, data }) => updateReservation(reservationId, data),
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reservation-list'] });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const { mutate: updateReservationState } = updateReservationMutation;
+
+  const onClickConfirm = (id: number) => {
+    updateReservationState({ reservationId: id, data: { status: 'confirmed' } });
   };
 
-  // const deleteMyActivityMutation = useMutation<ApiResponse, Error, number>({
-  //   mutationFn: (activityId) => deleteActivity(activityId),
-  //   retry: 1,
-  //   retryDelay: 300,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
-  //   },
-  // });
+  const onClickCancel = (id: number) => {
+    updateReservationState({ reservationId: id, data: { status: 'canceled' } });
+  };
+
+  const onClickReview = (id: number) => {
+    console.log(`id:${id},` + '후기 작성 버튼 클릭 시 리뷰 모달 호출');
+  };
 
   const MyReservationList = () => {
     if (isLoading) {
@@ -82,8 +97,9 @@ const ReservationListPage = () => {
           <ReservationListCard
             key={reservation.id}
             data={reservation}
-            onEdit={() => onClickEdit()}
-            onDelete={() => onClickDelete()}
+            onCancel={onClickCancel}
+            onConfirm={onClickConfirm}
+            onReview={onClickReview}
           />
         ))}
       </div>
@@ -101,16 +117,18 @@ const ReservationListPage = () => {
           </span>
           <div className='flex pt-3.5 gap-2'>
             {!!data?.reservations?.length &&
-              Object.entries(reservationStatus).map(([value, label]) => (
-                <Badge
-                  key={value}
-                  variant='outline'
-                  selected={selectedStatus === value}
-                  onClick={() => setSelectedStatus(value)}
-                >
-                  {label}
-                </Badge>
-              ))}
+              Object.entries(reservationStatusAll)
+                .filter(([value]) => value !== 'declined')
+                .map(([value, label]) => (
+                  <Badge
+                    key={value}
+                    variant='outline'
+                    selected={selectedStatus === value}
+                    onClick={() => setSelectedStatus(value)}
+                  >
+                    {label}
+                  </Badge>
+                ))}
           </div>
         </div>
       </div>
