@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-/**
- * 기존 validations 기반 Zod 스키마
- */
 export const userFormSchema = z
   .object({
     nickname: z
@@ -21,9 +18,13 @@ export const userFormSchema = z
       .refine((val) => !/\s/.test(val), '공백 없이 입력해주세요.'),
     confirmPassword: z.string().min(1, '비밀번호 확인은 필수 입력입니다.'),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
-    message: '비밀번호가 일치하지 않습니다.',
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        path: ['confirmPassword'],
+        code: 'custom',
+        message: '비밀번호가 일치하지 않습니다.',
+      });
+    }
   });
-
 export type UserFormValues = z.infer<typeof userFormSchema>;

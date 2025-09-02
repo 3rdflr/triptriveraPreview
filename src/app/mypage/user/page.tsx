@@ -7,6 +7,15 @@ import { useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userFormSchema } from '@/lib/utils/userSchema';
+import { useUserStore } from '@/store/userStore';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getUserInfo, updateUserInfo } from '@/app/api/user';
+import { useEffect } from 'react';
+import { AxiosError } from 'axios';
+import { UserProfile, UserUpdateRequest } from '@/types/user.type';
+import { useOverlay } from '@/hooks/useOverlay';
+import ConfirmModal from '@/components/common/ConfirmModal';
+import { successToast } from '@/lib/utils/toastUtils';
 
 type UserFormValues = {
   nickname: string;
@@ -16,6 +25,42 @@ type UserFormValues = {
 };
 
 const UserPage = () => {
+  const { setUser } = useUserStore();
+  const overlay = useOverlay();
+  const queryClient = useQueryClient();
+
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: getUserInfo,
+    staleTime: 'static',
+  });
+
+  const updateUserMutation = useMutation<
+    UserProfile,
+    AxiosError<{ message: string }>,
+    UserUpdateRequest
+  >({
+    mutationFn: updateUserInfo,
+    retry: 1,
+    retryDelay: 300,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      successToast.run('내 정보 수정이 완료되었습니다.');
+    },
+    onError: (error) => {
+      overlay.open(({ isOpen, close }) => (
+        <ConfirmModal
+          title={error.response?.data?.message}
+          isOpen={isOpen}
+          onClose={close}
+          onAction={close}
+        />
+      ));
+    },
+  });
+
+  const { mutate: updateUser } = updateUserMutation;
+
   const methods = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -29,12 +74,29 @@ const UserPage = () => {
     shouldFocusError: false,
   });
 
-  const { register, handleSubmit, getValues, formState, trigger } = methods;
+  const { reset, register, handleSubmit, getValues, clearErrors, formState, trigger } = methods;
   const { isSubmitted, isSubmitting, isValid, errors } = formState;
 
   const onSubmit = async (data: UserFormValues) => {
-    console.log('폼 유효성 통과', data);
+    const { nickname, password } = data;
+    const params = {
+      nickname,
+      newPassword: password,
+    };
+    updateUser(params);
   };
+
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+      reset({
+        nickname: userData.nickname,
+        email: userData.email,
+        password: '',
+        confirmPassword: '',
+      });
+    }
+  }, [userData, reset, setUser]);
 
   return (
     <div className='flex flex-col gap-7.5'>
@@ -77,9 +139,13 @@ const UserPage = () => {
                   placeholder='8자 이상 입력해 주세요'
                   aria-invalid={isSubmitted ? (errors.password ? 'true' : 'false') : undefined}
                   error={errors.password?.message}
-                  onInput={() => {
-                    if (getValues('confirmPassword')) {
-                      trigger('confirmPassword');
+                  onInput={async () => {
+                    const confirmPasswordValue = getValues('confirmPassword');
+                    if (confirmPasswordValue) {
+                      await trigger('confirmPassword');
+                      // 에러 클리어 후 다시 유효성 체크
+                      clearErrors('confirmPassword');
+                      await trigger('confirmPassword');
                     }
                   }}
                   {...register('password')}
