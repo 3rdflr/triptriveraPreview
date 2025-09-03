@@ -31,12 +31,9 @@ export default function WishList() {
             <div key={activity.id}>
               {isMobile ? (
                 <div className='group block w-[327px] h-auto rounded-2xl overflow-hidden shadow-lg bg-white transition-transform hover:scale-105'>
-                  <button
-                    type='button'
-                    className='absolute right-5 z-[100] w-8 h-8 flex items-center justify-center rounded-full transition size-2'
-                  >
+                  <div className='absolute right-5 z-[100] w-8 h-8 flex items-center justify-center rounded-full transition size-2'>
                     <ActivityLike activity={activity} userId={user.id} size={32} />
-                  </button>
+                  </div>
                   <Link href={`/activities/${activity.id}`}>
                     <div className='w-full h-[200px] relative'>
                       <Image
@@ -83,12 +80,9 @@ export default function WishList() {
                     </span>
                   </div>
                   {user && (
-                    <button
-                      type='button'
-                      className='relative top-0 right-0 z-[100] w-6 h-6 flex items-center justify-center rounded-full transition'
-                    >
+                    <div className='relative top-0 right-0 z-[100] w-6 h-6 flex items-center justify-center rounded-full transition'>
                       <ActivityLike activity={activity} userId={user.id} size={32} />
-                    </button>
+                    </div>
                   )}
                 </div>
               )}
