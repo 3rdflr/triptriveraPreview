@@ -24,17 +24,17 @@ export default function Nav() {
     setIsClient(true);
   }, []);
 
-  const cappedScrollY = useTransform(scrollY, (v) => Math.min(v, 80));
+  const cappedScrollY = useTransform(scrollY, (v) => Math.min(v, 1));
 
   // 스크롤 위치에 따른 애니메이션 원본 값 (raw values)
   const rawStackHeight = useTransform(
     cappedScrollY,
-    [0, 40, 80],
+    [0, 0.5, 1],
     [CATEGORY_H + GAP + SEARCH_H, SEARCH_H, SEARCH_H],
   );
-  const rawCategoryY = useTransform(cappedScrollY, [0, 40, 80], [0, -CATEGORY_H, -CATEGORY_H]);
-  const rawCategoryOpacity = useTransform(cappedScrollY, [0, 40, 80], [1, 0, 0]);
-  const rawSearchY = useTransform(cappedScrollY, [0, 30, 80], [90, 10, 25]);
+  const rawCategoryY = useTransform(cappedScrollY, [0, 0.5, 1], [0, -CATEGORY_H, -CATEGORY_H]);
+  const rawCategoryOpacity = useTransform(cappedScrollY, [0, 0.5, 1], [1, 0, 0]);
+  const rawSearchY = useTransform(cappedScrollY, [0, 0.5, 1], [90, 10, 25]);
 
   // spring easing 적용
   const springConfig = { stiffness: 300, damping: 35, mass: 0.5 };
