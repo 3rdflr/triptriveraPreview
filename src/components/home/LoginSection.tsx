@@ -86,7 +86,7 @@ export default function LoginSection() {
           </Dropdown.Menu>
         </Dropdown>
         {notificationData?.totalCount && notificationData?.totalCount > 0 ? (
-          <span className='relative bottom-3 right-4 block w-2 h-2 bg-primary-500 rounded-full '></span>
+          <span className='relative bottom-3 right-4 block w-2 h-2 bg-primary-500 rounded-full animate-ping'></span>
         ) : null}
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <NotificationModal />

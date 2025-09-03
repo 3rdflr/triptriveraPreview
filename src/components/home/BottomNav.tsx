@@ -98,7 +98,7 @@ export default function BottomNav() {
               <Bell strokeWidth={1} width={20} height={20} />
               <span>알림</span>
               {notificationData?.totalCount && notificationData?.totalCount > 0 ? (
-                <span className='absolute top-4.5 right-34.5 block w-1 h-1 bg-primary-500 rounded-full '></span>
+                <span className='absolute top-4.5 right-34.5 block w-1 h-1 bg-primary-500 rounded-full animate-ping'></span>
               ) : null}
             </button>
 
