@@ -128,6 +128,7 @@ const UserPage = () => {
                   id='email'
                   label='이메일'
                   placeholder='이메일을 입력해 주세요'
+                  autoComplete='email'
                   aria-invalid={isSubmitted ? (errors.email ? 'true' : 'false') : undefined}
                   error={errors.email?.message}
                   {...register('email')}
@@ -137,6 +138,7 @@ const UserPage = () => {
                   id='password'
                   label='비밀번호'
                   placeholder='8자 이상 입력해 주세요'
+                  autoComplete='new-password'
                   aria-invalid={isSubmitted ? (errors.password ? 'true' : 'false') : undefined}
                   error={errors.password?.message}
                   onInput={async () => {
@@ -155,6 +157,7 @@ const UserPage = () => {
                   id='confirmPassword'
                   label='비밀번호 확인'
                   placeholder='비밀번호를 한 번 더 입력해 주세요'
+                  autoComplete='new-password'
                   aria-invalid={
                     isSubmitted ? (errors.confirmPassword ? 'true' : 'false') : undefined
                   }
