@@ -3,11 +3,10 @@ import { Button } from '@/components/ui/button';
 
 import { FaUser, FaCommentDots, FaCog, FaCalendarAlt, FaHeart } from 'react-icons/fa';
 import { FaArrowRightFromBracket } from 'react-icons/fa6';
-import Image from 'next/image';
-import RoundButton from '../myActivities/RoundButton';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ProfileImageUploader from './ProfileImageUploader';
 
 interface SideMenuProps {
   className?: string;
@@ -37,19 +36,7 @@ export default function SideMenu({ className }: SideMenuProps) {
     >
       <div className='flex flex-col gap-6 md:gap-3 lg:gap-6'>
         {/* 프로필 영역 */}
-        <div className='relative flex justify-center mt-4 w-[120px] h-[120px] md:w-[70px] md:h-[70px] lg:w-[120px] lg:h-[120px] mx-auto'>
-          <Image
-            src='/images/icons/default_profile.svg'
-            priority
-            alt='Profile'
-            width={120}
-            height={120}
-          />
-          <RoundButton
-            mode='edit'
-            className='absolute bottom-[8px] right-[4px] md:bottom-[4px] md:right-[0px] lg:bottom-[6px] lg:right-[2px]'
-          />
-        </div>
+        <ProfileImageUploader />
 
         {/* 메뉴 리스트 */}
         <nav className='flex flex-col gap-2.5 md:gap-0.5 lg:gap-2.5'>

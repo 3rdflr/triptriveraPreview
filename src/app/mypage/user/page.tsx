@@ -32,7 +32,6 @@ const UserPage = () => {
   const { data: userData } = useQuery({
     queryKey: ['user'],
     queryFn: getUserInfo,
-    staleTime: 'static',
   });
 
   const updateUserMutation = useMutation<
@@ -130,6 +129,7 @@ const UserPage = () => {
                   placeholder='이메일을 입력해 주세요'
                   disabled
                   autoComplete='email'
+                  {...register('email')}
                 />
                 <FormInput
                   type='password'
