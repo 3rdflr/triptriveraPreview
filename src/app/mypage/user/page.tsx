@@ -19,7 +19,7 @@ import { successToast } from '@/lib/utils/toastUtils';
 
 type UserFormValues = {
   nickname: string;
-  email: string;
+  email?: string;
   password: string;
   confirmPassword: string;
 };
@@ -128,10 +128,8 @@ const UserPage = () => {
                   id='email'
                   label='이메일'
                   placeholder='이메일을 입력해 주세요'
+                  disabled
                   autoComplete='email'
-                  aria-invalid={isSubmitted ? (errors.email ? 'true' : 'false') : undefined}
-                  error={errors.email?.message}
-                  {...register('email')}
                 />
                 <FormInput
                   type='password'
