@@ -26,7 +26,11 @@ const ProfileImageUploader = () => {
     queryFn: getUserInfo,
   });
 
-  const uploadProfileMutation = useMutation<UploadProfileImageResponse, Error, File>({
+  const uploadProfileMutation = useMutation<
+    UploadProfileImageResponse,
+    AxiosError<{ message: string }>,
+    File
+  >({
     mutationFn: (file: File) => uploadProfileImage(file),
     retry: 1,
     retryDelay: 300,
@@ -124,7 +128,7 @@ const ProfileImageUploader = () => {
         <Image
           src={PROFILE_IMG_URL}
           priority
-          alt='Profile'
+          alt='프로필 기본 이미지'
           width={120}
           height={120}
           blurDataURL={PROFILE_IMG_URL}
@@ -132,7 +136,7 @@ const ProfileImageUploader = () => {
       ) : (
         <Image
           src={previewImageUrl ? previewImageUrl : profileImageUrl}
-          alt='미리보기 이미지'
+          alt='프로필 이미지'
           width={120}
           height={120}
           className='w-full h-full object-cover rounded-full border border-grayscale-100 bg-white'
