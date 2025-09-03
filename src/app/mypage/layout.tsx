@@ -14,14 +14,10 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
 
   return (
     <div className='flex justify-center max-w-[327px] md:max-w-[684px] lg:max-w-[980px] mx-auto py-7.5 gap-7.5 lg:gap-12.5'>
-      {/* SideMenu가 보일 때만 렌더링 */}
-      {mypageMain && (
-        <div className='w-full flex justify-center p-4'>
-          <SideMenu className={sideMenuClass} />
-        </div>
-      )}
-      {/* children이 보일 때만 렌더링 */}
-      {!mypageMain && <div className='flex-1 w-full flex justify-center'>{children}</div>}
+      <div className={sideMenuClass}>
+        <SideMenu />
+      </div>
+      <div className={mypageMain ? 'hidden md:flex-1' : 'flex-1'}>{children}</div>
     </div>
   );
 };
