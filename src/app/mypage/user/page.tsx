@@ -169,7 +169,7 @@ const UserPage = () => {
                 />
               </div>
               <div className='flex justify-center'>
-                <Button size='md' disabled={!isValid}>
+                <Button size='md' disabled={!isValid} className='min-w-30'>
                   {isSubmitting ? '저장중...' : '저장하기'}
                 </Button>
               </div>
