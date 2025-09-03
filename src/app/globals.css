@@ -199,6 +199,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@theme {
+  --color-card-border: #dddddd;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
