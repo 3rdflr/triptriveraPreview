@@ -16,6 +16,7 @@ import { UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
+import Spinner from '@/components/common/Spinner';
 
 type UserFormValues = {
   nickname: string;
@@ -29,7 +30,7 @@ const UserPage = () => {
   const overlay = useOverlay();
   const queryClient = useQueryClient();
 
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading } = useQuery({
     queryKey: ['user'],
     queryFn: getUserInfo,
   });
@@ -96,6 +97,10 @@ const UserPage = () => {
       });
     }
   }, [userData, reset, setUser]);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className='flex flex-col gap-7.5'>
