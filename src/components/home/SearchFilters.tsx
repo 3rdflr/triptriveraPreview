@@ -1,4 +1,3 @@
-// src/components/SearchFilters.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -11,26 +10,10 @@ import {
   useTransform,
   MotionValue,
 } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, SearchIcon } from 'lucide-react';
 import PriceFilter from './PriceFilter';
 import { PLACES } from './Constants';
 import Image from 'next/image';
-
-const SearchIcon = () => (
-  <svg
-    xmlns='http://www.w3.org/2000/svg'
-    viewBox='0 0 24 24'
-    fill='none'
-    stroke='currentColor'
-    strokeWidth='2'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-    className='w-5 h-5'
-  >
-    <circle cx='11' cy='11' r='8'></circle>
-    <line x1='21' y1='21' x2='16.65' y2='16.65'></line>
-  </svg>
-);
 
 type Props = {
   scrollY: MotionValue<number>;
@@ -77,25 +60,44 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
 
   const updateHighlight = () => {
     const totalSections = sections.length;
-    let index = -1;
+    let baseIndex = -1;
+    let hoverIndex = -1;
 
-    if (hoverSection) {
-      index = sections.findIndex((s) => s === hoverSection);
-    } else if (openedSection) {
-      index = sections.findIndex((s) => s === openedSection);
+    if (openedSection) {
+      baseIndex = sections.findIndex((s) => s === openedSection);
     }
 
-    if (index === -1) {
+    if (hoverSection) {
+      hoverIndex = sections.findIndex((s) => s === hoverSection);
+    }
+
+    // 선택도 없고 hover도 없으면 highlight 사라짐
+    if (baseIndex === -1 && hoverIndex === -1) {
       animate(highlightW, 0, { type: 'spring', stiffness: 500, damping: 30 });
       return;
     }
 
     const containerWidth = width.get();
     const secWidth = containerWidth / totalSections;
-    const left = index * secWidth;
+
+    let left: number, right: number;
+
+    if (baseIndex === -1) {
+      // 선택이 없으면 hover만 표시
+      left = hoverIndex * secWidth;
+      right = left + secWidth;
+    } else if (hoverIndex === -1) {
+      // hover가 없으면 선택만 표시
+      left = baseIndex * secWidth;
+      right = left + secWidth;
+    } else {
+      // 선택 + hover 합체
+      left = Math.min(baseIndex, hoverIndex) * secWidth;
+      right = (Math.max(baseIndex, hoverIndex) + 1) * secWidth;
+    }
 
     animate(highlightX, left, { type: 'spring', stiffness: 500, damping: 30 });
-    animate(highlightW, secWidth, { type: 'spring', stiffness: 500, damping: 30 });
+    animate(highlightW, right - left, { type: 'spring', stiffness: 500, damping: 30 });
   };
 
   useEffect(() => {
@@ -184,11 +186,11 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
       />
       <motion.div
         style={{ left: highlightX, width: highlightW }}
-        className='absolute top-0 bottom-0 z-10 bg-white rounded-full shadow-md pointer-events-none'
+        className={`absolute top-0 bottom-0 z-10 shadow-md rounded-full pointer-events-none ${isSearching ? 'bg-white' : 'bg-grayscale-50'}`}
       />
 
       <div className='relative z-20 w-full h-full grid overflow-auto grid-cols-[1fr_1fr_1fr]'>
-        {sections.map((sec, idx) => {
+        {sections.map((sec) => {
           const ref = sectionRefs[sec];
           const isKeyword = sec === 'keyword';
 
@@ -282,13 +284,9 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                     `}
                     aria-label='검색'
                   >
-                    <SearchIcon />
+                    <SearchIcon width={24} height={24} />
                   </button>
                 </>
-              )}
-
-              {!isSearching && idx < sections.length - 1 && (
-                <div className='absolute top-2 bottom-2 right-0 w-px bg-grayscale-100' />
               )}
             </div>
           );
