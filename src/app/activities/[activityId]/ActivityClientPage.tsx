@@ -4,6 +4,7 @@ import { useSuspenseQuery, useQuery } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
+import ReviewList from '@/components/pages/activities/ReviewList';
 import { activityQueryKeys } from './queryClients';
 import { useEffect } from 'react';
 import NaverMap from '@/components/common/naverMaps/NaverMap';
@@ -220,10 +221,11 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
           </section>
 
           <section className='border-t pt-8'>
-            <h2 className='text-lg font-semibold mb-4'>체험 후기</h2>
-            <div className='h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500'>
-              리뷰 컴포넌트 (추후 구현)
+            <div className='flex items-center  '>
+              <h2 className='text-lg font-semibold mb-4'>체험 후기</h2>
+              <p>{activity.reviewCount}개</p>
             </div>
+            <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
           </section>
         </div>
       </div>
