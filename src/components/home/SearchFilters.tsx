@@ -51,53 +51,34 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
   const highlightX = useMotionValue(0);
   const highlightW = useMotionValue(0);
 
-  const rawWidth = useTransform(scrollY, [0, 50], [814, 340]);
-  const rawHeight = useTransform(scrollY, [0, 50], [64, 46]);
+  const rawWidth = useTransform(scrollY, [0, 1], [814, 340]);
+  const rawHeight = useTransform(scrollY, [0, 1], [64, 46]);
   const width = useMotionValue(814);
   const height = useMotionValue(64);
 
   const [isShrunk, setIsShrunk] = useState(false);
 
+  // 🔹 DOM 기반 highlight 업데이트
   const updateHighlight = () => {
-    const totalSections = sections.length;
-    let baseIndex = -1;
-    let hoverIndex = -1;
+    if (!containerRef.current) return;
 
-    if (openedSection) {
-      baseIndex = sections.findIndex((s) => s === openedSection);
-    }
+    let target: HTMLDivElement | null = null;
+    if (hoverSection) target = sectionRefs[hoverSection].current;
+    else if (openedSection) target = sectionRefs[openedSection].current;
 
-    if (hoverSection) {
-      hoverIndex = sections.findIndex((s) => s === hoverSection);
-    }
-
-    // 선택도 없고 hover도 없으면 highlight 사라짐
-    if (baseIndex === -1 && hoverIndex === -1) {
+    if (!target) {
       animate(highlightW, 0, { type: 'spring', stiffness: 500, damping: 30 });
       return;
     }
 
-    const containerWidth = width.get();
-    const secWidth = containerWidth / totalSections;
+    const targetRect = target.getBoundingClientRect();
+    const containerRect = containerRef.current.getBoundingClientRect();
 
-    let left: number, right: number;
-
-    if (baseIndex === -1) {
-      // 선택이 없으면 hover만 표시
-      left = hoverIndex * secWidth;
-      right = left + secWidth;
-    } else if (hoverIndex === -1) {
-      // hover가 없으면 선택만 표시
-      left = baseIndex * secWidth;
-      right = left + secWidth;
-    } else {
-      // 선택 + hover 합체
-      left = Math.min(baseIndex, hoverIndex) * secWidth;
-      right = (Math.max(baseIndex, hoverIndex) + 1) * secWidth;
-    }
+    const left = targetRect.left - containerRect.left;
+    const widthValue = targetRect.width;
 
     animate(highlightX, left, { type: 'spring', stiffness: 500, damping: 30 });
-    animate(highlightW, right - left, { type: 'spring', stiffness: 500, damping: 30 });
+    animate(highlightW, widthValue, { type: 'spring', stiffness: 500, damping: 30 });
   };
 
   useEffect(() => {
