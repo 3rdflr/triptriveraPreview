@@ -97,7 +97,6 @@ const ProfileImageUploader = () => {
     reader.readAsDataURL(file);
 
     // 이미지 URL 생성 API 호출
-    // 이미지 URL 생성 API 호출 & 바로 반환값 사용
     const { profileImageUrl: updatedProfileImageUrl } = await uploadProfile(file);
 
     // 내 정보 업데이트 API 호출
