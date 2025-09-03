@@ -42,6 +42,7 @@ export default function LoginSection() {
               alt='Profile'
               width={30}
               height={30}
+              className='rounded-full cursor-pointer'
             />
           </Dropdown.Trigger>
           <Dropdown.Menu
