@@ -1,5 +1,7 @@
+import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStatusCalendar';
+
 const ReservationStatusPage = () => {
-  return <div>체험 현황 페이지</div>;
+  return <ReservationStatusCalendar />;
 };
 
 export default ReservationStatusPage;
