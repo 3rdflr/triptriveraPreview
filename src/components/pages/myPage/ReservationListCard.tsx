@@ -19,7 +19,7 @@ import { useState } from 'react';
 interface MyExperienceCardProps {
   data: Reservation;
   onCancel: (id: number) => void;
-  onReview: (id: number) => void;
+  onReview: (data: number) => void;
 }
 
 const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps) => {
@@ -98,7 +98,7 @@ const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps
       </Card>
       <div className='flex gap-3 lg:hidden'>
         {status === 'completed' && (
-          <Button size='sm' className='w-full' onClick={() => onReview(id)}>
+          <Button size='sm' className='w-full' onClick={() => onReview(data)}>
             후기 작성
           </Button>
         )}
