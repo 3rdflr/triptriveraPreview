@@ -27,7 +27,7 @@ export default function ReviewList({ activityId }: ReviewListProps) {
         isFetchingNextPage={reviewData.isFetchingNextPage}
         itemHeightEstimate={140}
         scrollKey={`reviews-${activityId}`}
-        className='rounded-3xl'
+        className='rounded-3xl px-2'
       >
         {/* 초기 로딩 스켈레톤 */}
         <InfinityScroll.Skeleton count={3}>

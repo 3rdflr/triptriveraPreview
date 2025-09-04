@@ -8,16 +8,17 @@ import { useScrollPosition } from '@/hooks/useScrollPosition';
 // 타입 정의
 interface InfinityScrollProps<T> {
   children: React.ReactNode;
-  className?: string;
-  items: T[];
-  hasNextPage: boolean;
-  fetchNextPage: () => void;
-  isLoading: boolean;
-  isFetchingNextPage: boolean;
-  itemHeightEstimate: number;
-  maxItems?: number;
-  scrollKey?: string;
-  enableScrollPosition?: boolean;
+  className?: string; // 전체 컨테이너에 적용할 스타일
+  height?: number; // 컨테이너의 높이
+  items: T[]; // 표시할 아이템 목록
+  hasNextPage: boolean; // 다음 페이지가 있는지 여부
+  fetchNextPage: () => void; // 다음 페이지를 가져오는 함수
+  isLoading: boolean; // 현재 로딩 중인지 여부
+  isFetchingNextPage: boolean; // 다음 페이지를 가져오는 중인지 여부
+  itemHeightEstimate: number; // 아이템의 예상 높이
+  maxItems?: number; // 최대 아이템 수
+  scrollKey?: string; // 스크롤 위치를 저장할 키
+  enableScrollPosition?: boolean; // 스크롤 위치 복원 기능 활성화 여부
 }
 
 interface InfinityScrollContextType<T> {
@@ -45,7 +46,7 @@ interface InfinityScrollEmptyProps {
 interface InfinityScrollSkeletonProps {
   children?: React.ReactNode;
   className?: string;
-  count?: number;
+  count?: number; // 스켈레톤 개수
 }
 
 // Context 생성
@@ -64,6 +65,7 @@ function useInfinityScrollContext<T>(): InfinityScrollContextType<T> {
 function InfinityScrollRoot<T>({
   children,
   className,
+  height = 600,
   items,
   hasNextPage,
   fetchNextPage,
@@ -86,12 +88,10 @@ function InfinityScrollRoot<T>({
 
   useEffect(() => {
     // 최대 아이템의 길이가 초과되면 잘라냅니다.(최적화)
-    console.log('items.length: ', items.length);
     if (items.length > maxItems) {
       setDisplayItems(items.slice(items.length - maxItems));
     } else {
       setDisplayItems(items);
-      console.log('items-update', items);
     }
   }, [items, maxItems]);
 
@@ -113,19 +113,7 @@ function InfinityScrollRoot<T>({
   // 가상화된 아이템들
   const virtualItems = virtualizer.getVirtualItems();
 
-  // 디버깅: 가상 아이템 정보 출력
-  console.log('🔍 Virtual Items Debug:', {
-    displayItemsLength: displayItems.length,
-    virtualItemsLength: virtualItems.length,
-    totalSize: virtualizer.getTotalSize(),
-    virtualItems: virtualItems.map((item) => ({
-      index: item.index,
-      start: item.start,
-      size: item.size,
-    })),
-  });
-
-  // 무한 스크롤 로직 (컨테이너 기반)
+  // 무한 스크롤 로직
   useEffect(() => {
     if (!parentRef.current || !hasNextPage || isFetchingNextPage) return;
 
@@ -138,11 +126,6 @@ function InfinityScrollRoot<T>({
 
       // 80% 스크롤 시 다음 페이지 로드
       if (scrollPercentage > 0.8) {
-        console.log('🔄 무한스크롤 트리거 (컨테이너 기반):', {
-          scrollPercentage,
-          hasNextPage,
-          isFetchingNextPage,
-        });
         fetchNextPage();
       }
     };
@@ -171,7 +154,7 @@ function InfinityScrollRoot<T>({
         ref={parentRef}
         className={cn('infinity-scroll-container w-full', className)}
         style={{
-          height: '600px', // 고정 높이 설정
+          height: `${height}px`,
           overflow: 'auto',
         }}
       >
@@ -203,7 +186,6 @@ function InfinityScrollContents<T>({
     <>
       {virtualItems.map((virtualItem) => {
         const isLoaderRow = virtualItem.index > displayItems.length - 1;
-        console.log('isLoaderRow', isLoaderRow);
         // 로딩 행 처리
         if (isLoaderRow) {
           return hasNextPage ? (
@@ -217,14 +199,14 @@ function InfinityScrollContents<T>({
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              {isFetchingNextPage ?? (
+              {isFetchingNextPage ? (
                 <div className='text-center p-8'>
                   <div className='flex items-center justify-center space-x-3'>
                     <div className='animate-spin rounded-full h-6 w-6 border-2 border-primary-400 border-t-transparent'></div>
                     <span className='text-sm text-gray-600'>{loadingText}</span>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           ) : null;
         }
@@ -277,18 +259,9 @@ function InfinityScrollSkeleton({ children, className, count = 3 }: InfinityScro
   );
 }
 
-// 컴파운드 컴포넌트 패턴
+// 컴파운드 컴포넌트 패턴 사용
 export const InfinityScroll = Object.assign(InfinityScrollRoot, {
   Contents: InfinityScrollContents,
   Empty: InfinityScrollEmpty,
   Skeleton: InfinityScrollSkeleton,
 });
-
-// 타입 export
-export type {
-  InfinityScrollProps,
-  InfinityScrollContextType,
-  InfinityScrollContentsProps,
-  InfinityScrollEmptyProps,
-  InfinityScrollSkeletonProps,
-};
