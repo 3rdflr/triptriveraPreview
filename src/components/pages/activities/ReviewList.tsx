@@ -16,28 +16,6 @@ export default function ReviewList({ activityId }: ReviewListProps) {
 
   const reviewData = useInfiniteReviews(activityId, 10);
 
-  console.log('📋 ReviewList 데이터 상태:', {
-    allReviewsLength: reviewData.allReviews.length,
-    averageRating: reviewData.averageRating,
-    totalCount: reviewData.totalCount,
-    isLoading: reviewData.isLoading,
-    isError: reviewData.isError,
-    hasNextPage: reviewData.hasNextPage,
-  });
-
-  // 첫 몇 개 리뷰 데이터 확인
-  if (reviewData.allReviews.length > 0) {
-    console.log(
-      '📝 첫 3개 리뷰 샘플:',
-      reviewData.allReviews.slice(0, 3).map((review) => ({
-        id: review.id,
-        nickname: review.user.nickname,
-        rating: review.rating,
-        contentPreview: review.content.substring(0, 50) + '...',
-      })),
-    );
-  }
-
   return (
     <div className='flex flex-col items-center gap-[30px]'>
       {/* ReviewHero 영역 */}
@@ -74,6 +52,15 @@ export default function ReviewList({ activityId }: ReviewListProps) {
         <InfinityScroll.Contents>
           {(review: Review, _index: number) => <ReviewCard key={review.id} review={review} />}
         </InfinityScroll.Contents>
+
+        <InfinityScroll.Loading>
+          <div className='bg-white shadow-sm rounded-lg p-6 text-center mx-4'>
+            <div className='flex items-center justify-center space-x-3'>
+              <div className='animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent'></div>
+              <span className='text-sm text-gray-600'>더 많은 리뷰를 불러오고 있습니다...</span>
+            </div>
+          </div>
+        </InfinityScroll.Loading>
 
         <InfinityScroll.Empty>
           <div className='flex flex-col items-center justify-center py-16 text-gray-500 bg-white rounded-lg shadow-sm mx-4 my-8'>

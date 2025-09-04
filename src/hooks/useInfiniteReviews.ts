@@ -10,11 +10,6 @@ import { useMemo } from 'react';
  * @returns 무한스크롤에 필요한 데이터와 함수들
  */
 export function useInfiniteReviews(activityId: string, pageSize: number = 10) {
-  // 개발 환경에서만 디버깅 로그 출력
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔄 useInfiniteReviews 시작:', { activityId, pageSize });
-  }
-
   // React Query의 useInfiniteQuery를 사용하여 페이지 기반 무한스크롤 구현
   const {
     data,
@@ -36,14 +31,6 @@ export function useInfiniteReviews(activityId: string, pageSize: number = 10) {
         page: Number(pageParam),
         size: pageSize,
       });
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log('✅ API 응답:', {
-          reviewsCount: result.reviews.length,
-          totalCount: result.totalCount,
-          averageRating: result.averageRating,
-        });
-      }
 
       const totalPages = Math.ceil(result.totalCount / pageSize);
       const hasMore = Number(pageParam) < totalPages;
@@ -77,20 +64,6 @@ export function useInfiniteReviews(activityId: string, pageSize: number = 10) {
   const firstPage = data?.pages?.[0];
   const averageRating = firstPage?.averageRating || 0;
   const totalCount = firstPage?.totalCount || 0;
-
-  // 개발 환경에서만 디버깅 로그 출력
-  if (process.env.NODE_ENV === 'development') {
-    console.log('📊 useInfiniteReviews 상태:', {
-      allReviewsCount: allReviews.length,
-      averageRating,
-      totalCount,
-      isLoading,
-      isFetchingNextPage,
-      hasNextPage,
-      isError,
-      pagesCount: data?.pages?.length || 0,
-    });
-  }
 
   return {
     allReviews, // 모든 리뷰 배열

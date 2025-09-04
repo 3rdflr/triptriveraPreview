@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import { useWindowVirtualizer, VirtualItem } from '@tanstack/react-virtual';
+import { cn } from '@/lib/utils/shadCnUtils';
 
 // 타입 정의
 interface InfinityScrollProps<T> {
@@ -26,6 +27,7 @@ interface InfinityScrollContextType<T> {
   isFetchingNextPage: boolean;
   virtualizer: ReturnType<typeof useWindowVirtualizer>;
   virtualItems: VirtualItem[];
+  loadingContent?: React.ReactNode;
 }
 
 interface InfinityScrollContentsProps<T> {
@@ -72,9 +74,10 @@ function InfinityScrollRoot<T>({
 }: InfinityScrollProps<T>) {
   // 실제 화면에 표시할 아이템
   const [displayItems, setDisplayItems] = useState<T[]>([]);
+  const [loadingContent, setLoadingContent] = useState<React.ReactNode>(null);
 
   useEffect(() => {
-    if (items.length > maxItems) {
+    if (maxItems > 0 && items.length > maxItems) {
       setDisplayItems(items.slice(-maxItems));
     } else {
       setDisplayItems(items);
@@ -108,18 +111,34 @@ function InfinityScrollRoot<T>({
     estimateSize: () => itemHeightEstimate,
     overscan: 5,
   });
-
+  // 가화된 아이템들
   const virtualItems = virtualizer.getVirtualItems();
 
   // 무한 스크롤 로직
   useEffect(() => {
     const lastItem = virtualItems[virtualItems.length - 1];
     if (!lastItem) return;
-
+    // 마지막 아이템이 화면에 보이는 경우 다음 페이지를 불러옵니다.
     if (lastItem.index >= displayItems.length - 1 && !isLoading && hasNextPage) {
       fetchNextPage();
     }
   }, [hasNextPage, fetchNextPage, displayItems.length, isLoading, virtualItems]);
+
+  // children에서 Loading 컴포넌트 찾기
+  useEffect(() => {
+    const findLoadingComponent = (children: React.ReactNode): React.ReactNode => {
+      let foundLoading = null;
+      React.Children.forEach(children, (child) => {
+        if (React.isValidElement(child) && child.type === InfinityScrollLoading) {
+          foundLoading = child.props.children;
+        }
+      });
+      return foundLoading;
+    };
+
+    const loading = findLoadingComponent(children);
+    setLoadingContent(loading);
+  }, [children]);
 
   // Context 값
   const contextValue: InfinityScrollContextType<T> = {
@@ -131,17 +150,19 @@ function InfinityScrollRoot<T>({
     isFetchingNextPage,
     virtualizer,
     virtualItems,
+    loadingContent,
   };
 
   return (
     <InfinityScrollContext.Provider value={contextValue}>
-      <div className={className}>
+      <div className={cn('infinity-scroll-container w-full', className)}>
         <div
           style={{
-            height: virtualizer.getTotalSize(),
+            height: `${virtualizer.getTotalSize()}px`,
             width: '100%',
             position: 'relative',
           }}
+          className='infinity-scroll'
         >
           {children}
         </div>
@@ -152,8 +173,14 @@ function InfinityScrollRoot<T>({
 
 // Contents 컴포넌트
 function InfinityScrollContents<T>({ children }: InfinityScrollContentsProps<T>) {
-  const { displayItems, virtualItems, virtualizer, hasNextPage, isFetchingNextPage } =
-    useInfinityScrollContext<T>();
+  const {
+    displayItems,
+    virtualItems,
+    virtualizer,
+    hasNextPage,
+    isFetchingNextPage,
+    loadingContent,
+  } = useInfinityScrollContext<T>();
 
   return (
     <>
@@ -171,11 +198,15 @@ function InfinityScrollContents<T>({ children }: InfinityScrollContentsProps<T>)
                 left: 0,
                 width: '100%',
                 transform: `translateY(${virtualItem.start}px)`,
-                textAlign: 'center',
-                padding: '2rem 0',
               }}
             >
-              {isFetchingNextPage ? '로딩 중...' : '더 불러오기'}
+              {isFetchingNextPage && loadingContent ? (
+                loadingContent
+              ) : (
+                <div className='text-center p-8'>
+                  {isFetchingNextPage ? '로딩 중...' : '더 불러오기'}
+                </div>
+              )}
             </div>
           ) : null;
         }
@@ -192,7 +223,6 @@ function InfinityScrollContents<T>({ children }: InfinityScrollContentsProps<T>)
               left: 0,
               width: '100%',
               transform: `translateY(${virtualItem.start}px)`,
-              marginBottom: '16px', // gap-4
             }}
           >
             {children(displayItems[virtualItem.index], virtualItem.index)}
@@ -203,7 +233,7 @@ function InfinityScrollContents<T>({ children }: InfinityScrollContentsProps<T>)
   );
 }
 
-// Loading 컴포넌트 (인라인 로딩은 Contents에서 처리하므로 선택적 사용)
+// Loading 컴포넌트
 function InfinityScrollLoading({ children }: InfinityScrollLoadingProps) {
   const { isFetchingNextPage } = useInfinityScrollContext();
   if (!isFetchingNextPage) return null;
