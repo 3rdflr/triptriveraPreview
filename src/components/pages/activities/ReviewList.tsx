@@ -12,8 +12,6 @@ interface ReviewListProps {
 }
 
 export default function ReviewList({ activityId }: ReviewListProps) {
-  console.log('🎬 ReviewList 렌더링 시작:', { activityId });
-
   const reviewData = useInfiniteReviews(activityId, 10);
 
   return (
@@ -29,8 +27,7 @@ export default function ReviewList({ activityId }: ReviewListProps) {
         isFetchingNextPage={reviewData.isFetchingNextPage}
         itemHeightEstimate={140}
         scrollKey={`reviews-${activityId}`}
-        maxItems={0}
-        className='bg-gray-50 rounded-3xl'
+        className='rounded-3xl'
       >
         {/* 초기 로딩 스켈레톤 */}
         <InfinityScroll.Skeleton count={3}>
@@ -53,20 +50,9 @@ export default function ReviewList({ activityId }: ReviewListProps) {
           {(review: Review, _index: number) => <ReviewCard key={review.id} review={review} />}
         </InfinityScroll.Contents>
 
-        <InfinityScroll.Loading>
-          <div className='bg-white shadow-sm rounded-lg p-6 text-center mx-4'>
-            <div className='flex items-center justify-center space-x-3'>
-              <div className='animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent'></div>
-              <span className='text-sm text-gray-600'>더 많은 리뷰를 불러오고 있습니다...</span>
-            </div>
-          </div>
-        </InfinityScroll.Loading>
-
-        <InfinityScroll.Empty>
-          <div className='flex flex-col items-center justify-center py-16 text-gray-500 bg-white rounded-lg shadow-sm mx-4 my-8'>
-            <p className='text-xl font-medium mb-2'>아직 리뷰가 없습니다</p>
-            <p className='text-sm text-gray-400'>첫 번째 리뷰를 남겨보세요!</p>
-          </div>
+        <InfinityScroll.Empty className='flex flex-col items-center justify-center gap-3 text-gray-500'>
+          <p className='text-xl'>아직 리뷰가 없습니다</p>
+          <p className='text-sm text-gray-400'>첫 번째 리뷰를 남겨보세요!</p>
         </InfinityScroll.Empty>
       </InfinityScroll>
     </div>
