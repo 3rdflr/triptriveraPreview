@@ -9,7 +9,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './status-calendar-custom.css';
 import { ko } from 'date-fns/locale';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 
 const locales = { ko };
@@ -24,6 +24,7 @@ const localizer = dateFnsLocalizer({
 
 const formats = {
   weekdayFormat: (date: Date) => format(date, 'EEEEE'),
+  dateFormat: (date: Date) => format(date, 'd'),
 };
 
 const events = [
@@ -36,19 +37,34 @@ const events = [
   {
     title: 'Long Event',
     start: new Date(2025, 8, 4),
-    end: new Date(2025, 8, 5),
+    end: new Date(2025, 8, 4),
   },
 ];
+
+const CustomDateHeader = ({ label, date }: { label: string; date: Date }) => {
+  const hasEvent = events.some(
+    (event) => isSameDay(event.start, date) || isSameDay(event.end, date),
+  );
+
+  return (
+    <div className='relative flex items-center justify-center'>
+      <span>{label}</span>
+      {hasEvent && (
+        <span className='absolute -top-0.5 -right-1.5 w-1.5 h-1.5 rounded-full bg-red-500'></span>
+      )}
+    </div>
+  );
+};
 
 const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
   const formatted = format(label, 'yyyy년 M월', { locale: ko });
 
   return (
-    <div className='rbc-toolbar flex justify-center gap-4 p-7.5'>
+    <div className='custom-toolbar flex items-center justify-center gap-4 p-7.5'>
       {/* 이전 달 버튼 */}
       <FaCaretLeft onClick={() => onNavigate('PREV')} />
       {/* 월 텍스트 */}
-      <span className='text-20-bold'>{formatted}</span>
+      <span className='text-20-bold whitespace-nowrap'>{formatted}</span>
 
       {/* 다음 달 버튼 */}
       <FaCaretRight onClick={() => onNavigate('NEXT')} />
@@ -77,12 +93,11 @@ const ReservationStatusCalendar = () => {
   }, []);
 
   return mounted ? (
-    <div className='w-94 h-154 md:w-119 md:h-195 lg:w-160 shadow-lg border border-grayscale-50 rounded-2xl'>
+    <div className='w-full h-154 sm:w-94 sm:h-154 md:w-119 md:h-195 lg:w-160 sm:shadow-lg sm:border sm:border-grayscale-50 rounded-2xl'>
       <BigCalendar
         localizer={localizer}
         formats={formats}
         events={events}
-        step={60}
         views={['month']}
         date={currentDate}
         popup={false}
@@ -90,6 +105,9 @@ const ReservationStatusCalendar = () => {
         onShowMore={handleShowMore}
         components={{
           toolbar: CustomToolbar,
+          month: {
+            dateHeader: CustomDateHeader,
+          },
         }}
       />
     </div>

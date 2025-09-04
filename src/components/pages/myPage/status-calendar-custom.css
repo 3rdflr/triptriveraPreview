@@ -74,3 +74,11 @@
 .rbc-month-view .rbc-month-row + .rbc-month-row {
   border-top: 1px solid #edeef2;
 }
+
+.rbc-month-view {
+  border: none;
+}
+
+.custom-toolbar {
+  flex-wrap: nowrap;
+}
