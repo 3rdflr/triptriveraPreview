@@ -12,15 +12,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const MyExperiencePage = () => {
+  const pathname = usePathname();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
 
   const router = useRouter();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['my-activities-list'],
+    queryKey: ['my-activities-list', pathname],
     queryFn: () => getMyActivitiesList({}),
   });
 

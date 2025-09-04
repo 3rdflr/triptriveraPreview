@@ -4,6 +4,8 @@ import {
   ApiResponse,
   MyActivitiesListRequest,
   MyActivitiesListResponse,
+  ReservationBoardParams,
+  ReservationBoardResponse,
 } from '@/types/myActivity.type';
 
 /**
@@ -32,5 +34,18 @@ export const updateActivity = async (
  */
 export const deleteActivity = async (activityId: number): Promise<ApiResponse> => {
   const response = await axiosInstance.delete(`/my-activities/${activityId}`);
+  return response.data;
+};
+
+/**
+ * 내 체험 월별 예약 현황 조회
+ */
+export const getReservationDashboard = async (
+  activityId: number,
+  params: ReservationBoardParams,
+): Promise<ReservationBoardResponse> => {
+  const response = await axiosInstance.get(`/my-activities/${activityId}/reservation-dashboard`, {
+    params,
+  });
   return response.data;
 };

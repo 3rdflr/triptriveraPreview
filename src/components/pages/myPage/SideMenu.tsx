@@ -20,7 +20,7 @@ export default function SideMenu({ className }: SideMenuProps) {
     { href: '/mypage/reservation-list', label: '예약내역', icon: FaCommentDots },
     { href: '/mypage/my-experience', label: '내 체험 관리', icon: FaCog },
     { href: '/mypage/reservation-status', label: '예약 현황', icon: FaCalendarAlt },
-    { href: '', label: '위시리스트', icon: FaHeart },
+    { href: '/mypage/wishlist', label: '위시리스트', icon: FaHeart },
   ];
 
   const onLogout = () => {
@@ -55,7 +55,15 @@ export default function SideMenu({ className }: SideMenuProps) {
                     : 'text-grayscale-600 hover:bg-[#FFF9FB]',
                 )}
               >
-                <Link href={href}>
+                <Link
+                  href={href}
+                  className={clsx(
+                    'group justify-start gap-2 py-6.5 text-base',
+                    isActive
+                      ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
+                      : 'text-grayscale-600 hover:bg-[#FFF9FB]',
+                  )}
+                >
                   <Icon
                     className={clsx(
                       'h-4 w-4',

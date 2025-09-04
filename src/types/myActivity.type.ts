@@ -21,3 +21,29 @@ export interface MyActivitiesListResponse {
 export interface ApiResponse {
   message: string;
 }
+
+export interface ReservationBoardParams {
+  year: string;
+  month: string;
+}
+
+export interface ReservationCounts {
+  completed: number;
+  confirmed: number;
+  pending: number;
+}
+
+export interface ReservationByDate {
+  date: string;
+  reservations: ReservationCounts;
+}
+
+export type ReservationBoardResponse = ReservationByDate[];
+
+export interface CalendarEvent {
+  title: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+  type: 'completed' | 'confirmed' | 'pending';
+}
