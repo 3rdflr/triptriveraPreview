@@ -221,8 +221,8 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
           </section>
 
           <section className='border-t pt-8'>
-            <div className='flex items-center  '>
-              <h2 className='text-lg font-semibold mb-4'>체험 후기</h2>
+            <div className='flex items-center gap-2'>
+              <h2 className='text-lg font-semibold'>체험 후기</h2>
               <p>{activity.reviewCount}개</p>
             </div>
             <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
