@@ -1,5 +1,6 @@
 'use client';
 
+import { Stars } from '@/components/common/Stars';
 import { Review } from '@/types/reviews.type';
 
 interface ReviewCardProps {
@@ -8,29 +9,21 @@ interface ReviewCardProps {
 
 export function ReviewCard({ review }: ReviewCardProps) {
   return (
-    <div className='border-b border-gray-200 p-4'>
-      <div className='flex items-center gap-3 mb-2'>
-        <div className='w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center'>
-          {review.user.nickname.charAt(0)}
+    <div className=' p-5 min-h-[140px] flex flex-col gap-3 rounded-3xl shadow-sm'>
+      <div className='flex flex-col items-center gap-1'>
+        {/* 이름 및 날짜 */}
+        <div className='flex-1 flex items-center gap-2'>
+          <span className='font-bold text-[14px] md:text-md'>{review.user.nickname}</span>
+          <span className='text-xs md:text-[14px] text-gray-400'>
+            {(() => {
+              const date = new Date(review.createdAt);
+              return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+            })()}
+          </span>
         </div>
-        <div>
-          <p className='font-medium text-sm'>{review.user.nickname}</p>
-          <div className='flex items-center gap-1'>
-            {Array.from({ length: 5 }, (_, i) => (
-              <span
-                key={i}
-                className={`text-sm ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-        </div>
-        <span className='text-xs text-gray-500 ml-auto'>
-          {new Date(review.createdAt).toLocaleDateString()}
-        </span>
+        <Stars initRate={review.rating} size='sm' className='flex-shrink-0' />
       </div>
-      <p className='text-gray-700 text-sm leading-relaxed'>{review.content}</p>
+      <p className='text-gray-800 text-sm leading-relaxed line-clamp-4'>{review.content}</p>
     </div>
   );
 }
