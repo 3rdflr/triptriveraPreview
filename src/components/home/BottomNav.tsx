@@ -13,12 +13,14 @@ import Image from 'next/image';
 import NotificationModal from './NotificationModal';
 
 export default function BottomNav() {
-  const { isMobile } = useScreenSize();
-  const { data: notificationData } = useNotifications();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visible, setVisible] = useState(true);
 
+  const { isMobile } = useScreenSize();
+  const { data: notificationData } = useNotifications();
+
   const user = useUserStore((state) => state.user);
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -62,7 +64,11 @@ export default function BottomNav() {
     };
   }, [isMobile]);
 
+  const activities = pathname.startsWith('/activities');
+
   if (!isMobile) return null;
+
+  if (activities) return null;
 
   return (
     <>
