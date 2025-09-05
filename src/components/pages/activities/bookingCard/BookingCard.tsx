@@ -6,7 +6,6 @@ import BookingCardDesktop from './BookingCardDesktop';
 import BookingCardMobile from './BookingCardMobile';
 import BookingError from '@/components/pages/activities/bookingCard/BookingError';
 import { ErrorBoundary } from 'react-error-boundary';
-// import { getMockSchedules } from '@/mocks/schedules.mock'; // 목업 데이터는 주석 처리
 import { getAvailableSchedule } from '@/app/api/activities';
 
 interface BookingCardProps {
@@ -24,7 +23,7 @@ function BookingCardContent({ activityId, activityTitle, price, baseSchedules }:
   // 기본 스케줄을 AvailableSchedule 형태로 변환 (캘린더 표시용)
   const baseAvailableSchedules = useMemo(() => {
     const scheduleMap = new Map<string, { id: number; startTime: string; endTime: string }[]>();
-
+    console.log('📅 [BookingCard] baseSchedules:', baseSchedules);
     baseSchedules.forEach((schedule) => {
       if (!scheduleMap.has(schedule.date)) {
         scheduleMap.set(schedule.date, []);
@@ -66,6 +65,7 @@ function BookingCardContent({ activityId, activityTitle, price, baseSchedules }:
     // 선택한 날짜에 대한 상세 스케줄 API 호출이 자동으로 실행됨
     console.log('📅 [BookingCard] 날짜 선택:', date?.toISOString().split('T')[0]);
   };
+
   // 시간 슬롯 선택 핸들러
   const handleTimeSlotSelect = (scheduleId: number) => {
     setSelectedScheduleId(scheduleId);

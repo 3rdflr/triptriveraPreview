@@ -31,14 +31,13 @@ export default function BookingCalendar({
   };
 
   return (
-    <div className='w-full overflow-hidden'>
+    <div className='w-full'>
       <BasicCalendar
         mode='single'
         selected={selectedDate}
         onSelect={onDateSelect}
         disabled={disabledDates}
         locale={ko}
-        className='w-full !max-w-full [&_.rdp-months]:!max-w-full [&_.rdp-months]:w-full'
       />
     </div>
   );

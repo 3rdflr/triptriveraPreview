@@ -1,5 +1,12 @@
 import { ActivityDetail } from '@/types/activities.type';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, EllipsisVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 /**
  *
@@ -9,47 +16,48 @@ import { MapPin, Star } from 'lucide-react';
  */
 interface ActivityInfoProps {
   activity: ActivityDetail;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export default function ActivityInfo({ activity }: ActivityInfoProps) {
+export default function ActivityInfo({ activity, onEdit, onDelete }: ActivityInfoProps) {
   return (
-    <div className='space-y-6'>
-      {/* 제목과 기본 정보 */}
-      <div>
-        <div className='flex items-center gap-2 mb-2'>
-          <span className='text-sm text-gray-500'>{activity.category}</span>
-        </div>
-        <h1 className='text-2xl font-bold text-gray-900 mb-3'>{activity.title}</h1>
-
-        {/* 평점과 리뷰 */}
-        <div className='flex items-center gap-4 mb-3'>
-          <div className='flex items-center gap-1'>
-            <Star className='w-5 h-5 text-yellow-400 fill-current' />
-            <span className='text-lg font-semibold'>{activity.rating}</span>
-            <span className='text-gray-500'>({activity.reviewCount})</span>
+    <div className='flex justify-between'>
+      <div className='flex flex-col gap-2'>
+        {/* 카테고리 */}
+        <p className='text-sm text-gray-950'>{activity.category}</p>
+        {/* 제목과 기본 정보 */}
+        <div className='flex flex-col gap-4'>
+          <h1 className='text-2xl font-bold text-gray-950'>{activity.title}</h1>
+          <div className='flex flex-col gap-[10px]'>
+            {/* 평점 */}
+            <div className='flex items-center gap-[6px]'>
+              <Star className='w-4 h-4 text-yellow-400 fill-current' />
+              <span className='text-sm text-gray-700'>
+                {activity.rating.toFixed(1)} ({activity.reviewCount})
+              </span>
+            </div>
+            {/* 주소 */}
+            <div className='flex items-center gap-2 text-gray-600'>
+              <MapPin className='w-4 h-4' />
+              <span className='text-sm'>{activity.address}</span>
+            </div>
           </div>
         </div>
-
-        {/* 주소 */}
-        <div className='flex items-center gap-2 text-gray-600'>
-          <MapPin className='w-4 h-4' />
-          <span className='text-sm'>{activity.address}</span>
-        </div>
       </div>
 
-      {/* 가격 */}
-      <div className='border-t pt-6'>
-        <div className='text-2xl font-bold text-gray-900'>
-          ₩{activity.price.toLocaleString()}
-          <span className='text-base font-normal text-gray-500'>/인</span>
-        </div>
-      </div>
-
-      {/* 체험 설명 */}
-      <div className='border-t pt-6'>
-        <h2 className='text-lg font-semibold mb-3'>체험 설명</h2>
-        <p className='text-gray-700 leading-relaxed whitespace-pre-wrap'>{activity.description}</p>
-      </div>
+      {/* 케밥 버튼 */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' className='h-8 w-8 p-0 rounded-full'>
+            <EllipsisVertical className='w-5 h-5' />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='center'>
+          <DropdownMenuItem onClick={onEdit}>수정하기</DropdownMenuItem>
+          <DropdownMenuItem onClick={onDelete}>삭제하기</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

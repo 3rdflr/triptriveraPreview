@@ -57,7 +57,7 @@ export default function BookingCardDesktop({
   return (
     <div
       className={clsx(
-        'bg-white border border-card-border rounded-3xl p-[30px] shadow-sm',
+        'bg-white border border-card-border rounded-3xl p-[20px] xl:p-[30px] shadow-sm',
         'flex flex-col gap-6',
       )}
     >
