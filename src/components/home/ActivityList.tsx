@@ -8,6 +8,7 @@ import { useInfiniteList } from '@/hooks/useInfiniteList';
 import Spinner from '../common/Spinner';
 import ActivityCard from './ActivityCard';
 import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ActivityList({
   initialActivities,
@@ -35,6 +36,23 @@ export default function ActivityList({
     params.delete('category');
     return params.toString() !== '';
   })();
+
+  if (allActivities.length === 0)
+    return (
+      <div className='flex flex-col items-center justify-center gap-7 mt-50'>
+        <div className='flex flex-col items-center justify-center'>
+          <Image
+            src={'/images/icons/Logo_top.svg'}
+            alt='빈 체험 로고'
+            width={234}
+            height={337}
+            className='animate-bounce'
+          />
+          <Image src={'/images/icons/Logo_bottom.svg'} alt='빈 체험 로고' width={45} height={16} />
+        </div>
+        <span className='text-18-regular text-grayscale-300'>존재하는 체험이 없어요!</span>
+      </div>
+    );
 
   return (
     <div className='p-[24px] lg:px-[86px] my-5'>
