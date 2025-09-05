@@ -8,12 +8,13 @@ import Spinner from '@/components/common/Spinner';
 import ActivitySelect from '@/components/pages/myPage/ActivitySelect';
 import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStatusCalendar';
 import { Label } from '@/components/ui/label';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
-import ConfirmModal from '@/components/common/ConfirmModal';
 import { useOverlay } from '@/hooks/useOverlay';
+import { Event as RBCEvent } from 'react-big-calendar';
+import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -44,48 +45,59 @@ const ReservationStatusPage = () => {
     refetchOnMount: 'always',
   });
 
-  const { refetch: refetchReservedScheduleData } = useQuery({
-    queryKey: ['reserved-schedule', pathname, activityId, selectedDate],
-    queryFn: ({ queryKey }) => {
-      const [_key, _pathname, activityId, selectedDate] = queryKey as [
-        string,
-        string,
-        string,
-        string,
-      ];
-
-      if (!activityId || !selectedDate) return Promise.resolve(null);
-
-      return getReservedSchedule(Number(activityId), { date: selectedDate });
+  const { mutate: fetchReservedSchedule } = useMutation({
+    mutationFn: (date: string) => {
+      if (!activityId) throw new Error('체험 ID가 없습니다');
+      return getReservedSchedule(Number(activityId), { date });
     },
-    enabled: false,
-    staleTime: 0,
-    refetchOnMount: 'always',
+    onSuccess: (data) => {
+      console.log(data);
+      overlay.open(({ isOpen, close }) => (
+        <ReservedScheduleModal
+          date={selectedDate ?? ''}
+          isOpen={isOpen}
+          onClose={close}
+          onAction={close}
+        />
+      ));
+    },
+    onError: () => {
+      console.log('TODO: 에러 모달 추가');
+    },
   });
 
   const events = reservationListData?.flatMap((item) => {
     const date = new Date(item.date);
+    const result: RBCEvent[] = [];
 
-    return [
-      {
+    if (item.reservations.pending > 0) {
+      result.push({
         title: `예약 ${item.reservations.pending}`,
         start: date,
         end: date,
         allDay: true,
-      },
-      {
+      });
+    }
+
+    if (item.reservations.confirmed > 0) {
+      result.push({
         title: `승인 ${item.reservations.confirmed}`,
         start: date,
         end: date,
         allDay: true,
-      },
-      {
+      });
+    }
+
+    if (item.reservations.completed > 0) {
+      result.push({
         title: `완료 ${item.reservations.completed}`,
         start: date,
         end: date,
         allDay: true,
-      },
-    ];
+      });
+    }
+
+    return result;
   });
 
   const onChangeActivitySelect = (id: string) => {
@@ -97,17 +109,9 @@ const ReservationStatusPage = () => {
     setCurrentDate(date);
   };
 
-  const onClickCalendarDay = async (date: string) => {
+  const onClickCalendarDay = (date: string) => {
     setSelectedDate(date);
-
-    const { data: scheduleData } = await refetchReservedScheduleData();
-
-    // 스케쥴 데이터 확인 후 모달 띄움
-    console.log(scheduleData);
-
-    overlay.open(({ isOpen, close }) => (
-      <ConfirmModal title={`예약:`} isOpen={isOpen} onClose={close} onAction={close} />
-    ));
+    fetchReservedSchedule(date);
   };
 
   useEffect(() => {
