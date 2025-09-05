@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import {
   Calendar as BigCalendar,
   dateFnsLocalizer,
@@ -12,14 +11,19 @@ import './status-calendar-custom.css';
 import { ko } from 'date-fns/locale';
 import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
-import ConfirmModal from '@/components/common/ConfirmModal';
-import { useOverlay } from '@/hooks/useOverlay';
 import clsx from 'clsx';
+
+const badgeClassMap: Record<string, string> = {
+  완료: 'bg-gray-100 text-gray-600',
+  승인: 'bg-[var(--badge-blue-light)] text-[var(--badge-blue-dark)]',
+  예약: 'bg-primary-100 text-primary-500',
+};
 
 interface ReservationStatusCalendarProps {
   date: Date;
   events: RBCEvent[];
   onNavigate: (date: Date) => void;
+  onClickDate: (date: string) => void;
 }
 
 const locales = { ko };
@@ -37,56 +41,58 @@ const formats = {
   dateFormat: (date: Date) => format(date, 'd'),
 };
 
-// const events = [
-//   {
-//     title: 'All Day Event very long title',
-//     allDay: true,
-//     start: new Date(2025, 8, 3),
-//     end: new Date(2025, 8, 3),
-//   },
-//   {
-//     title: 'Long Event',
-//     start: new Date(2025, 8, 4),
-//     end: new Date(2025, 8, 4),
-//   },
-// ];
-
-const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
-  const formatted = format(label, 'yyyy년 M월', { locale: ko });
-
-  return (
-    <div className='custom-toolbar flex items-center justify-center gap-4 p-7.5'>
-      {/* 이전 달 버튼 */}
-      <FaCaretLeft onClick={() => onNavigate('PREV')} />
-      {/* 월 텍스트 */}
-      <span className='text-20-bold whitespace-nowrap'>{formatted}</span>
-
-      {/* 다음 달 버튼 */}
-      <FaCaretRight onClick={() => onNavigate('NEXT')} />
-    </div>
-  );
-};
-
 const ReservationStatusCalendar = ({
   date,
   events,
   onNavigate,
+  onClickDate,
 }: ReservationStatusCalendarProps) => {
-  const overlay = useOverlay();
-  const [showModal, setShowModal] = useState(false);
-  const [modalEvents, setModalEvents] = useState<RBCEvent[]>([]);
+  const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
+    const formatted = format(label, 'yyyy년 M월', { locale: ko });
+
+    return (
+      <div className='custom-toolbar flex items-center justify-center gap-4 p-7.5'>
+        {/* 이전 달 버튼 */}
+        <FaCaretLeft onClick={() => onNavigate('PREV')} />
+        {/* 월 텍스트 */}
+        <span className='text-16-bold md:text-20-bold whitespace-nowrap'>{formatted}</span>
+
+        {/* 다음 달 버튼 */}
+        <FaCaretRight onClick={() => onNavigate('NEXT')} />
+      </div>
+    );
+  };
+
+  const onClickEvent = (event: RBCEvent) => {
+    const date = format(event.start as Date, 'yyyy-MM-dd');
+    onClickDate(date);
+  };
 
   const CustomEvent = ({ event }: EventProps<RBCEvent>) => {
     const title = String(event.title);
-    let bgColor = 'bg-gray-500';
+    let badgeClass = '';
 
-    if (title.includes('완료')) bgColor = 'bg-green-500';
-    else if (title.includes('승인')) bgColor = 'bg-blue-500';
-    else if (title.includes('예약')) bgColor = 'bg-yellow-500';
+    const badgeKey = Object.keys(badgeClassMap).find((key) => title.includes(key));
+
+    badgeClass = badgeKey ? badgeClassMap[badgeKey] : '';
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      onClickEvent(event);
+    };
 
     return (
-      <div className={clsx('text-white rounded-lg px-1 py-0.5 text-xs text-center', bgColor)}>
-        {event.title}
+      <div
+        className={clsx(
+          'flex justify-center items-center rounded-sm p-0.5 md:p-0 text-11-medium md:text-14-medium',
+          'max-w-[67px] w-full',
+          badgeClass,
+        )}
+        onClick={handleClick}
+      >
+        <span className='overflow-hidden text-ellipsis whitespace-nowrap text-center w-full'>
+          {event.title}
+        </span>
       </div>
     );
   };
@@ -106,35 +112,19 @@ const ReservationStatusCalendar = ({
     );
   };
 
-  const onClickEvent = (event: RBCEvent) => {
-    console.log('이벤트 클릭됨:', event);
-    overlay.open(({ isOpen, close }) => (
-      <ConfirmModal
-        title={`예약: ${event.title}`}
-        isOpen={isOpen}
-        onClose={close}
-        onAction={close}
-      />
-    ));
-  };
+  const onSelectDay = (start: Date) => {
+    console.log('날짜 영역 클릭했습니다.');
+    const hasEvent = events.some((event) => event.start && isSameDay(event.start, start));
 
-  const handleShowMore = (events: RBCEvent[], date: Date) => {
-    console.log('hello??');
-    setShowModal(true);
-    setModalEvents(events);
-
-    console.log(date);
-    console.log(showModal);
-    console.log(modalEvents);
-
-    overlay.open(({ isOpen, close }) => (
-      <ConfirmModal title={`달력 모달 ${date}`} isOpen={isOpen} onClose={close} onAction={close} />
-    ));
+    if (!hasEvent) return; // 이벤트 없으면 모달 호출 안함
+    const date = format(start, 'yyyy-MM-dd');
+    onClickDate(date);
   };
 
   return (
-    <div className='w-full h-154 sm:w-94 sm:h-154 md:w-119 md:h-195 lg:w-160 sm:shadow-lg sm:border sm:border-grayscale-100 rounded-2xl'>
+    <div className='w-full h-170 sm:w-94 sm:h-170 md:w-119 md:h-195 lg:w-160 sm:shadow-lg sm:border sm:border-grayscale-100 rounded-2xl'>
       <BigCalendar
+        selectable
         localizer={localizer}
         formats={formats}
         events={events}
@@ -142,8 +132,7 @@ const ReservationStatusCalendar = ({
         date={date}
         popup={false}
         onNavigate={onNavigate}
-        onShowMore={handleShowMore}
-        onSelectEvent={onClickEvent}
+        onSelectSlot={({ start }) => onSelectDay(start)}
         components={{
           toolbar: CustomToolbar,
           month: {

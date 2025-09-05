@@ -42,6 +42,14 @@
 
 .rbc-date-cell {
   padding-top: 12px; /* 원하는 값으로 변경 가능 */
+  font-size: 12px;
+}
+
+/* 화면이 744px 이상일 때 */
+@media (min-width: 744px) {
+  .rbc-date-cell {
+    font-size: 16px;
+  }
 }
 
 /* 요일 위 가로선 제거 */
@@ -85,4 +93,13 @@
 
 .rbc-event {
   background: none;
+  color: unset !important;
+}
+
+.rbc-event-content {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
+  height: 100%;
 }

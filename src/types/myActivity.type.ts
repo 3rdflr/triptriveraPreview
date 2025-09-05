@@ -40,10 +40,15 @@ export interface ReservationByDate {
 
 export type ReservationBoardResponse = ReservationByDate[];
 
-export interface CalendarEvent {
-  title: string;
-  start: Date;
-  end: Date;
-  allDay: boolean;
-  type: 'completed' | 'confirmed' | 'pending';
+export interface ReservationSchedule {
+  scheduleId: number;
+  startTime: string;
+  endTime: string;
+  count: ReservationCounts;
+}
+
+export type ReservationScheduleResponse = ReservationSchedule[];
+
+export interface ReservationScheduleParams {
+  date: string;
 }
