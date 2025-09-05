@@ -32,7 +32,7 @@ export default function ActivityCard({
             alt={activity.title}
             width={375}
             height={375}
-            className='cursor-pointer hover:scale-105 transition-soft w-full aspect-square object-cover'
+            className='cursor-pointer hover:scale-105 transition-soft duration-500 w-full aspect-square object-cover'
             onClick={() => router.push(`/activities/${activity.id}`)}
             onError={() => {
               setIsError(true);
