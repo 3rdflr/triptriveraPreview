@@ -25,6 +25,7 @@ export default function ReviewList({ activityId }: ReviewListProps) {
         fetchNextPage={reviewData.fetchNextPage}
         isLoading={reviewData.isLoading}
         isFetchingNextPage={reviewData.isFetchingNextPage}
+        height={600}
         itemHeightEstimate={140}
         scrollKey={`reviews-${activityId}`}
         className='rounded-3xl px-2'
@@ -46,7 +47,7 @@ export default function ReviewList({ activityId }: ReviewListProps) {
             </div>
           </div>
         </InfinityScroll.Skeleton>
-        <InfinityScroll.Contents>
+        <InfinityScroll.Contents loadingText='더 많은 후기를 불러오는 중입니다...'>
           {(review: Review, _index: number) => <ReviewCard key={review.id} review={review} />}
         </InfinityScroll.Contents>
 
