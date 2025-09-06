@@ -9,9 +9,8 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { reservationStatus } from '@/lib/constants/reservation';
+import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation';
 import { toCardDate } from '@/lib/utils/dateUtils';
-import { ReservationStatus } from '@/types/activities.type';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -29,14 +28,6 @@ const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps
   const [isError, setIsError] = useState(false);
   const baseImageUrl = '/images/icons/_empty.png';
   const image = isError ? baseImageUrl : bannerImageUrl;
-
-  const badgeStatusColor: Record<ReservationStatus, string> = {
-    pending: 'bg-primary-100 text-primary-500',
-    confirmed: 'bg-[var(--badge-green-light)] text-[var(--badge-green-dark)]',
-    declined: 'bg-[var(--badge-coral-light)] text-[var(--badge-coral-dark)]',
-    canceled: 'bg-gray-100 text-gray-600',
-    completed: 'bg-[var(--badge-blue-light)] text-[var(--badge-blue-dark)]',
-  };
 
   return (
     <section className='flex flex-col w-full gap-3'>

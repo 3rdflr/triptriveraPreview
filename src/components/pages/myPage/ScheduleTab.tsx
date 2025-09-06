@@ -43,11 +43,11 @@ const ScheduleTab = ({
         return (
           <TabsContent key={tab} value={tab} className='flex flex-col gap-5'>
             {schedules.length === 0 ? (
-              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-58'>
+              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-64.5'>
                 <p>예약 내역이 없습니다.</p>
               </div>
             ) : (
-              <div className='flex flex-col gap-7.5 min-h-58'>
+              <div className='flex flex-col gap-7.5 min-h-64.5'>
                 <div className='flex flex-col gap-2.5'>
                   <Label className='text-lg font-bold'>예약 시간</Label>
                   <div>

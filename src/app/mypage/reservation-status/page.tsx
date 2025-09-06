@@ -105,7 +105,6 @@ const ReservationStatusPage = () => {
 
   const onClickCalendarDay = (date: string) => {
     setSelectedDate(date);
-    overlay.close();
     overlay.open(({ isOpen, close }) => (
       <ReservedScheduleModal
         activityId={activityId ?? ''}
@@ -157,29 +156,17 @@ const ReservationStatusPage = () => {
   useEffect(() => {
     if (!reservedScheduleData) return;
 
-    const pendingSchedule = reservedScheduleData.filter(
-      (s) => s.count?.pending && s.count.pending > 0,
-    );
-    const confirmedSchedule = reservedScheduleData.filter(
-      (s) => s.count?.confirmed && s.count.confirmed > 0,
-    );
-    const declinedSchedule = reservedScheduleData.filter(
-      (s) => s.count?.declined && s.count.declined > 0,
-    );
+    (['pending', 'confirmed', 'declined'] as const).reduce((acc, key) => {
+      const filtered = reservedScheduleData.filter((s) => s.count?.[key] && s.count[key] > 0);
 
-    setScheduleList('pending', pendingSchedule);
-    setScheduleList('confirmed', confirmedSchedule);
-    setScheduleList('declined', declinedSchedule);
+      setScheduleList(key, filtered);
 
-    if (pendingSchedule.length > 0) {
-      setSelectedSchedule('pending', String(pendingSchedule[0].scheduleId));
-    }
-    if (confirmedSchedule.length > 0) {
-      setSelectedSchedule('confirmed', String(confirmedSchedule[0].scheduleId));
-    }
-    if (declinedSchedule.length > 0) {
-      setSelectedSchedule('declined', String(declinedSchedule[0].scheduleId));
-    }
+      if (filtered.length > 0) {
+        setSelectedSchedule(key, String(filtered[0].scheduleId));
+      }
+
+      return acc;
+    });
   }, [reservedScheduleData, setScheduleList, setSelectedSchedule]);
 
   useEffect(() => {

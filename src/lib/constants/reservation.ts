@@ -18,3 +18,11 @@ export const reservationStatusAll: Record<ReservationStatusWithAll, ReservationS
     all: '전체',
     ...reservationStatus,
   };
+
+export const badgeStatusColor: Record<ReservationStatus, string> = {
+  pending: 'bg-primary-100 text-primary-500',
+  confirmed: 'bg-[var(--badge-green-light)] text-[var(--badge-green-dark)]',
+  declined: 'bg-[var(--badge-coral-light)] text-[var(--badge-coral-dark)]',
+  canceled: 'bg-gray-100 text-gray-600',
+  completed: 'bg-[var(--badge-blue-light)] text-[var(--badge-blue-dark)]',
+};

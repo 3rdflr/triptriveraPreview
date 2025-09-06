@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ReservedReservation } from '@/types/myReservation.type';
+import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation';
 
 interface ScheduleReservationCardProps {
   reservationData: ReservedReservation;
@@ -45,7 +46,11 @@ const ScheduleReservationCard = ({
         )}
 
         {/* 예약 승인/예약 거절(confirmed/declined) 상태인 경우 배지 */}
-        {status != 'pending' && <Badge size='xs'>{status}</Badge>}
+        {status != 'pending' && (
+          <Badge size='xs' className={badgeStatusColor[status]}>
+            {reservationStatus[status]}
+          </Badge>
+        )}
       </div>
     </div>
   );
