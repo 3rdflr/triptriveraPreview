@@ -1,5 +1,5 @@
 import { useContext, useRef, useMemo } from 'react';
-import { OverlayContext } from '../components/common/OverlayProvider';
+import { OverlayContext } from '@/providers/OverlayProvider';
 
 export type OverlayElement = (props: { isOpen: boolean; close: () => void }) => JSX.Element;
 
