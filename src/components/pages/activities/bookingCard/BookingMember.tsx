@@ -28,20 +28,20 @@ export default function BookingMember({
         <Button
           variant='ghost'
           size='sm'
-          className='disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 rounded-3xl'
+          className='disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 rounded-full size-10'
           onClick={() => onMemberCountChange(Math.max(1, memberCount - 1))}
           disabled={memberCount <= 1}
         >
-          <Minus />
+          <Minus className='w-5 h-5' />
         </Button>
         <span className='font-bold'>{memberCount}</span>
         <Button
-          className='rounded-3xl'
+          className='rounded-full size-10'
           variant='ghost'
           size='sm'
           onClick={() => onMemberCountChange(memberCount + 1)}
         >
-          <Plus />
+          <Plus className='w-5 h-5' />
         </Button>
       </div>
     </div>

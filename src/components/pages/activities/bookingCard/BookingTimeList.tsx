@@ -18,7 +18,7 @@ export default function BookingTimeList({
   // 선택된 날짜의 스케줄들을 표시합니다.
 
   return (
-    <div>
+    <div className='flex flex-col gap-2'>
       {/* Time Slots */}
       <div className='font-bold flex items-center'>예약 가능한 시간</div>
 
@@ -27,7 +27,7 @@ export default function BookingTimeList({
           {!selectedDate ? '날짜를 선택해주세요' : '예약 가능한 시간이 없습니다'}
         </div>
       ) : (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 max-h-[150px] overflow-y-auto'>
           {selectedSchedule.map((schedule) => (
             <BookingTimeSlot
               key={schedule.id}

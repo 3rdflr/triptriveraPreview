@@ -21,12 +21,12 @@ function BasicCalendar({
       }}
       classNames={{
         root: `${defaultClassNames.root} w-full`,
-        day: `${defaultClassNames.day} text-center`,
-        day_button: `${defaultClassNames.day_button} lg:!w-6 lg:!h-6 flex items-center justify-center`,
+        day: `w-10 h-10 lg:w-8 lg:h-8 xl:w-10 xl:h-10`,
+        day_button: 'w-full h-full',
       }}
       modifiersClassNames={{
         selected: 'bg-primary-500 text-white font-bold rounded-full',
-        today: 'bg-primary-100 text-primary-500 font-bold rounded-full',
+        today: 'bg-primary-100 text-primary-500 font-bold rounded-full cursor-pointer',
       }}
       components={{
         Chevron: (props) =>
