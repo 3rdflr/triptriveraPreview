@@ -25,7 +25,7 @@ function BasicCalendar({
         day_button: `${defaultClassNames.day_button} lg:!w-6 lg:!h-6 flex items-center justify-center`,
       }}
       modifiersClassNames={{
-        selected: 'bg-primary-500 text-white font-bold rounded-full text-center',
+        selected: 'bg-primary-500 text-white font-bold rounded-full',
         today: 'bg-primary-100 text-primary-500 font-bold rounded-full',
       }}
       components={{

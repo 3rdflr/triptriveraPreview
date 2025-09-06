@@ -2,57 +2,45 @@
 
 import { Button } from '@/components/ui/button';
 import BookingCalendar from './BookingCalendar';
-import BookingDetail from './BookingDetail';
-import { AvailableSchedule } from '@/types/activities.type';
+import BookingTimeList from './BookingTimeList';
+import BookingMember from './BookingMember';
+import { SchedulesByDate } from '@/types/activities.type';
 import clsx from 'clsx';
+import { format } from 'date-fns';
+import { filterAvailableScheduleTimes } from '@/utils/schedule.utils';
 
 interface BookingCardDesktopProps {
   price: number;
-  availableSchedules?: AvailableSchedule[];
+  schedulesByDate: SchedulesByDate;
   isLoading: boolean;
   selectedDate?: Date;
   selectedScheduleId?: number;
-  headCount: number;
+  memberCount: number;
   onDateSelect: (date: Date | undefined) => void;
   onTimeSlotSelect: (scheduleId: number) => void;
-  onHeadCountChange: (count: number) => void;
+  onMemberCountChange: (count: number) => void;
   onBooking: () => void;
 }
 
 export default function BookingCardDesktop({
   price,
-  availableSchedules,
+  schedulesByDate,
   selectedDate,
   selectedScheduleId,
-  headCount,
+  memberCount,
   onDateSelect,
   onTimeSlotSelect,
-  onHeadCountChange,
+  onMemberCountChange,
   onBooking,
 }: BookingCardDesktopProps) {
-  const totalPrice = price * headCount;
+  const totalPrice = price * memberCount;
 
-  const BookingSection = () => {
-    if (!selectedScheduleId) return null;
-
-    return (
-      <>
-        <div className='border-t pt-4 mb-4'>
-          <div className='flex items-center justify-between text-lg font-bold'>
-            <span>총 합계</span>
-            <span className='text-blue-600'>₩{totalPrice.toLocaleString()}</span>
-          </div>
-        </div>
-
-        <Button
-          onClick={onBooking}
-          className='w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors'
-        >
-          지금 예약하기
-        </Button>
-      </>
-    );
-  };
+  const selectedSchedule = selectedDate
+    ? filterAvailableScheduleTimes(
+        schedulesByDate[format(selectedDate, 'yyyy-MM-dd')],
+        selectedDate,
+      )
+    : undefined;
 
   return (
     <div
@@ -61,7 +49,7 @@ export default function BookingCardDesktop({
         'flex flex-col gap-6',
       )}
     >
-      {/* Price Display */}
+      {/* 가격 */}
       <div className='flex items-center gap-1'>
         <span className='text-md font-bold'>₩{price.toLocaleString()}</span>
         <span className='text-md text-gray-500'> / 인</span>
@@ -71,24 +59,35 @@ export default function BookingCardDesktop({
       <div className='text-sm flex flex-col items-center gap-2'>
         <div className='w-full flex items-start text-sm font-bold'>날짜</div>
         <BookingCalendar
-          availableSchedules={availableSchedules}
+          schedulesByDate={schedulesByDate}
           selectedDate={selectedDate}
           onDateSelect={onDateSelect}
         />
       </div>
 
-      {/* Booking Details (Time Slots + Member Count) */}
-      <BookingDetail
+      <BookingTimeList
         selectedDate={selectedDate}
         selectedScheduleId={selectedScheduleId}
-        headCount={headCount}
-        availableSchedules={availableSchedules}
+        selectedSchedule={selectedSchedule}
         onTimeSlotSelect={onTimeSlotSelect}
-        onHeadCountChange={onHeadCountChange}
       />
 
+      <BookingMember memberCount={memberCount} onMemberCountChange={onMemberCountChange} />
+
       {/* Total Price & Booking Button */}
-      <BookingSection />
+      <hr className='border-t border-gray-100' />
+      <div className='flex items-center py-5'>
+        <span className='text-md font-bold'>총 금액</span>
+        <span className='text-md font-bold'>₩{totalPrice.toLocaleString()}</span>
+        <Button
+          variant='primary'
+          className='ml-auto'
+          onClick={onBooking}
+          disabled={!selectedScheduleId}
+        >
+          예약하기
+        </Button>
+      </div>
     </div>
   );
 }
