@@ -1,40 +1,42 @@
 'use client';
-import {
-  getMyActivitiesList,
-  getReservationDashboard,
-  getReservedSchedule,
-} from '@/app/api/myActivities';
+import { getMyActivitiesList } from '@/app/api/myActivities';
 import Spinner from '@/components/common/Spinner';
 import ActivitySelect from '@/components/pages/myPage/ActivitySelect';
 import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStatusCalendar';
 import { Label } from '@/components/ui/label';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { useOverlay } from '@/hooks/useOverlay';
 import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
 import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
+import { getReservationDashboard, getReservedSchedule } from '@/app/api/myReservations';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
-  const pathname = usePathname();
+
+  const { setStatus, setSelectedSchedule, setScheduleList } = useScheduleStore();
+
   const [activityId, setActivityId] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  const { data: activityListData, isLoading } = useQuery({
-    queryKey: ['my-activities-list', pathname],
+  const { data: activityListData, isLoading: isActivityListLoading } = useQuery({
+    queryKey: ['my-activities-list'],
     queryFn: () => getMyActivitiesList({}),
     refetchOnMount: 'always',
   });
 
-  const { data: reservationListData } = useQuery({
-    queryKey: ['reservation-list', pathname, activityId, currentDate],
+  const { data: reservationListData, isLoading: isReservationListLoading } = useQuery({
+    queryKey: [
+      'reservation-list',
+      activityId,
+      currentDate ? format(currentDate, 'yyyy-MM-dd') : null,
+    ],
     queryFn: ({ queryKey }) => {
-      const [_key, _pathname, activityId, date] = queryKey as [string, string, string, Date];
+      const [_key, activityId, date] = queryKey as [string, string, string];
 
       if (!activityId || !date) return Promise.resolve(null);
 
@@ -48,47 +50,15 @@ const ReservationStatusPage = () => {
     refetchOnMount: 'always',
   });
 
-  const { mutate: fetchReservedSchedule } = useMutation({
-    mutationFn: (date: string) => {
-      if (!activityId) throw new Error('체험 ID가 없습니다');
-      return getReservedSchedule(Number(activityId), { date });
-    },
-    onSuccess: (data) => {
-      const pendingSchedule = data.filter((s) => s.count?.pending && s.count.pending > 0);
-      const confirmedSchedule = data.filter((s) => s.count?.confirmed && s.count.confirmed > 0);
-      const declinedSchedule = data.filter((s) => s.count?.declined && s.count.declined > 0);
-
-      const store = useScheduleStore.getState();
-
-      store.setScheduleList('pending', pendingSchedule);
-      store.setScheduleList('confirmed', confirmedSchedule);
-      store.setScheduleList('declined', declinedSchedule);
-
-      if (pendingSchedule.length > 0) {
-        store.setSelectedSchedule('pending', String(pendingSchedule[0].scheduleId));
+  const { data: reservedScheduleData } = useQuery({
+    queryKey: ['reserved-schedule', activityId, selectedDate],
+    queryFn: () => {
+      if (!activityId || !selectedDate) {
+        return Promise.resolve([]);
       }
-
-      if (confirmedSchedule.length > 0) {
-        store.setSelectedSchedule('confirmed', String(confirmedSchedule[0].scheduleId));
-      }
-
-      if (declinedSchedule.length > 0) {
-        store.setSelectedSchedule('declined', String(declinedSchedule[0].scheduleId));
-      }
-
-      overlay.close();
-      overlay.open(({ isOpen, close }) => (
-        <ReservedScheduleModal
-          date={selectedDate ?? ''}
-          isOpen={isOpen}
-          onClose={close}
-          onAction={close}
-        />
-      ));
+      return getReservedSchedule(Number(activityId), { date: selectedDate });
     },
-    onError: () => {
-      console.log('TODO: 에러 모달 추가');
-    },
+    enabled: !!activityId && !!selectedDate,
   });
 
   const events = reservationListData?.flatMap((item) => {
@@ -127,7 +97,6 @@ const ReservationStatusPage = () => {
 
   const onChangeActivitySelect = (id: string) => {
     setActivityId(id);
-    console.log(id, '해당 id로 api 호출');
   };
 
   const onNavigateCalendar = (date: Date) => {
@@ -136,7 +105,19 @@ const ReservationStatusPage = () => {
 
   const onClickCalendarDay = (date: string) => {
     setSelectedDate(date);
-    fetchReservedSchedule(date);
+    overlay.close();
+    overlay.open(({ isOpen, close }) => (
+      <ReservedScheduleModal
+        activityId={activityId ?? ''}
+        date={date}
+        isOpen={isOpen}
+        onClose={() => {
+          close();
+          setStatus('pending');
+        }}
+        onAction={close}
+      />
+    ));
   };
 
   const ReservationSection = () => {
@@ -174,12 +155,40 @@ const ReservationStatusPage = () => {
   };
 
   useEffect(() => {
+    if (!reservedScheduleData) return;
+
+    const pendingSchedule = reservedScheduleData.filter(
+      (s) => s.count?.pending && s.count.pending > 0,
+    );
+    const confirmedSchedule = reservedScheduleData.filter(
+      (s) => s.count?.confirmed && s.count.confirmed > 0,
+    );
+    const declinedSchedule = reservedScheduleData.filter(
+      (s) => s.count?.declined && s.count.declined > 0,
+    );
+
+    setScheduleList('pending', pendingSchedule);
+    setScheduleList('confirmed', confirmedSchedule);
+    setScheduleList('declined', declinedSchedule);
+
+    if (pendingSchedule.length > 0) {
+      setSelectedSchedule('pending', String(pendingSchedule[0].scheduleId));
+    }
+    if (confirmedSchedule.length > 0) {
+      setSelectedSchedule('confirmed', String(confirmedSchedule[0].scheduleId));
+    }
+    if (declinedSchedule.length > 0) {
+      setSelectedSchedule('declined', String(declinedSchedule[0].scheduleId));
+    }
+  }, [reservedScheduleData, setScheduleList, setSelectedSchedule]);
+
+  useEffect(() => {
     if (activityListData && activityListData.activities.length > 0) {
       setActivityId(String(activityListData?.activities[0].id));
     }
   }, [activityListData]);
 
-  if (isLoading) {
+  if (isActivityListLoading || isReservationListLoading) {
     return <Spinner />;
   }
 

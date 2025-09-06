@@ -1,14 +1,34 @@
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ScheduleSelect from './ScheduleSelect';
+import { Tabs, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
-// import { Dropdown } from 'react-simplified-package';
+import { TabsList } from '@radix-ui/react-tabs';
+import ScheduleDropdown from './ScheduleDropdown';
+import { ReservedReservation } from '@/types/myReservation.type';
+import ScheduleReservationCard from './ScheduleReservationCard';
+import Spinner from '@/components/common/Spinner';
 
-const ScheduleTab = () => {
-  const { selectedSchedules, setSelectedSchedule, scheduleLists } = useScheduleStore();
+interface ScheduleTabProps {
+  reservations: ReservedReservation[];
+  onConfirm: (activityId: number, reservationId: number) => void;
+  onDecline: (activityId: number, reservationId: number) => void;
+  onSelectSchedule: (value: string, tab: 'pending' | 'confirmed' | 'declined') => void;
+  isLoading: boolean;
+}
 
+const ScheduleTab = ({
+  reservations,
+  onConfirm,
+  onDecline,
+  onSelectSchedule,
+  isLoading,
+}: ScheduleTabProps) => {
+  const { status, setStatus, selectedSchedules, scheduleLists } = useScheduleStore();
   return (
-    <Tabs defaultValue='pending' className='w-full'>
+    <Tabs
+      value={status}
+      onValueChange={(val) => setStatus(val as keyof typeof selectedSchedules)}
+      className='w-full'
+    >
       <div className='w-full flex justify-start border-b border-b-grayscale-100'>
         <TabsList>
           <TabsTrigger value='pending'>신청 {scheduleLists.pending.length}</TabsTrigger>
@@ -16,74 +36,50 @@ const ScheduleTab = () => {
           <TabsTrigger value='declined'>거절 {scheduleLists.declined.length}</TabsTrigger>
         </TabsList>
       </div>
-      {(['pending', 'confirmed', 'declined'] as const).map((tab) => (
-        <TabsContent key={tab} value={tab} className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-2.5'>
-            <Label className='text-lg font-bold'>예약 시간</Label>
-            <div onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
-              <ScheduleSelect
-                value={selectedSchedules[tab]}
-                onChange={(val) => setSelectedSchedule(tab, val)}
-                scheduleList={scheduleLists[tab]}
-              />
-              {/* <Dropdown>
-                <Dropdown.Trigger>
-                  <div className='w-full border border-gray-50'>옵션 선택</div>
-                </Dropdown.Trigger>
 
-                <Dropdown.Menu
-                  style={{
-                    textAlign: 'center',
-                    backgroundColor: '#333',
-                    border: '1px solid #333',
-                  }}
-                >
-                  <a
-                    href='#'
-                    style={{
-                      display: 'block',
-                      padding: '10px',
-                      textDecoration: 'none',
-                      color: 'white',
-                    }}
-                  >
-                    옵션 1
-                  </a>
-                  <a
-                    href='#'
-                    style={{
-                      display: 'block',
-                      padding: '10px',
-                      textDecoration: 'none',
-                      color: 'white',
-                    }}
-                  >
-                    옵션 2
-                  </a>
-                  <a
-                    href='#'
-                    style={{
-                      display: 'block',
-                      padding: '10px',
-                      textDecoration: 'none',
-                      color: 'white',
-                    }}
-                  >
-                    옵션 3
-                  </a>
-                </Dropdown.Menu>
-              </Dropdown> */}
-            </div>
-          </div>
+      {(['pending', 'confirmed', 'declined'] as const).map((tab) => {
+        const schedules = scheduleLists[tab];
 
-          <div className='flex flex-col'>
-            <Label className='text-lg font-bold'>예약 내역</Label>
-            드롭다운
-          </div>
-        </TabsContent>
-      ))}
+        return (
+          <TabsContent key={tab} value={tab} className='flex flex-col gap-5'>
+            {schedules.length === 0 ? (
+              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-58'>
+                <p>예약 내역이 없습니다.</p>
+              </div>
+            ) : (
+              <div className='flex flex-col gap-7.5 min-h-58'>
+                <div className='flex flex-col gap-2.5'>
+                  <Label className='text-lg font-bold'>예약 시간</Label>
+                  <div>
+                    <ScheduleDropdown
+                      value={selectedSchedules[tab]}
+                      onChange={(value) => onSelectSchedule(value, tab)}
+                      scheduleList={schedules}
+                    />
+                  </div>
+                </div>
+
+                <div className='flex flex-col gap-2.5'>
+                  <Label className='text-lg font-bold'>예약 내역</Label>
+                  {isLoading ? (
+                    <Spinner />
+                  ) : (
+                    reservations?.map((reservation: ReservedReservation) => (
+                      <ScheduleReservationCard
+                        key={reservation.id}
+                        reservationData={reservation}
+                        onConfirm={onConfirm}
+                        onDecline={onDecline}
+                      />
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 };
-
 export default ScheduleTab;

@@ -66,6 +66,7 @@ const ReservationStatusCalendar = ({
   const onClickEvent = (event: RBCEvent) => {
     const date = format(event.start as Date, 'yyyy-MM-dd');
     onClickDate(date);
+    console.log(date);
   };
 
   const CustomEvent = ({ event }: EventProps<RBCEvent>) => {
@@ -113,12 +114,13 @@ const ReservationStatusCalendar = ({
   };
 
   const onSelectDay = (start: Date) => {
-    console.log('날짜 영역 클릭했습니다.');
+    const date = format(start, 'yyyy-MM-dd');
+    console.log(date);
+    onClickDate(date);
+
     const hasEvent = events.some((event) => event.start && isSameDay(event.start, start));
 
-    if (!hasEvent) return; // 이벤트 없으면 모달 호출 안함
-    const date = format(start, 'yyyy-MM-dd');
-    onClickDate(date);
+    if (!hasEvent) return;
   };
 
   return (
