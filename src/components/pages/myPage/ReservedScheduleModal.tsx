@@ -7,9 +7,6 @@ import { format } from 'date-fns';
 
 interface ReservedScheduleModalProps {
   date?: string;
-  exitText?: string;
-  actionText?: string;
-  buttons?: React.ReactNode;
   className?: string;
   isOpen: boolean;
   onClose: () => void;

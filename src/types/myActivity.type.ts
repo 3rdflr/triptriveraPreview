@@ -40,15 +40,28 @@ export interface ReservationByDate {
 
 export type ReservationBoardResponse = ReservationByDate[];
 
+export interface ReservedCounts {
+  declined: number;
+  confirmed: number;
+  pending: number;
+}
+
 export interface ReservationSchedule {
   scheduleId: number;
   startTime: string;
   endTime: string;
-  count: ReservationCounts;
+  count: ReservedCounts;
 }
 
 export type ReservationScheduleResponse = ReservationSchedule[];
 
 export interface ReservationScheduleParams {
   date: string;
+}
+
+export interface ReservedSchedule {
+  scheduleId: number;
+  startTime: string;
+  endTime: string;
+  count: ReservedCounts;
 }

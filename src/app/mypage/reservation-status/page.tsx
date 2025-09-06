@@ -15,6 +15,8 @@ import { format } from 'date-fns';
 import { useOverlay } from '@/hooks/useOverlay';
 import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
+import Image from 'next/image';
+import { useScheduleStore } from '@/store/reservedScheduleStore';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -26,6 +28,7 @@ const ReservationStatusPage = () => {
   const { data: activityListData, isLoading } = useQuery({
     queryKey: ['my-activities-list', pathname],
     queryFn: () => getMyActivitiesList({}),
+    refetchOnMount: 'always',
   });
 
   const { data: reservationListData } = useQuery({
@@ -51,7 +54,29 @@ const ReservationStatusPage = () => {
       return getReservedSchedule(Number(activityId), { date });
     },
     onSuccess: (data) => {
-      console.log(data);
+      const pendingSchedule = data.filter((s) => s.count?.pending && s.count.pending > 0);
+      const confirmedSchedule = data.filter((s) => s.count?.confirmed && s.count.confirmed > 0);
+      const declinedSchedule = data.filter((s) => s.count?.declined && s.count.declined > 0);
+
+      const store = useScheduleStore.getState();
+
+      store.setScheduleList('pending', pendingSchedule);
+      store.setScheduleList('confirmed', confirmedSchedule);
+      store.setScheduleList('declined', declinedSchedule);
+
+      if (pendingSchedule.length > 0) {
+        store.setSelectedSchedule('pending', String(pendingSchedule[0].scheduleId));
+      }
+
+      if (confirmedSchedule.length > 0) {
+        store.setSelectedSchedule('confirmed', String(confirmedSchedule[0].scheduleId));
+      }
+
+      if (declinedSchedule.length > 0) {
+        store.setSelectedSchedule('declined', String(declinedSchedule[0].scheduleId));
+      }
+
+      overlay.close();
       overlay.open(({ isOpen, close }) => (
         <ReservedScheduleModal
           date={selectedDate ?? ''}
@@ -114,6 +139,40 @@ const ReservationStatusPage = () => {
     fetchReservedSchedule(date);
   };
 
+  const ReservationSection = () => {
+    if (!activityListData?.activities || activityListData?.activities.length === 0) {
+      return (
+        <div className='flex flex-col mx-auto'>
+          <Image
+            src={'/images/icons/_empty.png'}
+            width={182}
+            height={182}
+            alt='예약 현황 디폴트 이미지'
+          />
+          <span className='text-18-medium text-grayscale-600'>아직 등록한 체험이 없어요</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className='flex flex-col sm:gap-4'>
+        <div className='px-4 md:px-0'>
+          <ActivitySelect
+            value={activityId ?? undefined}
+            activityList={activityListData?.activities ?? []}
+            onChange={onChangeActivitySelect}
+          />
+        </div>
+        <ReservationStatusCalendar
+          date={currentDate}
+          events={events ?? []}
+          onNavigate={onNavigateCalendar}
+          onClickDate={onClickCalendarDay}
+        />
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (activityListData && activityListData.activities.length > 0) {
       setActivityId(String(activityListData?.activities[0].id));
@@ -125,7 +184,7 @@ const ReservationStatusPage = () => {
   }
 
   return (
-    <div className='flex flex-col gap-0.5 sm:gap-5'>
+    <div className='flex flex-col gap-5'>
       {/* 헤더 */}
       <div className='px-6 sm:px-0 flex flex-col gap-4'>
         <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>
@@ -136,19 +195,8 @@ const ReservationStatusPage = () => {
             </span>
           </div>
         </div>
-        <ActivitySelect
-          value={activityId ?? undefined}
-          activityList={activityListData?.activities ?? []}
-          onChange={onChangeActivitySelect}
-        />
       </div>
-
-      <ReservationStatusCalendar
-        date={currentDate}
-        events={events ?? []}
-        onNavigate={onNavigateCalendar}
-        onClickDate={onClickCalendarDay}
-      />
+      <ReservationSection />
     </div>
   );
 };
