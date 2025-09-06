@@ -35,37 +35,45 @@ export default function LoginSection() {
         )}
         <Dropdown>
           <Dropdown.Trigger>
-            <Image
-              src={
-                user.profileImageUrl ? user.profileImageUrl : '/images/icons/default_profile.svg'
-              }
-              alt='Profile'
-              width={30}
-              height={30}
-              className='rounded-full cursor-pointer'
-            />
+            <div className='w-[30px] h-[30px] rounded-full cursor-pointer overflow-hidden'>
+              <Image
+                src={
+                  user.profileImageUrl ? user.profileImageUrl : '/images/icons/default_profile.svg'
+                }
+                alt='Profile'
+                width={30}
+                height={30}
+                className='object-cover w-full h-full'
+              />
+            </div>
           </Dropdown.Trigger>
           <Dropdown.Menu
             className='w-36 bg-white rounded-xl shadow-lg py-2 border-b border-gray-200'
-            style={{ width: '146px', borderRadius: '15px', borderBottom: '1px solid #e5e7eb' }}
+            style={{
+              width: '146px',
+              borderRadius: '15px',
+              borderBottom: '1px solid #e5e7eb',
+              zIndex: '999',
+              cursor: 'pointer',
+            }}
           >
             <button
               onClick={() => router.push('/mypage/user')}
-              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer hover:bg-gray-100 transition'
+              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer z-[200] hover:bg-gray-100 transition'
             >
               <CircleUser strokeWidth={1.5} width={20} height={20} /> 프로필
             </button>
 
             <button
               onClick={() => router.push('/mypage/wishlist')}
-              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer hover:bg-gray-100 transition'
+              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer z-[200] hover:bg-gray-100 transition'
             >
               <Heart strokeWidth={1.5} width={20} height={20} /> 위시리스트
             </button>
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer hover:bg-gray-100 transition'
+              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer z-[200] hover:bg-gray-100 transition'
             >
               <Bell strokeWidth={1.5} width={20} height={20} /> 알림
               {notificationData?.totalCount && notificationData?.totalCount > 0 ? (
@@ -80,7 +88,7 @@ export default function LoginSection() {
                 logout();
                 router.push('/');
               }}
-              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer hover:bg-gray-100 transition'
+              className='flex items-center justify-start gap-3 w-full text-start px-4 py-2 text-14-regular text-title cursor-pointer z-[200] hover:bg-gray-100 transition'
             >
               <LogOut strokeWidth={1.5} width={20} height={20} /> 로그아웃
             </button>

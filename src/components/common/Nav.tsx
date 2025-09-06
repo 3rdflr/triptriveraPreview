@@ -17,115 +17,100 @@ export default function Nav() {
   const { scrollY } = useScroll();
   const { isMobile, isTablet } = useScreenSize();
   const [isSearching, setIsSearching] = useState(false);
-  // **새로운 상태 추가**
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isLanding = pathname === '/';
 
+  const withOutNav = pathname.startsWith('/login') || pathname.startsWith('/signup');
+
+  // Nav 전체 height motion: 181px -> 96px
   const cappedScrollY = useTransform(scrollY, (v) => Math.min(v, 1));
+  const rawNavHeight = useTransform(cappedScrollY, [0, 1], [165, 79]);
+  const navHeight = useSpring(rawNavHeight, { stiffness: 300, damping: 35 });
 
-  // 스크롤 위치에 따른 애니메이션 원본 값 (raw values)
-  const rawStackHeight = useTransform(
-    cappedScrollY,
-    [0, 0.5, 1],
-    [CATEGORY_H + GAP + SEARCH_H, SEARCH_H, SEARCH_H],
-  );
-  const rawCategoryY = useTransform(cappedScrollY, [0, 0.5, 1], [0, -CATEGORY_H, -CATEGORY_H]);
-  const rawCategoryOpacity = useTransform(cappedScrollY, [0, 0.5, 1], [1, 0, 0]);
-  const rawSearchY = useTransform(cappedScrollY, [0, 0.5, 1], [90, 10, 25]);
+  // 카테고리 & 검색창 y-offset
+  const rawCategoryY = useTransform(cappedScrollY, [0, 1], [0, -70]);
+  const rawCategoryOpacity = useTransform(cappedScrollY, [0, 1], [1, 0]);
+  const rawSearchY = useTransform(cappedScrollY, [0, 1], [0, -70]);
 
-  // spring easing 적용
   const springConfig = { stiffness: 300, damping: 35, mass: 0.5 };
-  const stackHeight = useSpring(rawStackHeight, springConfig);
+
   const categoryY = useSpring(rawCategoryY, springConfig);
   const categoryOpacity = useSpring(rawCategoryOpacity, springConfig);
   const searchY = useSpring(rawSearchY, springConfig);
 
-  // 검색창 focus 시 레이아웃 고정
-  const frozenStackHeight = CATEGORY_H + GAP + SEARCH_H;
-  const frozenCategoryY = 0;
-  const frozenCategoryOpacity = 1;
-  const frozenSearchY = 87;
+  useEffect(() => setIsClient(true), []);
 
-  const isLanding = pathname === '/';
-
-  // **isClient가 false일 때 null을 반환하여 서버 렌더링을 막음**
-  if (!isClient) {
-    return null;
-  }
+  if (!isClient || withOutNav) return null;
 
   if (isMobile) return <NavMobileView />;
 
   return (
     <>
-      {/* 전체 네비게이션 wrapper */}
-      <div
-        className={`sticky top-0 left-0 w-full border-b z-[110] bg-gradient-to-b from-white to-gray-50 shadow-md`}
+      <motion.div
+        className='fixed top-0 left-0 w-full border-b z-[110] bg-gradient-to-b from-white to-gray-50 shadow-md'
+        style={{
+          height: isLanding
+            ? isSearching
+              ? 165 // 검색 중일 때 원래 최대 height 유지
+              : navHeight
+            : 79,
+        }}
       >
         {/* 상단 로고 + 로그인 */}
-        <div
-          className={`w-full flex items-center justify-between px-10 cursor-pointer ${
-            isLanding ? 'absolute top-[15px] h-[64px]' : 'h-[80px] relative'
-          }`}
-        >
-          <Link href='/' className='z-[120]'>
+        <div className='flex items-center justify-between px-10 h-[79px]'>
+          <Link href='/' className={`${isSearching ? 'z-[100]' : 'z-[120]'}`}>
             {isTablet ? (
               <Image src='/images/icons/small_logo.svg' alt='Logo' width={40} height={40} />
             ) : (
               <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
             )}
           </Link>
-          <div className='flex items-center gap-2 z-[120]'>
+
+          <div className={`flex items-center gap-2 ${isSearching ? 'z-[100]' : 'z-[120]'}`}>
             <LoginSection />
           </div>
         </div>
 
-        {/* 랜딩 페이지에서만 카테고리 + 검색창 + 배경 */}
+        {/* 랜딩페이지에서만 카테고리 + 검색창 */}
         {isLanding && (
-          <>
+          <div className='flex flex-col items-center pointer-events-none relative top-[-79px]'>
+            {/* 카테고리 */}
             <motion.div
-              style={{ height: isSearching ? frozenStackHeight : stackHeight }}
-              className='relative w-full flex justify-center px-6'
+              style={{
+                y: isSearching ? 0 : categoryY,
+                opacity: isSearching ? 1 : categoryOpacity,
+              }}
+              className='w-full flex justify-center pointer-events-auto'
             >
-              {/* 카테고리 */}
-              <motion.div
-                style={{
-                  y: isSearching ? frozenCategoryY : categoryY,
-                  opacity: isSearching ? frozenCategoryOpacity : categoryOpacity,
-                }}
-                className='absolute top-0 left-0 w-full flex justify-center cursor-pointer'
-              >
-                <CategoryList scrollY={scrollY} freeze={isSearching} />
-              </motion.div>
-
-              {/* 검색창 */}
-              <motion.div
-                style={{ y: isSearching ? frozenSearchY : searchY }}
-                className='absolute left-1/2 -translate-x-1/2 w-full flex justify-center z-[110] px-10'
-              >
-                <SearchFilters
-                  scrollY={scrollY}
-                  isSearching={isSearching}
-                  setIsSearching={setIsSearching}
-                />
-              </motion.div>
+              <CategoryList scrollY={scrollY} freeze={isSearching} />
             </motion.div>
 
-            {/* 검색 중일 때 뒷배경 */}
+            {/* 검색창 */}
+            <motion.div
+              style={{ y: isSearching ? 0 : searchY }}
+              className='w-full flex justify-center items-center pointer-events-auto px-10 mt-2 z-[110]'
+            >
+              <SearchFilters
+                scrollY={scrollY}
+                isSearching={isSearching}
+                setIsSearching={setIsSearching}
+              />
+            </motion.div>
+
+            {/* dim background */}
             {isSearching && (
               <div
-                className='opacity-20 fixed top-0 left-0 w-screen h-screen bg-black z-40'
-                onClick={() => {
-                  setIsSearching(false);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                className='fixed top-0 left-0 w-screen h-screen bg-black opacity-20 z-[100]'
+                onClick={() => setIsSearching(false)}
               />
             )}
-          </>
+          </div>
         )}
-      </div>
+      </motion.div>
+
+      {/* Spacer to prevent content overlap */}
+      <div style={{ height: isLanding ? CATEGORY_H + SEARCH_H + GAP : 64 }} />
     </>
   );
 }

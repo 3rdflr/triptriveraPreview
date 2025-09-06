@@ -133,19 +133,6 @@ export interface AvailableScheduleRequest {
 export const getActivitiesList = async (
   params: ActivitiesListRequest,
 ): Promise<ActivitiesListResponse> => {
-  // // 목업 데이터 사용 (개발 단계)
-  // const { mockActivitiesList } = await import('@/mocks/activities.mock');
-
-  // // 실제 API 호출 시뮬레이션을 위한 지연
-  // await new Promise((resolve) => setTimeout(resolve, 300));
-
-  // return {
-  //   cursorId: 0,
-  //   totalCount: mockActivitiesList.length,
-  //   activities: mockActivitiesList.slice(0, params.size || 20),
-  // };
-
-  // 실제 API 호출 (추후 활성화)
   const response = await axiosInstance.get('/activities', { params });
   return response.data;
 };
@@ -156,6 +143,8 @@ export const getActivitiesList = async (
 export const createActivity = async (
   data: ActivityCreateRequest,
 ): Promise<ActivityCreateResponse> => {
+  console.log('🔗 createActivity API 호출:', { title: data.title });
+
   const response = await axiosInstance.post('/activities', data);
   return response.data;
 };
@@ -164,6 +153,8 @@ export const createActivity = async (
  * 체험 상세 조회
  */
 export const getActivityDetail = async (activityId: number): Promise<ActivityDetail> => {
+  console.log('🔗 getActivityDetail API 호출:', { activityId });
+
   const response = await axiosInstance.get(`/activities/${activityId}`);
   return response.data;
 };
@@ -175,6 +166,8 @@ export const getAvailableSchedule = async (
   activityId: number,
   params: AvailableScheduleRequest,
 ): Promise<AvailableSchedule[]> => {
+  console.log('🔗 getAvailableSchedule API 호출:', { activityId, params });
+
   const response = await axiosInstance.get(`/activities/${activityId}/available-schedule`, {
     params,
   });
@@ -188,6 +181,7 @@ export const getActivityReviews = async (
   activityId: number,
   params?: ReviewsRequest,
 ): Promise<ReviewsResponse> => {
+  console.log('🔗 getActivityReviews API 호출:', { activityId, params });
   const response = await axiosInstance.get(`/activities/${activityId}/reviews`, { params });
   return response.data;
 };
@@ -199,6 +193,8 @@ export const createReservation = async (
   activityId: number,
   data: ReservationRequest,
 ): Promise<ReservationResponse> => {
+  console.log('🔗 createReservation API 호출:', { activityId, data });
+
   const response = await axiosInstance.post(`/activities/${activityId}/reservations`, data);
   return response.data;
 };
@@ -207,9 +203,10 @@ export const createReservation = async (
  * 체험 이미지 URL 생성
  */
 export const uploadActivityImage = async (image: File): Promise<ImageUploadResponse> => {
+  console.log('🔗 uploadActivityImage API 호출:', { fileName: image.name });
+
   const formData = new FormData();
   formData.append('image', image);
-
   const response = await axiosInstance.post('/activities/image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
