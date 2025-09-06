@@ -1,45 +1,32 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BookingCardDesktop from './BookingCardDesktop';
 import BookingCardMobile from './BookingCardMobile';
 import BookingError from '@/components/pages/activities/bookingCard/BookingError';
 import { ErrorBoundary } from 'react-error-boundary';
 import { getAvailableSchedule } from '@/app/api/activities';
+import { Schedule } from '@/types/activities.type';
+import { useScheduleGrouping } from '@/hooks/useScheduleGrouping';
 
 interface BookingCardProps {
   activityId: string;
   activityTitle: string;
   price: number;
-  baseSchedules: { id: number; date: string; startTime: string; endTime: string }[]; // ActivityDetail.schedules
+  baseSchedules: Schedule[];
 }
 
 function BookingCardContent({ activityId, activityTitle, price, baseSchedules }: BookingCardProps) {
+  //선택한 날짜
   const [selectedDate, setSelectedDate] = useState<Date>();
+  //선택한 스케줄ID
   const [selectedScheduleId, setSelectedScheduleId] = useState<number>();
+  //선택한 인원 수
   const [headCount, setHeadCount] = useState(1);
 
-  // 기본 스케줄을 AvailableSchedule 형태로 변환 (캘린더 표시용)
-  const baseAvailableSchedules = useMemo(() => {
-    const scheduleMap = new Map<string, { id: number; startTime: string; endTime: string }[]>();
-    console.log('📅 [BookingCard] baseSchedules:', baseSchedules);
-    baseSchedules.forEach((schedule) => {
-      if (!scheduleMap.has(schedule.date)) {
-        scheduleMap.set(schedule.date, []);
-      }
-      scheduleMap.get(schedule.date)!.push({
-        id: schedule.id,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-      });
-    });
-
-    return Array.from(scheduleMap.entries()).map(([date, times]) => ({
-      date,
-      times,
-    }));
-  }, [baseSchedules]);
+  // 기본 스케줄을 날짜별로 그룹화
+  const baseAvailableSchedules = useScheduleGrouping(baseSchedules);
 
   // 선택된 날짜의 상세 스케줄 조회 (실제 예약 가능한 시간)
   const { data: detailedSchedules, isLoading: isLoadingDetailed } = useQuery({
