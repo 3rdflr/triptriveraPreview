@@ -12,17 +12,16 @@ import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
 import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
-import { getReservationDashboard, getReservedSchedule } from '@/app/api/myReservations';
+import { getReservationDashboard } from '@/app/api/myReservations';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const { setStatus, setSelectedSchedule, setScheduleList } = useScheduleStore();
+  const { setStatus } = useScheduleStore();
 
   const [activityId, setActivityId] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const { data: activityListData, isLoading: isActivityListLoading } = useQuery({
     queryKey: ['my-activities-list'],
@@ -49,17 +48,6 @@ const ReservationStatusPage = () => {
     enabled: activityId !== null && currentDate !== null,
     staleTime: 0,
     refetchOnMount: 'always',
-  });
-
-  const { data: reservedScheduleData } = useQuery({
-    queryKey: ['reserved-schedule', activityId, selectedDate],
-    queryFn: () => {
-      if (!activityId || !selectedDate) {
-        return Promise.resolve([]);
-      }
-      return getReservedSchedule(Number(activityId), { date: selectedDate });
-    },
-    enabled: !!activityId && !!selectedDate,
   });
 
   const events = reservationListData?.flatMap((item) => {
@@ -105,7 +93,6 @@ const ReservationStatusPage = () => {
   };
 
   const onClickCalendarDay = (date: string) => {
-    setSelectedDate(date);
     overlay.open(({ isOpen, close }) => (
       <ReservedScheduleModal
         activityId={activityId ?? ''}
@@ -159,22 +146,6 @@ const ReservationStatusPage = () => {
       setIsInitialLoading(false);
     }
   }, [isActivityListLoading, isReservationListLoading]);
-
-  useEffect(() => {
-    if (!reservedScheduleData) return;
-
-    (['pending', 'confirmed', 'declined'] as const).reduce((acc, key) => {
-      const filtered = reservedScheduleData.filter((s) => s.count?.[key] && s.count[key] > 0);
-
-      setScheduleList(key, filtered);
-
-      if (filtered.length > 0) {
-        setSelectedSchedule(key, String(filtered[0].scheduleId));
-      }
-
-      return acc;
-    });
-  }, [reservedScheduleData, setScheduleList, setSelectedSchedule]);
 
   useEffect(() => {
     if (activityListData && activityListData.activities.length > 0) {

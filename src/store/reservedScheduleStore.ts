@@ -1,35 +1,29 @@
-import { ReservedSchedule } from '@/types/myReservation.type';
+import { ReservationListStatus, ReservedSchedule } from '@/types/myReservation.type';
 import { create } from 'zustand';
 
 interface ReservedScheduleState {
-  status: keyof ReservedScheduleState['selectedSchedules']; // 'pending' | 'confirmed' | 'declined'
-  setStatus: (status: keyof ReservedScheduleState['selectedSchedules']) => void;
+  status: ReservationListStatus;
+  setStatus: (status: ReservationListStatus) => void;
 
-  selectedSchedules: {
+  activeScheduleId: {
     pending: string;
     confirmed: string;
     declined: string;
   };
 
-  setSelectedSchedule: (tab: keyof ReservedScheduleState['selectedSchedules'], val: string) => void;
-  scheduleLists: {
-    pending: ReservedSchedule[];
-    confirmed: ReservedSchedule[];
-    declined: ReservedSchedule[];
-  };
-  setScheduleList: (
-    tab: keyof ReservedScheduleState['scheduleLists'],
-    list: ReservedSchedule[],
-  ) => void;
+  setActiveSchedule: (tab: ReservationListStatus, val: string) => void;
+
+  scheduleLists: Record<ReservationListStatus, ReservedSchedule[]>;
+  setScheduleList: (tab: ReservationListStatus, list: ReservedSchedule[]) => void;
 }
 
 export const useScheduleStore = create<ReservedScheduleState>((set) => ({
   status: 'pending',
   setStatus: (status) => set({ status }),
-  selectedSchedules: { pending: '', confirmed: '', declined: '' },
+  activeScheduleId: { pending: '', confirmed: '', declined: '' },
   scheduleLists: { pending: [], confirmed: [], declined: [] },
-  setSelectedSchedule: (tab, val) =>
-    set((state) => ({ selectedSchedules: { ...state.selectedSchedules, [tab]: val } })),
+  setActiveSchedule: (tab, val) =>
+    set((state) => ({ activeScheduleId: { ...state.activeScheduleId, [tab]: val } })),
   setScheduleList: (tab, list) =>
     set((state) => ({ scheduleLists: { ...state.scheduleLists, [tab]: list } })),
 }));

@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { TabsList } from '@radix-ui/react-tabs';
 import ScheduleDropdown from './ScheduleDropdown';
-import { ReservedReservation } from '@/types/myReservation.type';
+import { ReservationListStatus, ReservedReservation } from '@/types/myReservation.type';
 import ScheduleReservationCard from './ScheduleReservationCard';
 import Spinner from '@/components/common/Spinner';
 import { useScreenSize } from '@/hooks/useScreenSize';
@@ -24,11 +24,11 @@ const ScheduleTab = ({
   isLoading,
 }: ScheduleTabProps) => {
   const { isDesktop, isTablet } = useScreenSize();
-  const { status, setStatus, selectedSchedules, scheduleLists } = useScheduleStore();
+  const { status, setStatus, activeScheduleId, scheduleLists } = useScheduleStore();
   return (
     <Tabs
       value={status}
-      onValueChange={(val) => setStatus(val as keyof typeof selectedSchedules)}
+      onValueChange={(val) => setStatus(val as ReservationListStatus)}
       className='w-full'
     >
       <div className='w-full flex justify-start border-b border-b-grayscale-100'>
@@ -60,7 +60,7 @@ const ScheduleTab = ({
                   <Label className='text-lg font-bold'>예약 시간</Label>
                   <div>
                     <ScheduleDropdown
-                      value={selectedSchedules[tab]}
+                      value={activeScheduleId[tab]}
                       onChange={(value) => onSelectSchedule(value, tab)}
                       scheduleList={schedules}
                     />

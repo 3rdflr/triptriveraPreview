@@ -7,9 +7,14 @@ import { useScheduleStore } from '@/store/reservedScheduleStore';
 import {
   MyReservationUpdateResponse,
   ReservationListResponse,
+  ReservationListStatus,
   UpdateReservedScheduleBody,
 } from '@/types/myReservation.type';
-import { getReservationsList, updateReservedSchedule } from '@/app/api/myReservations';
+import {
+  getReservationsList,
+  getReservedSchedule,
+  updateReservedSchedule,
+} from '@/app/api/myReservations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
@@ -17,6 +22,7 @@ import { useOverlay } from '@/hooks/useOverlay';
 import { errorToast, successToast } from '@/lib/utils/toastUtils';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import BottomSheet from '@/components/common/BottomSheet';
+import { useEffect } from 'react';
 
 interface ReservedScheduleModalProps {
   activityId: string;
@@ -37,9 +43,21 @@ const ReservedScheduleModal = ({
   const { isDesktop } = useScreenSize();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
-  const { status, setStatus, setSelectedSchedule, selectedSchedules } = useScheduleStore();
+  const { status, setStatus, setActiveSchedule, activeScheduleId, setScheduleList } =
+    useScheduleStore();
 
-  const scheduleId = selectedSchedules[status];
+  const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
+
+  const { data: reservedScheduleData } = useQuery({
+    queryKey: ['reserved-schedule', activityId, date],
+    queryFn: () => {
+      if (!activityId || !date) {
+        return Promise.resolve([]);
+      }
+      return getReservedSchedule(Number(activityId), { date });
+    },
+    enabled: !!activityId && !!date,
+  });
 
   const {
     data: reservationStatusListData,
@@ -51,7 +69,10 @@ const ReservedScheduleModal = ({
       if (!activityId || !scheduleId) {
         return Promise.resolve({ reservations: [], totalCount: 0, cursorId: 0 });
       }
-      return getReservationsList(Number(activityId), { scheduleId: Number(scheduleId), status });
+      return getReservationsList(Number(activityId), {
+        scheduleId: Number(scheduleId),
+        status: status as ReservationListStatus,
+      });
     },
     enabled: !!activityId && !!scheduleId,
   });
@@ -90,8 +111,8 @@ const ReservedScheduleModal = ({
     },
   });
 
-  const handleScheduleSelect = (value: string, tab: keyof typeof selectedSchedules) => {
-    setSelectedSchedule(tab, value);
+  const handleScheduleSelect = (value: string, tab: keyof typeof activeScheduleId) => {
+    setActiveSchedule(tab, value);
     refetchReservationStatusList();
   };
 
@@ -110,6 +131,19 @@ const ReservedScheduleModal = ({
       body: { status: 'declined' },
     });
   };
+
+  useEffect(() => {
+    if (!reservedScheduleData || reservedScheduleData.length === 0) return;
+
+    (['pending', 'confirmed', 'declined'] as const).forEach((key) => {
+      const filtered = reservedScheduleData.filter((s) => s.count?.[key] && s.count[key] > 0);
+
+      setScheduleList(key, filtered);
+
+      // 첫 번째 scheduleId로 세팅
+      setActiveSchedule(key, filtered.length > 0 ? String(filtered[0].scheduleId) : '');
+    });
+  }, [setScheduleList, setActiveSchedule, reservedScheduleData]);
 
   if (isDesktop)
     return (
