@@ -21,8 +21,8 @@ const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownPro
   return (
     <Dropdown>
       <Dropdown.Trigger>
-        <div
-          className='flex justify-between items-center border border-grayscale-100 px-5 py-4 w-full'
+        <button
+          className='flex justify-between items-center border border-grayscale-100 px-5 py-4 w-full focus:ring-[3px] focus:border-[var(--primary-200)] focus:ring-[var(--primary-200)]/30'
           style={{
             width: `${dropdownWidth}px`,
             borderRadius: '16px',
@@ -32,7 +32,7 @@ const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownPro
             {selected ? `${selected.startTime}-${selected.endTime}` : '예약 시간을 선택해 주세요'}
           </div>
           <ChevronDownIcon className='size-4 opacity-50' />
-        </div>
+        </button>
       </Dropdown.Trigger>
 
       <Dropdown.Menu
