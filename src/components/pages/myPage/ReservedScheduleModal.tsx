@@ -48,7 +48,7 @@ const ReservedScheduleModal = ({
 
   const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
 
-  const { data: reservedScheduleData } = useQuery({
+  const { data: reservedScheduleData, refetch: refetchReservedScheduleData } = useQuery({
     queryKey: ['reserved-schedule', activityId, date],
     queryFn: () => {
       if (!activityId || !date) {
@@ -131,6 +131,18 @@ const ReservedScheduleModal = ({
       body: { status: 'declined' },
     });
   };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // 모달 열릴 때 초기화
+    (['pending', 'confirmed', 'declined'] as const).forEach((key) => {
+      setScheduleList(key, []);
+      setActiveSchedule(key, '');
+    });
+
+    refetchReservedScheduleData();
+  }, [isOpen, refetchReservedScheduleData, setScheduleList, setActiveSchedule]);
 
   useEffect(() => {
     if (!reservedScheduleData || reservedScheduleData.length === 0) return;
