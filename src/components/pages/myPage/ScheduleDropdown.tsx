@@ -1,6 +1,7 @@
 import { Dropdown } from 'react-simplified-package';
 import { ChevronDownIcon, CheckIcon } from 'lucide-react';
 import { ReservedSchedule } from '@/types/myReservation.type';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 interface ScheduleDropdownProps {
   value?: string | undefined;
@@ -9,6 +10,8 @@ interface ScheduleDropdownProps {
 }
 
 const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownProps) => {
+  const { isTablet, isMobile } = useScreenSize();
+  const dropdownWidth = isMobile ? 327 : isTablet ? 338 : 292;
   const selected = scheduleList?.find((s) => String(s.scheduleId) === value);
 
   const handleSelect = (val: string) => {
@@ -19,9 +22,9 @@ const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownPro
     <Dropdown>
       <Dropdown.Trigger>
         <div
-          className='flex justify-between items-center border border-grayscale-100 px-5 py-4'
+          className='flex justify-between items-center border border-grayscale-100 px-5 py-4 w-full'
           style={{
-            width: '292px',
+            width: `${dropdownWidth}px`,
             borderRadius: '16px',
           }}
         >
@@ -35,7 +38,7 @@ const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownPro
       <Dropdown.Menu
         className='border border-grayscale-100 bg-white w-80 rounded-2xl px-2 py-1.5'
         style={{
-          width: '292px',
+          width: `${dropdownWidth}px`,
           borderRadius: '16px',
         }}
       >

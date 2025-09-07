@@ -15,6 +15,8 @@ import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { useOverlay } from '@/hooks/useOverlay';
 import { errorToast, successToast } from '@/lib/utils/toastUtils';
+import { useScreenSize } from '@/hooks/useScreenSize';
+import BottomSheet from '@/components/common/BottomSheet';
 
 interface ReservedScheduleModalProps {
   activityId: string;
@@ -32,6 +34,7 @@ const ReservedScheduleModal = ({
   isOpen,
   onClose,
 }: ReservedScheduleModalProps) => {
+  const { isDesktop } = useScreenSize();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
   const { status, setStatus, setSelectedSchedule, selectedSchedules } = useScheduleStore();
@@ -108,27 +111,46 @@ const ReservedScheduleModal = ({
     });
   };
 
+  if (isDesktop)
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        modalClassName={clsx('bg-white !py-7.5 !px-6 !rounded-3xl', className)}
+        buttonClassName='!hidden'
+      >
+        <div className='flex flex-col items-center gap-3 w-73'>
+          <header className='flex justify-between items-center w-full'>
+            <span className='text-18-bold'>
+              {date ? format(new Date(date), 'yy년 M월 d일') : ''}
+            </span>
+            <IoClose size={18} onClick={onClose} />
+          </header>
+          <ScheduleTab
+            reservations={reservationStatusListData?.reservations ?? []}
+            isLoading={isLoading}
+            onConfirm={handleConfirmReservation}
+            onDecline={handleDeclineReservation}
+            onSelectSchedule={handleScheduleSelect}
+          />
+        </div>
+      </Modal>
+    );
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      modalClassName={clsx('bg-white !py-7.5 !px-6 !rounded-3xl', className)}
-      buttonClassName='!hidden'
+    <BottomSheet
+      open={isOpen}
+      onOpenChange={onClose}
+      title={date ? format(new Date(date), 'yy년 M월 d일') : ''}
     >
-      <div className='flex flex-col items-center gap-3 w-73'>
-        <header className='flex justify-between items-center w-full'>
-          <span className='text-18-bold'>{date ? format(new Date(date), 'yy년 M월 d일') : ''}</span>
-          <IoClose size={18} onClick={onClose} />
-        </header>
-        <ScheduleTab
-          reservations={reservationStatusListData?.reservations ?? []}
-          isLoading={isLoading}
-          onConfirm={handleConfirmReservation}
-          onDecline={handleDeclineReservation}
-          onSelectSchedule={handleScheduleSelect}
-        />
-      </div>
-    </Modal>
+      <ScheduleTab
+        reservations={reservationStatusListData?.reservations ?? []}
+        isLoading={isLoading}
+        onConfirm={handleConfirmReservation}
+        onDecline={handleDeclineReservation}
+        onSelectSchedule={handleScheduleSelect}
+      />
+    </BottomSheet>
   );
 };
 

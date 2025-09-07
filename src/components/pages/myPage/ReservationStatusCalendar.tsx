@@ -66,7 +66,6 @@ const ReservationStatusCalendar = ({
   const onClickEvent = (event: RBCEvent) => {
     const date = format(event.start as Date, 'yyyy-MM-dd');
     onClickDate(date);
-    console.log(date);
   };
 
   const CustomEvent = ({ event }: EventProps<RBCEvent>) => {
@@ -115,7 +114,6 @@ const ReservationStatusCalendar = ({
 
   const onSelectDay = (start: Date) => {
     const date = format(start, 'yyyy-MM-dd');
-    console.log(date);
     onClickDate(date);
 
     const hasEvent = events.some((event) => event.start && isSameDay(event.start, start));

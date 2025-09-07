@@ -137,7 +137,7 @@ const ReservationStatusPage = () => {
 
     return (
       <div className='flex flex-col sm:gap-4'>
-        <div className='px-4 md:px-0'>
+        <div className='px-4 sm:px-0'>
           <ActivitySelect
             value={activityId ?? undefined}
             activityList={activityListData?.activities ?? []}

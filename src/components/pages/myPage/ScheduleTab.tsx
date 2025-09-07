@@ -6,6 +6,7 @@ import ScheduleDropdown from './ScheduleDropdown';
 import { ReservedReservation } from '@/types/myReservation.type';
 import ScheduleReservationCard from './ScheduleReservationCard';
 import Spinner from '@/components/common/Spinner';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 interface ScheduleTabProps {
   reservations: ReservedReservation[];
@@ -22,6 +23,7 @@ const ScheduleTab = ({
   onSelectSchedule,
   isLoading,
 }: ScheduleTabProps) => {
+  const { isDesktop, isTablet } = useScreenSize();
   const { status, setStatus, selectedSchedules, scheduleLists } = useScheduleStore();
   return (
     <Tabs
@@ -30,10 +32,16 @@ const ScheduleTab = ({
       className='w-full'
     >
       <div className='w-full flex justify-start border-b border-b-grayscale-100'>
-        <TabsList>
-          <TabsTrigger value='pending'>신청 {scheduleLists.pending.length}</TabsTrigger>
-          <TabsTrigger value='confirmed'>승인 {scheduleLists.confirmed.length}</TabsTrigger>
-          <TabsTrigger value='declined'>거절 {scheduleLists.declined.length}</TabsTrigger>
+        <TabsList className='flex w-full'>
+          <TabsTrigger value='pending' className={`flex-1 ${isDesktop ? 'flex-none' : ''}`}>
+            신청 {scheduleLists.pending.length}
+          </TabsTrigger>
+          <TabsTrigger value='confirmed' className={`flex-1 ${isDesktop ? 'flex-none' : ''}`}>
+            승인 {scheduleLists.confirmed.length}
+          </TabsTrigger>
+          <TabsTrigger value='declined' className={`flex-1 ${isDesktop ? 'flex-none' : ''}`}>
+            거절 {scheduleLists.declined.length}
+          </TabsTrigger>
         </TabsList>
       </div>
 
@@ -47,8 +55,8 @@ const ScheduleTab = ({
                 <p>예약 내역이 없습니다.</p>
               </div>
             ) : (
-              <div className='flex flex-col gap-7.5 min-h-64.5'>
-                <div className='flex flex-col gap-2.5'>
+              <div className={`${isTablet ? 'flex-row' : 'flex-col'} flex gap-7.5 min-h-64.5`}>
+                <div className={`flex flex-col gap-2.5`}>
                   <Label className='text-lg font-bold'>예약 시간</Label>
                   <div>
                     <ScheduleDropdown
@@ -59,7 +67,7 @@ const ScheduleTab = ({
                   </div>
                 </div>
 
-                <div className='flex flex-col gap-2.5'>
+                <div className={`${isTablet ? 'flex-1' : 'w-full'} flex flex-col gap-2.5`}>
                   <Label className='text-lg font-bold'>예약 내역</Label>
                   {isLoading ? (
                     <Spinner />

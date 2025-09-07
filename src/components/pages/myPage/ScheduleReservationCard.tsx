@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ReservedReservation } from '@/types/myReservation.type';
 import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 interface ScheduleReservationCardProps {
   reservationData: ReservedReservation;
@@ -14,9 +15,12 @@ const ScheduleReservationCard = ({
   onConfirm,
   onDecline,
 }: ScheduleReservationCardProps) => {
+  const { isMobile } = useScreenSize();
   const { id: reservationId, activityId, headCount, nickname, status } = reservationData;
   return (
-    <div className='flex justify-between items-center w-full border border-grayscale-100 px-4 py-5 rounded-2xl'>
+    <div
+      className={`${isMobile ? 'w-[327px]' : 'w-full'} flex justify-between items-center border border-grayscale-100 px-4 py-5 rounded-2xl`}
+    >
       <div className='flex gap-2'>
         <div className='flex flex-col text-16-bold text-grayscale-500'>
           <span>닉네임</span>
