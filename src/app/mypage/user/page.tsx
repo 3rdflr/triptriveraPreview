@@ -17,7 +17,6 @@ import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
 import Spinner from '@/components/common/Spinner';
-import { usePathname } from 'next/navigation';
 
 type UserFormValues = {
   nickname: string;
@@ -27,13 +26,12 @@ type UserFormValues = {
 };
 
 const UserPage = () => {
-  const pathname = usePathname();
   const { setUser } = useUserStore();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
 
   const { data: userData, isLoading } = useQuery({
-    queryKey: ['user', pathname],
+    queryKey: ['user'],
     queryFn: getUserInfo,
   });
 

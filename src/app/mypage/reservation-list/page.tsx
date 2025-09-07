@@ -20,14 +20,12 @@ import { AxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 
 interface ReservationEmptyProps {
   text: string;
 }
 
 const ReservationListPage = () => {
-  const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState<ReservationStatusWithAll>('all');
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
@@ -37,7 +35,7 @@ const ReservationListPage = () => {
   const router = useRouter();
 
   const { data, isLoading } = useQuery<MyReservationListResponse>({
-    queryKey: ['reservation-list', selectedStatus, pathname],
+    queryKey: ['reservation-list', selectedStatus],
     queryFn: () =>
       getMyReservationsList({
         status: selectedStatus === 'all' ? undefined : selectedStatus,
