@@ -16,6 +16,7 @@ import { getReservationDashboard, getReservedSchedule } from '@/app/api/myReserv
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const { setStatus, setSelectedSchedule, setScheduleList } = useScheduleStore();
 
@@ -154,6 +155,12 @@ const ReservationStatusPage = () => {
   };
 
   useEffect(() => {
+    if (!isActivityListLoading && !isReservationListLoading) {
+      setIsInitialLoading(false);
+    }
+  }, [isActivityListLoading, isReservationListLoading]);
+
+  useEffect(() => {
     if (!reservedScheduleData) return;
 
     (['pending', 'confirmed', 'declined'] as const).reduce((acc, key) => {
@@ -175,7 +182,7 @@ const ReservationStatusPage = () => {
     }
   }, [activityListData]);
 
-  if (isActivityListLoading || isReservationListLoading) {
+  if (isInitialLoading) {
     return <Spinner />;
   }
 
