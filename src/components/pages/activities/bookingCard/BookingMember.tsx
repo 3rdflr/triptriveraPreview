@@ -18,13 +18,15 @@ export default function BookingMember({
   return (
     <div
       className={twMerge(
-        'flex justify-between md:flex-col lg:flex-row items-center md:items-start lg:items-center',
+        'w-full flex justify-between items-center gap-5',
+        'flex-row md:flex-col lg:flex-row',
+        'md:gap-5 md:items-start lg:items-center',
         className,
       )}
     >
-      <h3 className='font-bold flex-1'>참여 인원 수</h3>
+      <h3 className='font-bold'>참여 인원 수</h3>
 
-      <div className='max-w-[144px] md:max-w-[none] lg:max-w-[140px] w-full flex items-center justify-between border border-gray-100 rounded-3xl'>
+      <div className='max-w-[140px] md:max-w-none lg:max-w-[140px] w-full flex items-center justify-between border border-gray-100 rounded-3xl'>
         <Button
           variant='ghost'
           size='sm'

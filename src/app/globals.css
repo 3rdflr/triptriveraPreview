@@ -280,7 +280,7 @@
     border-radius: 4px;
   }
 
-  /* react-day-picker CSS 커스텀
+  /* react-day-picker CSS 커스텀 */
   .rdp-month_grid {
     border-collapse: separate !important;
     border-spacing: 4px 10px;
@@ -297,7 +297,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-  } */
+  }
 }
 
 /* 자동완성 제외하고 검증 스타일 제거 */

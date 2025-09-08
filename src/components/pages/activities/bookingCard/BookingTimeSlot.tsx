@@ -6,7 +6,7 @@ import { ScheduleTime } from '@/types/activities.type';
 interface BookingTimeSlotProps {
   scheduleTime: ScheduleTime;
   selectedScheduleId?: number;
-  onTimeSlotSelect: (scheduleId: number) => void;
+  onTimeSlotSelect: (scheduleTime: ScheduleTime) => void;
 }
 
 export default function BookingTimeSlot({
@@ -17,7 +17,7 @@ export default function BookingTimeSlot({
   return (
     <Button
       variant={selectedScheduleId === scheduleTime.id ? 'primary' : 'secondary'}
-      onClick={() => onTimeSlotSelect(scheduleTime.id)}
+      onClick={() => onTimeSlotSelect(scheduleTime)}
       className='w-full text-sm '
     >
       {scheduleTime.startTime} - {scheduleTime.endTime}

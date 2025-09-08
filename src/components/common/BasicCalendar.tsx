@@ -10,7 +10,6 @@ function BasicCalendar({
   ...props
 }: React.ComponentProps<typeof DayPicker>) {
   const defaultClassNames = getDefaultClassNames();
-  console.log('defaultClassNames', defaultClassNames);
   return (
     <DayPicker
       className='p-1'
@@ -20,7 +19,7 @@ function BasicCalendar({
         ...formatters,
       }}
       classNames={{
-        root: `${defaultClassNames.root} w-full`,
+        root: `${defaultClassNames.root} w-full flex items-center justify-center`,
         day: `w-10 h-10 lg:w-8 lg:h-8 xl:w-10 xl:h-10`,
         day_button: 'w-full h-full',
       }}

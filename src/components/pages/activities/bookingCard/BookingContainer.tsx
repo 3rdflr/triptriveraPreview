@@ -1,0 +1,187 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import BookingCardDesktop from './BookingCardDesktop';
+import BookingCardMobile from './BookingCardMobile';
+import BookingError from '@/components/pages/activities/bookingCard/BookingError';
+import { ErrorBoundary } from 'react-error-boundary';
+import { getAvailableSchedule } from '@/app/api/activities';
+import { Schedule, SchedulesByDate, ScheduleTime } from '@/types/activities.type';
+import { useSchedulesByDate } from '@/hooks/useSchedulesByDate';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+interface BookingContainerProps {
+  activityId: number;
+  price: number;
+  baseSchedules: Schedule[];
+}
+
+export interface BookingCardProps {
+  price: number;
+  totalPrice: number;
+  schedulesByDate: SchedulesByDate;
+  isLoading: boolean;
+  selectedDate?: Date;
+  selectedScheduleId?: number;
+  memberCount: number;
+  onDateSelect: (date: Date | undefined) => void;
+  onTimeSlotSelect: (scheduleTime: ScheduleTime) => void;
+  onMemberCountChange: (count: number) => void;
+  onBooking: () => void;
+}
+
+// Error boundary로 래핑된 메인 컴포넌트
+export default function BookingContainer({
+  activityId,
+  price,
+  baseSchedules,
+}: BookingContainerProps) {
+  // 선택한 날짜
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  // 선택한 스케줄
+  const [selectedScheduleTime, setSelectedScheduleTime] = useState<ScheduleTime | undefined>();
+  // 선택한 인원 수
+  const [memberCount, setMemberCount] = useState(1);
+  // 기본 스케줄을 날짜별 객체로 변환하여 상태로 관리
+  const initialSchedulesByDate = useSchedulesByDate(baseSchedules);
+  const [schedulesByDate, setSchedulesByDate] = useState<SchedulesByDate>(initialSchedulesByDate);
+  // 모바일 바텀시트 오픈 상태
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  // 선택된 날짜의 상세 스케줄 조회
+  const {
+    data: scheduleByDate,
+    isSuccess,
+    isLoading: isLoadingDetailed,
+  } = useQuery({
+    queryKey: ['scheduleByDate', activityId, selectedDate],
+    queryFn: async () => {
+      if (!selectedDate) return null;
+      const year = format(selectedDate, 'yyyy');
+      const month = format(selectedDate, 'MM');
+      return getAvailableSchedule(activityId, { year, month });
+    },
+    staleTime: 5 * 60 * 1000, // 5분 캐시
+    enabled: !!selectedDate, // 날짜가 선택된 경우에만 실행
+  });
+  const totalPrice = price * memberCount;
+
+  // API 응답 성공시 해당 날짜의 스케줄을 상세 데이터로 업데이트
+  useEffect(() => {
+    if (isSuccess && scheduleByDate && selectedDate) {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      const newSchedule = scheduleByDate.find((schedule) => schedule.date === dateStr);
+
+      if (newSchedule && newSchedule.times) {
+        setSchedulesByDate((prev) => ({
+          ...prev,
+          [dateStr]: newSchedule.times,
+        }));
+        console.log(`✅ [BookingCard] ${dateStr} 스케줄 업데이트됨`);
+      }
+    }
+  }, [scheduleByDate, isSuccess, selectedDate]);
+
+  // 날짜 선택 핸들러
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    // 날짜 변경 시 시간 선택 초기화
+    setSelectedScheduleTime(undefined);
+
+    if (date) {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      console.log('📅 [BookingCard] 날짜 선택:', dateStr);
+    }
+  };
+
+  // 시간 슬롯 선택 핸들러
+  const handleTimeSlotSelect = (scheduleTime: ScheduleTime) => {
+    setSelectedScheduleTime(scheduleTime);
+  };
+
+  // 인원 수 변경 핸들러
+  const handleMemberCountChange = (count: number) => {
+    setMemberCount(count);
+  };
+
+  const handleBooking = () => {
+    if (!selectedScheduleTime) return;
+
+    console.log('🎫 [BookingCard] 예약 요청:', {
+      activityId,
+      scheduleId: selectedScheduleTime,
+      memberCount,
+      totalPrice: price * memberCount,
+    });
+    // TODO: 실제 예약 API 호출
+    alert(
+      `예약이 완료되었습니다!\n총 ${memberCount}명, ${(price * memberCount).toLocaleString()}원`,
+    );
+  };
+
+  const bookingCardProps: BookingCardProps = {
+    price,
+    totalPrice,
+    schedulesByDate,
+    isLoading: isLoadingDetailed,
+    selectedDate,
+    selectedScheduleId: selectedScheduleTime?.id,
+    memberCount,
+    onDateSelect: handleDateSelect,
+    onTimeSlotSelect: handleTimeSlotSelect,
+    onMemberCountChange: handleMemberCountChange,
+    onBooking: handleBooking,
+  };
+  return (
+    <ErrorBoundary
+      fallbackRender={({ resetErrorBoundary }) => <BookingError resetError={resetErrorBoundary} />}
+    >
+      {/* Desktop version */}
+      <div className='hidden lg:block'>
+        <BookingCardDesktop {...bookingCardProps} />
+      </div>
+
+      {/* Mobile/Tablet version */}
+      <div className='block lg:hidden '>
+        <div className='fixed bottom-0 left-0 right-0 z-150 bg-white border-t border-gray-200 shadow-lg'>
+          <div className='flex flex-col w-full px-6 py-4 gap-3'>
+            <div className='flex justify-between items-center'>
+              <div className='flex items-center gap-2'>
+                <span className='text-sm font-bold'>총 금액</span>
+                <span className='text-lg font-bold'>₩{totalPrice.toLocaleString()}</span>
+              </div>
+              <span
+                onClick={() => setIsBottomSheetOpen(true)}
+                className='text-sm text-primary-500 cursor-pointer font-bold underline'
+              >
+                {selectedScheduleTime
+                  ? `${selectedScheduleTime.startTime} - ${selectedScheduleTime.endTime}`
+                  : '날짜 선택하기'}
+              </span>
+            </div>
+
+            <Button
+              className=''
+              onClick={() => setIsBottomSheetOpen(true)}
+              disabled={!selectedScheduleTime}
+            >
+              예약하기
+            </Button>
+          </div>
+        </div>
+
+        <Drawer
+          open={isBottomSheetOpen}
+          onOpenChange={setIsBottomSheetOpen}
+          autoFocus={isBottomSheetOpen}
+        >
+          <DrawerTitle></DrawerTitle>
+          <DrawerContent>
+            <BookingCardMobile {...bookingCardProps} />
+          </DrawerContent>
+        </Drawer>
+      </div>
+    </ErrorBoundary>
+  );
+}
