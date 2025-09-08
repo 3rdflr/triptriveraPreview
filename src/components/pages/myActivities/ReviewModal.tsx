@@ -18,7 +18,7 @@ interface ReviewModalProps {
 }
 
 export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalProps) {
-  const { id: reservationId, activity, date, startTime, endTime } = data;
+  const { id: reservationId, activity, date, startTime, endTime, headCount } = data;
   const queryClient = useQueryClient();
 
   const [rating, setRating] = useState(0);
@@ -53,34 +53,32 @@ export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalPro
       modalClassName={clsx('bg-white !p-7.5 !rounded-3xl', className)}
       buttonClassName='!hidden'
     >
-      <div className='flex flex-col'>
+      <div className='flex flex-col w-[300px] lg:w-[400px]'>
         <div className='flex flex-col gap-1'>
-          <h2 className='text-2xl font-bold'>{activity.title}</h2>
-          <div className='flex items-center gap-0.5 pb-0 lg:pb-2'>
-            {toCardDate(date)} <span className='text-lg px-1'>∙</span> {`${startTime} - ${endTime}`}
+          <div className='w-full flex flex-col items-center gap-1'>
+            <h2 className='text-lg font-bold'>{activity.title}</h2>
+            <div className='flex items-center gap-0.5 pb-0 lg:pb-2 text-gray-500'>
+              {toCardDate(date)} / {`${startTime} - ${endTime} (${headCount}명)`}
+            </div>
+            <Stars initRate={rating} edit={true} onChange={setRating} size='lg' />
           </div>
         </div>
-        <Stars initRate={rating} edit={true} onChange={setRating} />
-        <div>
-          <h3> 소중한 경험을 들려주세요</h3>
+
+        <div className='mt-6 flex flex-col gap-2'>
+          <h3 className='font-bold'> 소중한 경험을 들려주세요</h3>
           <textarea
-            className='w-full h-32 p-2 border rounded-md resize-none'
+            className='w-full h-32 p-2 border border-gray-300 shadow-sm rounded-md resize-none'
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder='체험에서 느낀 경험을 공유해주세요...'
           />
         </div>
 
-        <div className='mt-4'>
-          <Button
-            disabled={isPending || !isFormValid}
-            onClick={handleSubmit}
-            className={`w-full px-4 py-2 rounded-md font-medium transition-colors ${
-              isPending || !isFormValid
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
-            }`}
-          >
+        <div className='mt-4 flex items-center justify-evenly'>
+          <Button variant='ghost' onClick={onClose} className='flex-1'>
+            취소
+          </Button>
+          <Button className='flex-1' disabled={isPending || !isFormValid} onClick={handleSubmit}>
             {isPending ? '등록 중...' : '리뷰 등록'}
           </Button>
         </div>
