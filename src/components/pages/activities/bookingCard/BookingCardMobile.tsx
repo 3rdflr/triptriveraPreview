@@ -19,7 +19,7 @@ export default function BookingCardMobile({
   onDateSelect,
   onTimeSlotSelect,
   onMemberCountChange,
-  onBooking,
+  onClose,
 }: BookingCardProps) {
   const selectedSchedule = selectedDate
     ? filterAvailableScheduleTimes(
@@ -34,18 +34,19 @@ export default function BookingCardMobile({
     if (!selectedDate) return '날짜 선택';
     else if (!selectedScheduleId) return '시간 선택';
     else if (isMobile && !checkSchedule) return '인원 선택';
-    else return '예약하기';
+    else return '확인';
   };
-  const handleBooking = () => {
+  const handleSubmit = () => {
     if (isMobile && !checkSchedule) {
       setCheckSchedule(true);
     } else {
-      onBooking();
+      // 드롭다운 닫기
+      onClose?.();
     }
   };
 
   return (
-    <div className={clsx('bg-white  rounded-3xl p-6 md:p-[30px]', 'flex flex-col gap-6 z-[150]')}>
+    <div className={clsx('bg-white  rounded-3xl p-6 md:p-[30px]', 'flex flex-col gap-6 z-[400]')}>
       {(isTablet || !checkSchedule) && (
         <div className='flex flex-col md:flex-row items-center justify-between gap-6 w-full'>
           <BookingCalendar
@@ -94,7 +95,7 @@ export default function BookingCardMobile({
         className='w-full'
         variant='primary'
         disabled={!selectedScheduleId}
-        onClick={handleBooking}
+        onClick={handleSubmit}
       >
         {buttonText()}
       </Button>

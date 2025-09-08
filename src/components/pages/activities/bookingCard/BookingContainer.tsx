@@ -10,7 +10,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { getAvailableSchedule } from '@/app/api/activities';
 import { Schedule, SchedulesByDate, ScheduleTime } from '@/types/activities.type';
 import { useSchedulesByDate } from '@/hooks/useSchedulesByDate';
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 interface BookingContainerProps {
   activityId: number;
@@ -30,6 +30,7 @@ export interface BookingCardProps {
   onTimeSlotSelect: (scheduleTime: ScheduleTime) => void;
   onMemberCountChange: (count: number) => void;
   onBooking: () => void;
+  onClose?: () => void;
 }
 
 // Error boundary로 래핑된 메인 컴포넌트
@@ -120,6 +121,10 @@ export default function BookingContainer({
     );
   };
 
+  const handleClose = () => {
+    setIsBottomSheetOpen(false);
+  };
+
   const bookingCardProps: BookingCardProps = {
     price,
     totalPrice,
@@ -132,6 +137,7 @@ export default function BookingContainer({
     onTimeSlotSelect: handleTimeSlotSelect,
     onMemberCountChange: handleMemberCountChange,
     onBooking: handleBooking,
+    onClose: handleClose,
   };
   return (
     <ErrorBoundary
@@ -143,8 +149,8 @@ export default function BookingContainer({
       </div>
 
       {/* Mobile/Tablet version */}
-      <div className='block lg:hidden '>
-        <div className='fixed bottom-0 left-0 right-0 z-150 bg-white border-t border-gray-200 shadow-lg'>
+      <div className='block lg:hidden'>
+        <div className='fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg'>
           <div className='flex flex-col w-full px-6 py-4 gap-3'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center gap-2'>
@@ -155,8 +161,8 @@ export default function BookingContainer({
                 onClick={() => setIsBottomSheetOpen(true)}
                 className='text-sm text-primary-500 cursor-pointer font-bold underline'
               >
-                {selectedScheduleTime
-                  ? `${selectedScheduleTime.startTime} - ${selectedScheduleTime.endTime}`
+                {selectedScheduleTime && selectedDate
+                  ? `${format(selectedDate, 'MM월 dd일')} ${selectedScheduleTime.startTime} - ${selectedScheduleTime.endTime}`
                   : '날짜 선택하기'}
               </span>
             </div>
@@ -177,7 +183,8 @@ export default function BookingContainer({
           autoFocus={isBottomSheetOpen}
         >
           <DrawerTitle></DrawerTitle>
-          <DrawerContent>
+          <DrawerDescription></DrawerDescription>
+          <DrawerContent aria-describedby='예약 바텀시트'>
             <BookingCardMobile {...bookingCardProps} />
           </DrawerContent>
         </Drawer>

@@ -331,3 +331,12 @@ input[aria-invalid='true']:focus:-webkit-autofill {
     inset 0 0 0 30px #fde6e7,
     0 0 0 3px rgba(249, 127, 180, 0.3);
 }
+
+/* Drawer z-index override for Naver Maps */
+[data-vaul-drawer] {
+  z-index: 200 !important;
+}
+
+[data-vaul-overlay] {
+  z-index: 199 !important;
+}

@@ -5,7 +5,7 @@ import { getActivityDetail } from '@/app/api/activities';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
 
-import BookingCard from '@/components/pages/activities/bookingCard/BookingContainer';
+import BookingCardContainer from '@/components/pages/activities/bookingCard/BookingContainer';
 
 import ReviewList from '@/components/pages/activities/ReviewList';
 
@@ -108,14 +108,14 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
 
           {/* SideBar */}
           <div className='lg:col-span-1'>
-            <div className='sticky top-30 flex flex-col gap-10'>
+            <div className='sticky top-30 flex flex-col gap-10 z-150'>
               <ActivityInfo
                 className='hidden lg:block'
                 activity={activity}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
               />
-              <BookingCard
+              <BookingCardContainer
                 activityId={activityId}
                 price={activity.price}
                 baseSchedules={activity.schedules}
