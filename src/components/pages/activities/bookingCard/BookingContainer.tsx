@@ -12,7 +12,11 @@ import { Schedule, SchedulesByDate, ScheduleTime } from '@/types/activities.type
 import { useSchedulesByDate } from '@/hooks/useSchedulesByDate';
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { useOverlay } from '@/hooks/useOverlay';
+import BookingConfirmModal from '@/components/pages/activities/bookingCard/BookingConfirm.Modal';
+
 interface BookingContainerProps {
+  title: string;
   activityId: number;
   price: number;
   baseSchedules: Schedule[];
@@ -35,6 +39,7 @@ export interface BookingCardProps {
 
 // Error boundary로 래핑된 메인 컴포넌트
 export default function BookingContainer({
+  title,
   activityId,
   price,
   baseSchedules,
@@ -50,6 +55,8 @@ export default function BookingContainer({
   const [schedulesByDate, setSchedulesByDate] = useState<SchedulesByDate>(initialSchedulesByDate);
   // 모바일 바텀시트 오픈 상태
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const overlay = useOverlay();
+
   // 선택된 날짜의 상세 스케줄 조회
   const {
     data: scheduleByDate,
@@ -89,11 +96,6 @@ export default function BookingContainer({
     setSelectedDate(date);
     // 날짜 변경 시 시간 선택 초기화
     setSelectedScheduleTime(undefined);
-
-    if (date) {
-      const dateStr = format(date, 'yyyy-MM-dd');
-      console.log('📅 [BookingCard] 날짜 선택:', dateStr);
-    }
   };
 
   // 시간 슬롯 선택 핸들러
@@ -111,14 +113,23 @@ export default function BookingContainer({
 
     console.log('🎫 [BookingCard] 예약 요청:', {
       activityId,
-      scheduleId: selectedScheduleTime,
+      selectedScheduleTime,
       memberCount,
       totalPrice: price * memberCount,
     });
-    // TODO: 실제 예약 API 호출
-    alert(
-      `예약이 완료되었습니다!\n총 ${memberCount}명, ${(price * memberCount).toLocaleString()}원`,
-    );
+    // TODO: 실제 예약 모달
+    overlay.open(({ isOpen, close }) => (
+      <BookingConfirmModal
+        isOpen={isOpen}
+        onClose={close}
+        activityId={activityId}
+        selectedDate={selectedDate!}
+        selectedScheduleTime={selectedScheduleTime}
+        memberCount={memberCount}
+        totalPrice={totalPrice}
+        title={title}
+      />
+    ));
   };
 
   const handleClose = () => {
@@ -153,9 +164,9 @@ export default function BookingContainer({
         <div className='fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg'>
           <div className='flex flex-col w-full px-6 py-4 gap-3'>
             <div className='flex justify-between items-center'>
-              <div className='flex items-center gap-2'>
-                <span className='text-sm font-bold'>총 금액</span>
-                <span className='text-lg font-bold'>₩{totalPrice.toLocaleString()}</span>
+              <div className='flex items-center gap-1'>
+                <span className='text-lg font-bold'>W {price.toLocaleString()}</span>
+                <span className='text-gray-500'>/ 1명</span>
               </div>
               <span
                 onClick={() => setIsBottomSheetOpen(true)}

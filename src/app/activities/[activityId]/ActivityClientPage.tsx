@@ -119,6 +119,7 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
                 activityId={activityId}
                 price={activity.price}
                 baseSchedules={activity.schedules}
+                title={activity.title}
               />
             </div>
           </div>
