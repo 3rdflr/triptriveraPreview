@@ -5,7 +5,7 @@ import BookingTimeList from './BookingTimeList';
 import BookingMember from './BookingMember';
 import clsx from 'clsx';
 import { format } from 'date-fns';
-import { filterAvailableScheduleTimes } from '@/utils/schedule.utils';
+import { filterAvailableScheduleTimes } from '@/lib/utils/schedule.utils';
 import { BookingCardProps } from './BookingContainer';
 import { Button } from '@/components/ui/button';
 import { useScreenSize } from '@/hooks/useScreenSize';
