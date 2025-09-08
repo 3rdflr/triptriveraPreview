@@ -28,8 +28,11 @@ export default function NavMobileView() {
   const pathname = usePathname();
 
   const otherPage = pathname !== '/';
-  const showNav = pathname.startsWith('/profile');
   const share = pathname.startsWith('/activities');
+  const withOutNav =
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/signup');
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -49,11 +52,11 @@ export default function NavMobileView() {
     }
   };
 
-  if (showNav) return null;
+  if (withOutNav) return null;
 
   if (otherPage)
     return (
-      <div className='w-full flex justify-between items-center py-4 px-6'>
+      <div className='sticky top-0 left-0 w-full flex justify-between items-center py-4 px-6 z-[100]'>
         <button
           className='w-[40px] h-[40px]  flex items-center justify-center text-title bg-gray-100 rounded-full shadow-lg'
           onClick={() => router.back()}
@@ -85,7 +88,7 @@ export default function NavMobileView() {
   return (
     <>
       {!isSearching ? (
-        <div className='sticky top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-50'>
+        <div className='sticky top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-[110]'>
           <div className='px-10 pt-6'>
             <button
               className='flex items-center justify-center gap-2 min-w-[275px] w-full bg-white h-[55px] rounded-full shadow-lg mb-2'
@@ -101,7 +104,7 @@ export default function NavMobileView() {
         </div>
       ) : (
         <motion.div
-          className='fixed top-0 left-0 w-full h-full bg-grayscale-25 z-70 overflow-y-scroll scrollbar-hide'
+          className='fixed top-0 left-0 w-full h-full bg-grayscale-25 z-[130] overflow-y-scroll scrollbar-hide pb-40'
           initial={{ y: '-100%' }}
           animate={{ y: 0 }}
           exit={{ y: '-100%' }}

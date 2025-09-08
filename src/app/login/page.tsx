@@ -13,6 +13,7 @@ import { AxiosError } from 'axios';
 import { login } from '../api/auth';
 import { getUserInfo } from '../api/user';
 import { errorToast, successToast } from '@/lib/utils/toastUtils';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 type loginFormValues = {
   email: string;
@@ -131,8 +132,11 @@ const Login = () => {
     });
   };
 
+  // 로그인 상태일 때 진입 막음
+  useAuthRedirect();
+
   return (
-    <div className=' m-auto grid place-items-center px-[24px] max-w-[674px]'>
+    <div className=' m-auto grid place-items-center px-[24px] max-w-[674px] mt-15'>
       <Image
         src='/images/logo_large.svg'
         width={150}

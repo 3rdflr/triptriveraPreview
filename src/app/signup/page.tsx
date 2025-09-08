@@ -11,6 +11,7 @@ import { signup } from '../api/user';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import { errorToast, successToast } from '@/lib/utils/toastUtils';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 type FormValues = {
   email: string;
@@ -20,7 +21,6 @@ type FormValues = {
   agree: boolean;
 };
 
-// 로그인 후 페이지 진입에 대해 ...
 const SignUp = () => {
   const router = useRouter();
 
@@ -122,8 +122,11 @@ const SignUp = () => {
     window.location.href = kakaoAuthUrl;
   };
 
+  // 로그인 상태일 때 진입 막음
+  useAuthRedirect();
+
   return (
-    <div className=' m-auto grid place-items-center px-[24px] max-w-[674px]'>
+    <div className='m-auto grid place-items-center px-[24px] max-w-[674px] mt-15'>
       <Image
         src='/images/logo_large.svg'
         width={150}
