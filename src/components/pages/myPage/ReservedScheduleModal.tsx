@@ -22,7 +22,7 @@ import { useOverlay } from '@/hooks/useOverlay';
 import { errorToast, successToast } from '@/lib/utils/toastUtils';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import BottomSheet from '@/components/common/BottomSheet';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ReservedScheduleModalProps {
   activityId: string;
@@ -43,20 +43,18 @@ const ReservedScheduleModal = ({
   const { isDesktop } = useScreenSize();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
+  const [showNoDatatoast, setShowNoDatatoast] = useState(false);
   const { status, setStatus, setActiveSchedule, activeScheduleId, setScheduleList } =
     useScheduleStore();
 
   const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
 
-  const { data: reservedScheduleData, refetch: refetchReservedScheduleData } = useQuery({
+  const { data: reservedScheduleData, isFetched: isReservedScheduleFetched } = useQuery({
     queryKey: ['reserved-schedule', activityId, date],
-    queryFn: () => {
-      if (!activityId || !date) {
-        return Promise.resolve([]);
-      }
-      return getReservedSchedule(Number(activityId), { date });
-    },
-    enabled: !!activityId && !!date,
+    queryFn: () => getReservedSchedule(Number(activityId), { date }),
+    enabled: !!isOpen && !!activityId && !!date,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const {
@@ -133,16 +131,26 @@ const ReservedScheduleModal = ({
   };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (
+      isOpen &&
+      isReservedScheduleFetched &&
+      !showNoDatatoast &&
+      (!reservedScheduleData || reservedScheduleData.length === 0)
+    ) {
+      errorToast.run('확인 가능한 예약 내역이 없습니다.');
+      setShowNoDatatoast(true);
+    }
+  }, [isOpen, isReservedScheduleFetched, reservedScheduleData, showNoDatatoast]);
+
+  useEffect(() => {
+    if (!isOpen) setShowNoDatatoast(false);
 
     // 모달 열릴 때 초기화
     (['pending', 'confirmed', 'declined'] as const).forEach((key) => {
       setScheduleList(key, []);
       setActiveSchedule(key, '');
     });
-
-    refetchReservedScheduleData();
-  }, [isOpen, refetchReservedScheduleData, setScheduleList, setActiveSchedule]);
+  }, [isOpen, setScheduleList, setActiveSchedule]);
 
   useEffect(() => {
     if (!reservedScheduleData || reservedScheduleData.length === 0) return;
@@ -156,6 +164,8 @@ const ReservedScheduleModal = ({
       setActiveSchedule(key, filtered.length > 0 ? String(filtered[0].scheduleId) : '');
     });
   }, [setScheduleList, setActiveSchedule, reservedScheduleData]);
+
+  if (!reservedScheduleData || reservedScheduleData.length === 0) return null;
 
   if (isDesktop)
     return (
