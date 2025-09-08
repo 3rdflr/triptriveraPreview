@@ -1,5 +1,5 @@
 'use client';
-
+import { useState, useEffect } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
@@ -14,6 +14,7 @@ import NaverMap from '@/components/common/naverMaps/NaverMap';
 import Marker from '@/components/common/naverMaps/Marker';
 import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 import { useRouter } from 'next/navigation';
+import { useUserStore } from '@/store/userStore';
 /**
  * ActivityClient 컴포넌트
  * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
@@ -25,6 +26,8 @@ interface ActivityClientProps {
 
 export default function ActivityClient({ activityId }: ActivityClientProps) {
   const router = useRouter();
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const user = useUserStore((state) => state.user);
 
   // 기본 체험 정보 조회 (서버에서 prefetch된 데이터 사용)
   const { data: activity } = useSuspenseQuery({
@@ -58,6 +61,15 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
     router.push(`/my-activities/activity/${activityId}`);
   };
 
+  useEffect(() => {
+    if (user?.id === activity.userId) {
+      // 활동의 소유자인 경우
+      setIsOwner(true);
+    } else {
+      setIsOwner(false);
+    }
+  }, [user, activity]);
+
   return (
     <div className='container mx-auto px-4 py-8 xl:pb-8'>
       <div className='max-w-[1200px] mx-auto'>
@@ -77,6 +89,7 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
                 activity={activity}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                isOwner={isOwner}
               />
               <hr className='border-gray-100 block lg:hidden' />
               <section className='flex flex-col gap-3'>
@@ -108,7 +121,7 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
 
           {/* SideBar */}
           <div className='lg:col-span-1'>
-            <div className='sticky top-30 flex flex-col gap-10 z-150'>
+            <div className='sticky top-30 flex flex-col gap-10 z-105'>
               <ActivityInfo
                 className='hidden lg:block'
                 activity={activity}

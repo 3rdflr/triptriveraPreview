@@ -20,9 +20,16 @@ interface ActivityInfoProps {
   className?: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  isOwner?: boolean;
 }
 
-export default function ActivityInfo({ activity, className, onEdit, onDelete }: ActivityInfoProps) {
+export default function ActivityInfo({
+  activity,
+  className,
+  onEdit,
+  onDelete,
+  isOwner,
+}: ActivityInfoProps) {
   return (
     <div className={twMerge('flex flex-col gap-2 justify-self-start', className)}>
       {/* 카테고리 및 드롭다운 */}
@@ -34,9 +41,13 @@ export default function ActivityInfo({ activity, className, onEdit, onDelete }: 
               <EllipsisVertical className='w-8 h-8' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='center'>
-            <DropdownMenuItem onClick={onEdit}>수정하기</DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete}>삭제하기</DropdownMenuItem>
+          <DropdownMenuContent align='center' className='z-120'>
+            <DropdownMenuItem onClick={onEdit} disabled={!isOwner}>
+              수정하기
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onDelete} disabled={!isOwner}>
+              삭제하기
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

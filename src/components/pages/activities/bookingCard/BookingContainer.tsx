@@ -117,7 +117,6 @@ export default function BookingContainer({
       memberCount,
       totalPrice: price * memberCount,
     });
-    // TODO: 실제 예약 모달
     overlay.open(({ isOpen, close }) => (
       <BookingConfirmModal
         isOpen={isOpen}
@@ -178,11 +177,7 @@ export default function BookingContainer({
               </span>
             </div>
 
-            <Button
-              className=''
-              onClick={() => setIsBottomSheetOpen(true)}
-              disabled={!selectedScheduleTime}
-            >
+            <Button className='' onClick={handleBooking} disabled={!selectedScheduleTime}>
               예약하기
             </Button>
           </div>

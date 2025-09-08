@@ -8,6 +8,8 @@ import { createReservation, ReservationRequest } from '@/app/api/activities';
 import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmActionModal from '@/components/common/ConfirmActionModal';
 import { successToast } from '@/lib/utils/toastUtils';
+import { useRouter } from 'next/navigation';
+import { AxiosError } from 'axios';
 
 interface BookingConfirmModalProps {
   className?: string;
@@ -33,21 +35,52 @@ const BookingConfirmModal = ({
   totalPrice,
 }: BookingConfirmModalProps) => {
   const overlay = useOverlay();
+  const router = useRouter();
+
   const { mutate: makeReservation } = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       activityId,
       reservationData,
     }: {
       activityId: number;
       reservationData: ReservationRequest;
     }) => createReservation(activityId, reservationData),
+
     onSuccess: (data) => {
       console.log('🎫 [BookingConfirmModal] 예약 성공:', data);
       onClose();
       successToast.run('예약이 완료되었습니다!');
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('❗ [BookingConfirmModal] 예약 실패:', error);
+      const axiosError = error as AxiosError<{ message: string }>;
+      console.log('🔍 에러 정보:', {
+        isAxiosError: axiosError?.isAxiosError,
+        status: axiosError?.response?.status,
+        message: axiosError?.message,
+      });
+
+      // 401 Unauthorized 에러인 경우 로그인 페이지로 리다이렉트
+      if (axiosError?.response?.status === 401) {
+        console.log('🚨 예약 실패: 로그인 필요');
+        overlay.open(({ isOpen, close }) => (
+          <ConfirmActionModal
+            isOpen={isOpen}
+            onClose={close}
+            title='로그인이 필요합니다.'
+            actionText='로그인하기'
+            exitText='취소'
+            onAction={() => {
+              close();
+              onClose(); // 예약 모달 닫기
+              router.push('/auth/signin');
+            }}
+          />
+        ));
+        return;
+      }
+
+      // 기타 에러인 경우 재시도 옵션 제공
       overlay.open(({ isOpen, close }) => (
         <ConfirmActionModal
           isOpen={isOpen}
@@ -114,6 +147,7 @@ const BookingConfirmModal = ({
           <Button
             size='md'
             onClick={() => {
+              console.log('🔘 예약 확정 버튼 클릭됨');
               makeReservation({
                 activityId,
                 reservationData: {
