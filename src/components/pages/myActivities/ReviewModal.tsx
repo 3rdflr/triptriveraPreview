@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Modal } from 'react-simplified-package';
 import { successToast, errorToast } from '@/lib/utils/toastUtils';
 import clsx from 'clsx';
+import { useOverlay } from '@/hooks/useOverlay';
+import { AxiosError } from 'axios';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 interface ReviewModalProps {
   data: Reservation;
@@ -19,6 +22,7 @@ interface ReviewModalProps {
 
 export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalProps) {
   const { id: reservationId, activity, date, startTime, endTime, headCount } = data;
+  const overlay = useOverlay();
   const queryClient = useQueryClient();
 
   const [rating, setRating] = useState(0);
@@ -41,8 +45,17 @@ export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalPro
       queryClient.invalidateQueries({ queryKey: ['reservation-list'] });
       onClose();
     },
-    onError: () => {
-      errorToast.run('리뷰 등록에 실패했습니다. 다시 시도해주세요.');
+    onError: (error: unknown) => {
+      console.log('🚨 리뷰 등록 실패', error);
+      const errorMessage = error as AxiosError<{ message: string }>;
+      overlay.open(({ isOpen, close }) => (
+        <ConfirmModal
+          title={errorMessage?.response?.data?.message || '리뷰 등록에 실패'}
+          isOpen={isOpen}
+          onClose={close}
+          onAction={close}
+        />
+      ));
     },
   });
 
