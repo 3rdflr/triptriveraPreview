@@ -29,7 +29,7 @@ export default function SearchResult({
 
   return (
     <>
-      <div className='grid grid-cols-1 xl:grid-cols-[4fr_3fr] h-auto text-white'>
+      <div className='grid grid-cols-1 lg:grid-cols-[4fr_3fr] h-auto text-white'>
         {isDesktop ? (
           <>
             <div className=''>
@@ -37,7 +37,7 @@ export default function SearchResult({
             </div>
 
             {/* 우측: 스크롤 고정 */}
-            <div className='h-screen sticky top-0'>
+            <div className='h-[80vh] sticky top-0 p-5'>
               <NaverMap address={initAddress} height='100%' zoom={11}>
                 {allActivities.map((activity, index) => (
                   <Marker

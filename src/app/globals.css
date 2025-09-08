@@ -101,6 +101,36 @@
   --badge-blue-dark: #0085ff;
   --badge-green-light: #e1f9dd;
   --badge-green-dark: #37ae00;
+
+  --visible-items: 1;
+}
+
+@media (min-width: 768px) {
+  /* md */
+  :root {
+    --visible-items: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* lg */
+  :root {
+    --visible-items: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  /* xl */
+  :root {
+    --visible-items: 4;
+  }
+}
+
+@media (min-width: 1536px) {
+  /* 2xl */
+  :root {
+    --visible-items: 5;
+  }
 }
 
 @theme inline {
@@ -204,6 +234,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+@theme {
+  --color-card-border: #dddddd;
 }
 
 .dark {
