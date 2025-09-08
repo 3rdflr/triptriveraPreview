@@ -19,7 +19,7 @@ import { useState } from 'react';
 interface MyExperienceCardProps {
   data: Reservation;
   onCancel: (id: number) => void;
-  onReview: (data: number) => void;
+  onReview: (reservation: Reservation) => void;
 }
 
 const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps) => {
@@ -65,7 +65,7 @@ const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps
               </CardContent>
               <CardFooter className='gap-2 hidden lg:flex lg:px-0 pb-0'>
                 {status === 'completed' && (
-                  <Button size='xs' onClick={() => onReview(id)}>
+                  <Button size='xs' onClick={() => onReview(data)}>
                     후기 작성
                   </Button>
                 )}
