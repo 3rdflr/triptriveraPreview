@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { SchedulesByDate, Schedule, ScheduleTime } from '@/types/activities.type';
-
+import { format } from 'date-fns';
 /**
  * Schedule[]을 SchedulesByDate 형태로 변환하는 훅
  * 날짜별로 그룹화하여 O(1) 조회 성능 제공
@@ -42,7 +42,7 @@ export function getScheduleSlots(
 ): ScheduleTime[] {
   if (!date) return [];
 
-  const dateKey = typeof date === 'string' ? date : date.toISOString().split('T')[0]; // YYYY-MM-DD 형태로 변환
+  const dateKey = typeof date === 'string' ? date : format(date, 'yyyy-MM-dd'); // YYYY-MM-DD 형태로 변환
 
   return schedulesByDate[dateKey] || [];
 }

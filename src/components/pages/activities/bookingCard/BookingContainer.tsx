@@ -164,7 +164,7 @@ export default function BookingContainer({
           <div className='flex flex-col w-full px-6 py-4 gap-3'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center gap-1'>
-                <span className='text-lg font-bold'>W {price.toLocaleString()}</span>
+                <span className='text-lg font-bold'>₩{price.toLocaleString()}</span>
                 <span className='text-gray-500'>/ 1명</span>
               </div>
               <span

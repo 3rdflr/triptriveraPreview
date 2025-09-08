@@ -73,7 +73,7 @@ const BookingConfirmModal = ({
             onAction={() => {
               close();
               onClose(); // 예약 모달 닫기
-              router.push('/auth/signin');
+              router.push('/login');
             }}
           />
         ));

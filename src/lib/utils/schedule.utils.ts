@@ -1,4 +1,4 @@
-import { isToday } from 'date-fns';
+import { isToday, isAfter, parse } from 'date-fns';
 import { ScheduleTime } from '@/types/activities.type';
 
 /**
@@ -20,9 +20,7 @@ export function filterAvailableScheduleTimes(
   // 오늘 날짜면 현재 시간 이후의 시간만 필터링
   const now = new Date();
   return schedules.filter((schedule) => {
-    const [hours, minutes] = schedule.startTime.split(':').map(Number);
-    const scheduleTime = new Date();
-    scheduleTime.setHours(hours, minutes, 0, 0);
-    return scheduleTime > now;
+    const scheduleTime = parse(schedule.startTime, 'HH:mm', now);
+    return isAfter(scheduleTime, now);
   });
 }
