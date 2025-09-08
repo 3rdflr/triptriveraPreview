@@ -87,8 +87,8 @@ export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalPro
           />
         </div>
 
-        <div className='mt-4 flex items-center justify-evenly'>
-          <Button variant='ghost' onClick={onClose} className='flex-1'>
+        <div className='mt-4 flex items-center justify-evenly gap-3'>
+          <Button variant='secondary' onClick={onClose} className='flex-1'>
             취소
           </Button>
           <Button className='flex-1' disabled={isPending || !isFormValid} onClick={handleSubmit}>
