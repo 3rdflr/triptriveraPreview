@@ -1,4 +1,4 @@
-import { ReservationStatus } from './activities.type';
+import { ReservationStatus } from '@/types/activities.type';
 
 export interface ReservationActivity {
   bannerImageUrl: string;
@@ -70,4 +70,89 @@ export interface MyReservationCreateResponse {
   activityId: number;
   teamId: string;
   id: number;
+}
+
+export interface ReservationBoardParams {
+  year: string;
+  month: string;
+}
+
+export interface ReservationCounts {
+  completed: number;
+  confirmed: number;
+  pending: number;
+}
+
+export interface ReservationByDate {
+  date: string;
+  reservations: ReservationCounts;
+}
+
+export type ReservationBoardResponse = ReservationByDate[];
+
+export interface ReservedCounts {
+  declined: number;
+  confirmed: number;
+  pending: number;
+}
+
+export interface ReservationSchedule {
+  scheduleId: number;
+  startTime: string;
+  endTime: string;
+  count: ReservedCounts;
+}
+
+export type ReservationScheduleResponse = ReservationSchedule[];
+
+export interface ReservationScheduleParams {
+  date: string;
+}
+
+export interface ReservedSchedule {
+  scheduleId: number;
+  startTime: string;
+  endTime: string;
+  count: ReservedCounts;
+}
+
+export interface ReservedReservation {
+  id: number;
+  nickname: string;
+  userId: number;
+  teamId: string;
+  activityId: number;
+  scheduleId: number;
+  status: ReservationStatus;
+  reviewSubmitted: boolean;
+  totalPrice: number;
+  headCount: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ReservationListStatus = Exclude<ReservationStatus, 'canceled' | 'completed'>;
+export interface ReservationListParams {
+  cursorId?: number;
+  size?: number;
+  scheduleId: number;
+  status: ReservationListStatus;
+}
+
+export interface ReservationListResponse {
+  cursorId: number;
+  totalCount: number;
+  reservations: ReservedReservation[];
+}
+
+export type UpdateReservedScheduleStatus = Exclude<
+  ReservationStatus,
+  'pending' | 'canceled' | 'completed'
+>;
+
+export interface UpdateReservedScheduleBody {
+  status: UpdateReservedScheduleStatus;
 }

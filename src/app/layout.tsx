@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { pretendard } from '@/lib/fonts';
-import { OverlayProvider } from '@/components/common/OverlayProvider';
+import { OverlayProvider } from '@/providers/OverlayProvider';
 import ToastProvider from '@/components/common/ToastProvider';
 import QueryProvider from '@/providers/QueryProvider';
 import BottomNav from '@/components/home/BottomNav';

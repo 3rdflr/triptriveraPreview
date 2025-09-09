@@ -1,0 +1,105 @@
+/* 이웃 달 날짜 색상 제거 */
+.rbc-month-view__days__day--neighboringMonth {
+  color: inherit !important; /* 부모 기본 색상 사용 */
+  opacity: 1 !important; /* 회색 투명 제거 */
+}
+
+/* 주말 기본 색상 */
+.rbc-month-view__days__day--weekend {
+  color: inherit !important;
+}
+
+/* 전체 배경 및 오프 레인지 배경 제거 */
+.rbc-day-bg,
+.rbc-off-range-bg {
+  background-color: transparent !important;
+}
+
+/* 월/일/주 view 세로선 제거 */
+.rbc-day-bg,
+.rbc-time-slot,
+.rbc-month-view .rbc-row-bg {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* 전체 달력 내부 테두리 제거 */
+.rbc-month-view,
+.rbc-time-view {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
+/* 날짜 텍스트 중앙 정렬 */
+.rbc-date-cell,
+.rbc-time-view .rbc-day-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.rbc-date-cell {
+  padding-top: 12px; /* 원하는 값으로 변경 가능 */
+  font-size: 12px;
+}
+
+/* 화면이 744px 이상일 때 */
+@media (min-width: 744px) {
+  .rbc-date-cell {
+    font-size: 16px;
+  }
+}
+
+/* 요일 위 가로선 제거 */
+.rbc-header-row {
+  border-bottom: none !important; /* 기존 월 뷰 헤더 아래 border 제거 */
+}
+
+/* 요일 영역 텍스트 중앙 정렬 및 가로선 조정 */
+.rbc-header {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: none !important; /* 요일 위 가로선 삭제 */
+  border-bottom: 1px solid #e0e0e0 !important; /* 요일 아래 가로선 추가 */
+  padding-bottom: 8px;
+}
+
+/* 요일 영역 세로선 제거 */
+.rbc-header + .rbc-header {
+  border-left: none !important;
+}
+
+/* header 밑 첫 번째 날짜 행만 제외 */
+.rbc-month-view .rbc-month-row:first-of-type {
+  border-top: none !important;
+}
+
+/* 나머지 날짜 행 위쪽 border 적용 */
+.rbc-month-view .rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #edeef2;
+}
+
+.rbc-month-view {
+  border: none;
+}
+
+.custom-toolbar {
+  flex-wrap: nowrap;
+}
+
+.rbc-event {
+  background: none;
+  color: unset !important;
+}
+
+.rbc-event-content {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
+  height: 100%;
+}

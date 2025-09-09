@@ -9,10 +9,10 @@ interface OverlayContextValue {
 export const OverlayContext = createContext<OverlayContextValue | null>(null);
 
 export const OverlayProvider = ({ children }: { children: ReactNode }) => {
-  const [overlayId, setOverlayId] = useState<Map<string, ReactNode>>(new Map());
+  const [overlayIds, setOverlayIds] = useState<Map<string, ReactNode>>(new Map());
 
   const mount = useCallback((id: string, element: ReactNode) => {
-    setOverlayId((overlayId) => {
+    setOverlayIds((overlayId) => {
       const copy = new Map(overlayId);
       copy.set(id, element);
       return copy;
@@ -20,7 +20,7 @@ export const OverlayProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const unmount = useCallback((id: string) => {
-    setOverlayId((overlayId) => {
+    setOverlayIds((overlayId) => {
       const copy = new Map(overlayId);
       copy.delete(id);
       return copy;
@@ -30,7 +30,7 @@ export const OverlayProvider = ({ children }: { children: ReactNode }) => {
   return (
     <OverlayContext.Provider value={{ mount, unmount }}>
       {children}
-      {[...overlayId.entries()].map(([id, element]) => (
+      {[...overlayIds.entries()].map(([id, element]) => (
         <React.Fragment key={id}>{element}</React.Fragment>
       ))}
     </OverlayContext.Provider>
