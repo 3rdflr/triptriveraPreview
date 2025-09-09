@@ -27,7 +27,7 @@ export default function NavMobileView() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const otherPage = pathname !== '/';
+  const isNavPage = pathname === '/' || pathname === '/recent';
   const share = pathname.startsWith('/activities');
   const withOutNav =
     pathname.startsWith('/profile') ||
@@ -54,9 +54,9 @@ export default function NavMobileView() {
 
   if (withOutNav) return null;
 
-  if (otherPage)
+  if (!isNavPage)
     return (
-      <div className='sticky top-0 left-0 w-full flex justify-between items-center py-4 px-6 z-[100]'>
+      <div className='sticky top-0 left-0 w-full flex justify-between items-center py-4 px-6 z-[100] '>
         <button
           className='w-[40px] h-[40px]  flex items-center justify-center text-title bg-gray-100 rounded-full shadow-lg'
           onClick={() => router.back()}
@@ -88,7 +88,7 @@ export default function NavMobileView() {
   return (
     <>
       {!isSearching ? (
-        <div className='sticky top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-[110]'>
+        <div className='sticky top-0 left-0 w-full border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 z-[110] shadow-md'>
           <div className='px-10 pt-6'>
             <button
               className='flex items-center justify-center gap-2 min-w-[275px] w-full bg-white h-[55px] rounded-full shadow-lg mb-2'
@@ -111,7 +111,13 @@ export default function NavMobileView() {
           transition={{ ease: [0.25, 0.8, 0.25, 1], duration: 0.6 }}
         >
           <Link href='/' className='flex items-center justify-center gap-2 py-9'>
-            <Image src='/images/icons/logo.svg' alt='기본로고' width={146} height={55} />
+            <Image
+              src='/images/icons/logo.svg'
+              alt='기본로고'
+              width={146}
+              height={55}
+              className='w-[146px] h-auto'
+            />
           </Link>
           <button
             className='w-[40px] h-[40px] rounded-full bg-white shadow-lg flex items-center justify-center absolute top-9 right-4 z-50'

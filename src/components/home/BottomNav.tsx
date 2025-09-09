@@ -116,14 +116,18 @@ export default function BottomNav() {
               } flex flex-col items-center justify-center gap-1`}
               href='/mypage'
             >
-              <Image
-                src={
-                  user.profileImageUrl ? user.profileImageUrl : '/images/icons/default_profile.svg'
-                }
-                alt='Profile'
-                width={20}
-                height={20}
-              />
+              <div className='w-[30px] h-[30px] rounded-full overflow-hidden'>
+                <Image
+                  src={
+                    user.profileImageUrl
+                      ? user.profileImageUrl
+                      : '/images/icons/default_profile.svg'
+                  }
+                  alt='Profile'
+                  width={20}
+                  height={20}
+                />
+              </div>
               <span>프로필</span>
             </Link>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

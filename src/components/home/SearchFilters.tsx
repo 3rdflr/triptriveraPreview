@@ -152,12 +152,12 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
   }, [openedSection, hoverSection, width]);
 
   useEffect(() => {
-    const unsubWidth = rawWidth.onChange((v) => {
+    const unsubWidth = rawWidth.on('change', (v) => {
       // 검색 중이면 width, hight 고정, 그 외엔 scrollY 따라감
       animate(width, isSearching ? 814 : v, { type: 'spring', stiffness: 300, damping: 35 });
     });
 
-    const unsubHeight = rawHeight.onChange((v) => {
+    const unsubHeight = rawHeight.on('change', (v) => {
       animate(height, isSearching ? 64 : v, { type: 'spring', stiffness: 300, damping: 35 });
     });
 
@@ -183,7 +183,7 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
 
   // shrink 판단
   useEffect(() => {
-    const unsub = height.onChange((h) => setIsShrunk(h < 50));
+    const unsub = height.on('change', (h) => setIsShrunk(h < 50));
     setIsShrunk(height.get() < 50);
     return () => unsub();
   }, [height]);

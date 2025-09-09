@@ -37,7 +37,7 @@ export default function SearchResult({
             </div>
 
             {/* 우측: 스크롤 고정 */}
-            <div className='h-[80vh] sticky top-0 p-5'>
+            <div className='h-[80vh] sticky top-35 px-5 py-6'>
               <NaverMap address={initAddress} height='100%' zoom={11}>
                 {allActivities.map((activity, index) => (
                   <Marker

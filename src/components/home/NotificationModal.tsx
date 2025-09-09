@@ -14,7 +14,7 @@ export default function NotificationModal() {
 
   return (
     <>
-      <div className='lg:h-[380px] h-full overflow-y-scroll'>
+      <div className='lg:h-[380px] h-full overflow-y-scroll scrollbar-hide'>
         {isLoading ? (
           <div className='h-full flex items-center justify-center w-full'>
             <Spinner />
@@ -25,15 +25,15 @@ export default function NotificationModal() {
           </div>
         ) : notificationData?.totalCount && notificationData?.totalCount > 0 ? (
           <>
-            <h2 className='text-15-medium font-semibold text-title  mb-[48px]'>
+            <h2 className='text-16-medium font-semibold text-title  mb-[48px]'>
               {notificationData?.totalCount}개의 알림
             </h2>
-            <ul className='flex flex-col gap-[24px]'>
+            <ul className='flex flex-col gap-[24px] scrollbar-hide'>
               {notificationData?.notifications?.map(
                 ({ id, content, createdAt }: NotificationItem) => (
                   <li
                     key={id}
-                    className='flex flex-col gap-[12px] pb-[24px] relative border-b last:border-b-0 border-grayscale-100 '
+                    className='flex flex-col gap-[12px] relative bg-grayscale-25 p-5 rounded-2xl'
                   >
                     <div
                       className={`${content.includes('승인') ? 'bg-blue-100 text-blue-200 ' : 'bg-red-100 text-red-300 '} flex items-center justify-center rounded-full px-[10px] py-[6px] w-fit h-fit`}
@@ -49,7 +49,7 @@ export default function NotificationModal() {
                       </span>
                     </div>
                     <button
-                      className='absolute top-[-8px] right-0 cursor-pointer '
+                      className='absolute top-5 right-5 cursor-pointer '
                       onClick={() => handleDeleteNotification(id)}
                     >
                       <X />

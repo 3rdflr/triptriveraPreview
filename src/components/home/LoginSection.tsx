@@ -48,7 +48,7 @@ export default function LoginSection() {
             </div>
           </Dropdown.Trigger>
           <Dropdown.Menu
-            className='w-36 bg-white rounded-xl shadow-lg py-2 border-b border-gray-200'
+            className='bg-white rounded-xl shadow-lg py-2 border-b border-gray-200'
             style={{
               width: '146px',
               borderRadius: '15px',

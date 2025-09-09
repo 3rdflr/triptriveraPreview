@@ -46,9 +46,15 @@ export default function ActivityList({
             alt='빈 체험 로고'
             width={234}
             height={337}
-            className='animate-bounce'
+            className='animate-bounce w-[234px] h-auto'
           />
-          <Image src={'/images/icons/Logo_bottom.svg'} alt='빈 체험 로고' width={45} height={16} />
+          <Image
+            src={'/images/icons/Logo_bottom.svg'}
+            alt='빈 체험 로고'
+            width={45}
+            height={16}
+            className='w-[45px] h-auto'
+          />
         </div>
         <span className='text-18-regular text-grayscale-300'>존재하는 체험이 없어요!</span>
       </div>

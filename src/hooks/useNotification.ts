@@ -1,7 +1,7 @@
 // hooks/useNotifications.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, deleteNotification } from '@/app/api/notifications';
-import { Notification } from '@/types/notification.type';
+import { NotificationItem } from '@/types/notification.type';
 
 // 알림 조회 훅
 export const useNotifications = () => {
@@ -14,35 +14,40 @@ export const useNotifications = () => {
 };
 
 // 알림 삭제 훅
+
 export const useDeleteNotification = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => deleteNotification(id),
-    onMutate: async (notificationId) => {
+
+    // 낙관적 업데이트
+    onMutate: async (deletedId: number) => {
       await queryClient.cancelQueries({ queryKey: ['notifications'] });
 
-      const previousData = queryClient.getQueryData(['notifications']);
+      const previousData = queryClient.getQueryData<{
+        totalCount: number;
+        notifications: NotificationItem[];
+      }>(['notifications']);
 
-      queryClient.setQueryData(['notifications'], (oldData: Notification | undefined) => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          notifications: oldData.notifications.filter(
-            (notification) => notification.id !== notificationId,
-          ),
-          totalCount: oldData.totalCount - 1,
-        };
-      });
+      if (previousData) {
+        queryClient.setQueryData(['notifications'], {
+          ...previousData,
+          notifications: previousData.notifications.filter((n) => n.id !== deletedId),
+          totalCount: previousData.totalCount - 1,
+        });
+      }
+
       return { previousData };
     },
-    onError: (error, notificationId, context) => {
+
+    onError: (_err, _variables, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(['notifications'], context.previousData);
       }
     },
-    // **수정된 부분: onSettled 대신 onSuccess를 사용합니다.**
-    onSuccess: () => {
+
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });

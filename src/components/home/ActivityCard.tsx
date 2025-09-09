@@ -6,6 +6,7 @@ import { FaStar as StarIcon } from 'react-icons/fa';
 import { BASE_IMG_URL } from '@/components/home/Constants';
 import { Activity } from '@/types/activities.type';
 import { useRecentViewedStore } from '@/store/recentlyWatched';
+import { successToast } from '@/lib/utils/toastUtils';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import ActivityLike from './ActivityLike';
@@ -26,7 +27,6 @@ export default function ActivityCard({
 
   const bannerImg = isError ? BASE_IMG_URL : activity.bannerImageUrl;
 
-  // 접근성 고려를 위해 이미지 클릭시 링크이동 or article 자체를 클릭시 이동 가능하게 할지 고려
   return (
     <article>
       {/* 이미지 영역 */}
@@ -65,7 +65,10 @@ export default function ActivityCard({
           <button
             className='absolute top-[12px] right-[16px] w-[28px] h-[28px]
             flex justify-center items-center cursor-pointer bg-grayscale-25 rounded-full z-10 shadow-md'
-            onClick={() => removeViewed(activity.id)}
+            onClick={() => {
+              removeViewed(activity.id);
+              successToast.run('삭제가 완료 되었습니다.');
+            }}
           >
             <X strokeWidth={2} size={18} />
           </button>

@@ -37,8 +37,7 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
     staleTime: 5 * 60 * 1000, // 5분 캐시 (기본 정보)
     gcTime: 30 * 60 * 1000, // 30분 메모리 보관
   });
-
-
+  
   // activity로드 후 최근 본 목록에 추가
   const addViewed = useRecentViewedStore((s) => s.addViewed);
 
