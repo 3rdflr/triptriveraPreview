@@ -27,9 +27,9 @@ const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => 
 
   return (
     <Card className='shadow-xl'>
-      <div className='flex items-start justify-between'>
+      <div className='flex items-start justify-between gap-4'>
         {/* 체험 내용 */}
-        <div>
+        <div className='flex-1 min-w-0 flex flex-col gap-2'>
           <CardHeader>
             <CardTitle>{title}</CardTitle>
             <CardDescription>
@@ -58,8 +58,8 @@ const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => 
         </div>
 
         {/* 체험 이미지 */}
-        <div className='px-6 lg:px-7.5 pt-9'>
-          <div className='relative px-7.5 lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] box-border'>
+        <div className='pt-9 mr-6 lg:mr-7.5 flex-shrink-0'>
+          <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] flex-shrink-0'>
             <Image
               src={image}
               alt='체험 관리 썸네일'

@@ -13,11 +13,13 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   const sideMenuClass = mypageMain ? 'xs:block sm:hidden' : 'hidden md:block';
 
   return (
-    <div className='flex justify-center max-w-[375px] md:max-w-[684px] lg:max-w-[980px] mx-auto py-7.5 gap-7.5 lg:gap-12.5'>
+    <div className='flex justify-center px-6 lg:px-0 md:max-w-[684px] lg:max-w-[980px] mx-auto py-7.5 gap-7.5 lg:gap-12.5'>
       <div className={sideMenuClass}>
         <SideMenu />
       </div>
-      <div className={mypageMain ? 'hidden md:flex-1' : 'flex-1'}>{children}</div>
+      <div className={`pt-2.5 ${mypageMain ? 'hidden md:flex-1 min-w-0' : 'flex-1 min-w-0'}`}>
+        {children}
+      </div>
     </div>
   );
 };
