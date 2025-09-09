@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-// import { getActivityReviews } from '@/app/api/activities';
-import { getMockReviews } from '@/mocks/reviews.mock';
+import { getActivityReviews } from '@/app/api/activities';
 import { useMemo } from 'react';
 
 /**
@@ -28,15 +27,10 @@ export function useInfiniteReviews(activityId: string, pageSize: number = 10) {
         console.log('📡 API 요청:', { activityId, pageParam, pageSize });
       }
 
-      // 기존 API 호출을 주석 처리하고 mock 데이터 사용
-      // const result = await getActivityReviews(Number(activityId), {
-      //   page: Number(pageParam),
-      //   size: pageSize,
-      // });
-
-      // Mock 데이터 사용 (개발/테스트용) - 지연 시간 추가
-      await new Promise((resolve) => setTimeout(resolve, 800)); // 800ms 지연
-      const result = getMockReviews(Number(activityId), Number(pageParam), pageSize);
+      const result = await getActivityReviews(Number(activityId), {
+        page: Number(pageParam),
+        size: pageSize,
+      });
 
       const totalPages = Math.ceil(result.totalCount / pageSize);
       const hasMore = Number(pageParam) < totalPages;
