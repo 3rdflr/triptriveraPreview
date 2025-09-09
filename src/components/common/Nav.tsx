@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { CATEGORY_H, SEARCH_H, GAP } from '../home/Constants';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -61,9 +60,21 @@ export default function Nav() {
         <div className='flex items-center justify-between px-10 h-[79px]'>
           <Link href='/' className={`${isSearching ? 'z-[100]' : 'z-[120]'}`}>
             {isTablet ? (
-              <Image src='/images/icons/small_logo.svg' alt='Logo' width={40} height={40} />
+              <Image
+                src='/images/icons/small_logo.svg'
+                alt='Logo'
+                width={40}
+                height={40}
+                style={{ width: '100%', height: 'auto' }}
+              />
             ) : (
-              <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
+              <Image
+                src='/images/icons/logo.svg'
+                alt='Logo'
+                width={105}
+                height={26}
+                style={{ width: '100%', height: 'auto' }}
+              />
             )}
           </Link>
 
@@ -110,7 +121,7 @@ export default function Nav() {
       </motion.div>
 
       {/* Spacer to prevent content overlap */}
-      <div style={{ height: isLanding ? CATEGORY_H + SEARCH_H + GAP : 64 }} />
+      <div style={{ height: isLanding ? 165 : 64 }} />
     </>
   );
 }
