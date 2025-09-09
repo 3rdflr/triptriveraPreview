@@ -67,17 +67,11 @@ async function handleRequest(method: string, req: Request, path: string[]) {
 
     // 2. GET 요청이 아닐 경우 요청 본문을 파싱
     let body = undefined;
-    if (method !== 'GET' && method !== 'DELETE') {
+    if (method !== 'GET') {
       const contentType = req.headers.get('content-type') || '';
       body = contentType.includes('multipart/form-data')
         ? Buffer.from(await req.arrayBuffer())
         : await req.text();
-    }
-
-    // DELETE 요청 시 body 로그 확인
-    if (method === 'DELETE') {
-      const deleteBody = await req.text();
-      console.log('DELETE request body:', deleteBody);
     }
 
     const backendUrl = new URL(`${BACKEND_URL}/${pathString}`);
