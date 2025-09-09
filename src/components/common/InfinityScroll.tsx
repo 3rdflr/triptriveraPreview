@@ -153,7 +153,7 @@ function InfinityScrollRoot<T>({
     <InfinityScrollContext.Provider value={contextValue}>
       <div
         ref={parentRef}
-        className={cn('infinity-scroll-container w-full border-1 border-amber-300', className)}
+        className={cn('infinity-scroll-container w-full', className)}
         style={{
           height: `${height}px`,
           overflow: 'auto',
@@ -165,7 +165,6 @@ function InfinityScrollRoot<T>({
             width: '100%',
             position: 'relative',
           }}
-          className='infinity-scroll border-2 border-amber-700'
         >
           {children}
         </div>
@@ -240,7 +239,15 @@ function InfinityScrollEmpty({ children, className }: InfinityScrollEmptyProps) 
   const { displayItems, isLoading } = useInfinityScrollContext();
   if (isLoading || displayItems.length > 0) return null;
   return (
-    <div className={cn('absolute inset-0 flex items-center justify-center bg-amber-50', className)}>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+      }}
+      className={cn('flex items-center justify-center ', className)}
+    >
       {children}
     </div>
   );
