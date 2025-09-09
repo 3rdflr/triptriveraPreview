@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
+import { useRecentViewedStore } from '@/store/recentlyWatched';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
 
@@ -36,6 +37,17 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
     staleTime: 5 * 60 * 1000, // 5분 캐시 (기본 정보)
     gcTime: 30 * 60 * 1000, // 30분 메모리 보관
   });
+
+
+  // activity로드 후 최근 본 목록에 추가
+  const addViewed = useRecentViewedStore((s) => s.addViewed);
+
+  useEffect(() => {
+    if (activity) {
+      addViewed(activity);
+      console.log('👀 최근 본 목록에 추가됨', activity.title);
+    }
+  }, [activity, addViewed]);
 
   // // 실시간 가격 정보 (30초마다 자동 갱신)
   // const { data: realtimePrice } = useQuery({

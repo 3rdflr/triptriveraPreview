@@ -5,18 +5,24 @@ import { useRouter } from 'next/navigation';
 import { FaStar as StarIcon } from 'react-icons/fa';
 import { BASE_IMG_URL } from '@/components/home/Constants';
 import { Activity } from '@/types/activities.type';
+import { useRecentViewedStore } from '@/store/recentlyWatched';
+import { X } from 'lucide-react';
 import Image from 'next/image';
 import ActivityLike from './ActivityLike';
 
 export default function ActivityCard({
   activity,
   userId,
+  isDelete,
 }: {
   activity: Activity;
   userId?: number;
+  isDelete?: boolean;
 }) {
   const router = useRouter();
   const [isError, setIsError] = useState(false);
+
+  const removeViewed = useRecentViewedStore((s) => s.removeViewed);
 
   const bannerImg = isError ? BASE_IMG_URL : activity.bannerImageUrl;
 
@@ -26,19 +32,17 @@ export default function ActivityCard({
       {/* 이미지 영역 */}
       <div className='relative'>
         {/* 배너 이미지 (에러 시 기본 이미지 fallback) */}
-        <div className='w-full aspect-square rounded-[20px] overflow-hidden bg-grayscale-25'>
+        <div className='relative w-full aspect-square rounded-[20px] overflow-hidden bg-grayscale-25'>
           <Image
             src={bannerImg}
             alt={activity.title}
-            width={375}
-            height={375}
-            className='cursor-pointer hover:scale-105 transition-soft duration-500 w-full aspect-square object-cover'
+            fill
+            priority
+            sizes={'375'}
+            className='object-cover cursor-pointer hover:scale-105 transition-soft duration-500'
             onClick={() => router.push(`/activities/${activity.id}`)}
-            onError={() => {
-              setIsError(true);
-            }}
+            onError={() => setIsError(true)}
             blurDataURL={BASE_IMG_URL}
-            loading='lazy'
           />
         </div>
         {/* 평점 배지 */}
@@ -57,6 +61,15 @@ export default function ActivityCard({
 
         {/* 좋아요 버튼 (로그인 사용자만 표시) */}
         {userId && <ActivityLike activity={activity} userId={userId} />}
+        {isDelete && (
+          <button
+            className='absolute top-[12px] right-[16px] w-[28px] h-[28px]
+            flex justify-center items-center cursor-pointer bg-grayscale-25 rounded-full z-10 shadow-md'
+            onClick={() => removeViewed(activity.id)}
+          >
+            <X strokeWidth={2} size={18} />
+          </button>
+        )}
       </div>
       {/* 카드 텍스트 영역 */}
       <div className='p-[8px] gap-[6px] flex flex-col'>

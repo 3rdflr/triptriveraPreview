@@ -133,10 +133,17 @@ export interface AvailableScheduleRequest {
 export const getActivitiesList = async (
   params: ActivitiesListRequest,
 ): Promise<ActivitiesListResponse> => {
-  const response = await axiosInstance.get('/activities', { params });
-  return response.data;
+  try {
+    const response = await axiosInstance.get('/activities', { params });
+    return response.data;
+  } catch {
+    return {
+      activities: [],
+      totalCount: 0,
+      cursorId: 0,
+    };
+  }
 };
-
 /**
  * 체험 등록
  */
