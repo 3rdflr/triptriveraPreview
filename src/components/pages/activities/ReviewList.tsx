@@ -32,9 +32,8 @@ export default function ReviewList({ activityId }: ReviewListProps) {
       >
         {/* 초기 로딩 스켈레톤 */}
         <InfinityScroll.Skeleton count={3}>
-          <div className='animate-pulse bg-white rounded-lg p-4 shadow-sm mx-4'>
+          <div className='animate-pulse bg-white rounded-3xl p-4 shadow-sm mx-4'>
             <div className='flex items-center space-x-4 mb-3'>
-              <div className='rounded-full bg-gray-200 h-10 w-10'></div>
               <div className='flex-1 space-y-2'>
                 <div className='h-4 bg-gray-200 rounded w-1/4'></div>
                 <div className='h-3 bg-gray-200 rounded w-20'></div>

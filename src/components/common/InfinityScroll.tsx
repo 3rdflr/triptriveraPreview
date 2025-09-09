@@ -4,6 +4,7 @@ import React, { useEffect, useState, createContext, useContext, useRef } from 'r
 import { useVirtualizer, VirtualItem, Virtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils/shadCnUtils';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { motion } from 'motion/react';
 
 // 타입 정의
 interface InfinityScrollProps<T> {
@@ -226,7 +227,13 @@ function InfinityScrollContents<T>({
               paddingBottom: `${itemGap}px`,
             }}
           >
-            {children(displayItems[virtualItem.index], virtualItem.index)}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {children(displayItems[virtualItem.index], virtualItem.index)}
+            </motion.div>
           </div>
         );
       })}
