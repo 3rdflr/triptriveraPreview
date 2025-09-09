@@ -28,7 +28,7 @@ export default function NotificationModal() {
             <h2 className='text-16-medium font-semibold text-title  mb-[48px]'>
               {notificationData?.totalCount}개의 알림
             </h2>
-            <ul className='flex flex-col gap-[24px]'>
+            <ul className='flex flex-col gap-[24px] scrollbar-hide'>
               {notificationData?.notifications?.map(
                 ({ id, content, createdAt }: NotificationItem) => (
                   <li
