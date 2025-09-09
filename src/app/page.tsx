@@ -31,7 +31,7 @@ export default async function Home({
   // SSR 초기 데이터 로딩
   const activitiesData = await getActivitiesList({
     method: 'cursor',
-    size: 28,
+    size: 21,
     ...(category && { category }),
     ...(keyword && { keyword }),
   });
