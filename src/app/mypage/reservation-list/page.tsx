@@ -166,12 +166,12 @@ const ReservationListPage = () => {
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
       <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>
-        <div className='flex flex-col gap-2.5'>
+        <div className='flex flex-col gap-2.5 flex-1 min-w-0 max-w-full'>
           <Label className='text-[18px] font-bold'>예약내역</Label>
           <span className='text-14-medium text-grayscale-500'>
             예약내역을 변경 및 취소할 수 있습니다.
           </span>
-          <div className='flex pt-3.5 gap-2'>
+          <div className='flex pt-3.5 gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide'>
             {!(isFirstLoad && !data?.reservations?.length) &&
               (Object.entries(reservationStatusAll) as [ReservationStatusWithAll, string][])
                 .filter(([value]) => value !== 'declined')

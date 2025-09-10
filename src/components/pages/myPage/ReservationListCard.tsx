@@ -33,8 +33,9 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
 
   return (
     <section className='flex flex-col w-full gap-3'>
-      <Card className='w-full shadow-xl'>
-        <div className='flex items-start justify-between w-full'>
+      <div className='text-16-bold lg:hidden'>{toCardDate(date)}</div>
+      <Card className='w-full min-w-[300px] shadow-xl'>
+        <div className='flex items-start justify-between w-full gap-7.5'>
           {/* 예약 내역 내용 */}
           <div className='flex-1 flex flex-col'>
             <CardHeader>
@@ -43,9 +44,12 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               </Badge>
               <CardTitle className='lg:pt-1.5 pt-1'>{title}</CardTitle>
               <CardDescription>
-                <div className='flex items-center gap-0.5 pb-0 lg:pb-2'>
-                  {toCardDate(date)} <span className='text-lg px-1'>∙</span>{' '}
-                  {`${startTime} - ${endTime}`}
+                <div className='flex items-center pb-0 lg:pb-2'>
+                  <div className='lg:block hidden'>
+                    {toCardDate(date)}
+                    <span className='text-lg px-1'>∙</span>
+                  </div>
+                  <div className='flex items-center'>{`${startTime} - ${endTime}`}</div>
                 </div>
               </CardDescription>
             </CardHeader>
@@ -78,7 +82,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
           </div>
 
           {/* 체험 이미지 */}
-          <div className='px-6 lg:px-7.5 pt-9'>
+          <div className='pt-9 pr-6 lg:pr-7.5 flex-shrink-0'>
             <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] box-border'>
               <Image
                 src={image}
@@ -97,11 +101,15 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
       <div className='flex gap-3 lg:hidden'>
         {status === 'completed' &&
           (!reviewSubmitted ? (
-            <Button size='sm' className='w-full' onClick={() => onReview(data)}>
+            <Button size='sm' className='w-full min-w-[300px] ' onClick={() => onReview(data)}>
               후기 작성
             </Button>
           ) : (
-            <Button size='sm' className='w-full' onClick={() => onGoReview(activity.id)}>
+            <Button
+              size='sm'
+              className='w-full min-w-[300px] '
+              onClick={() => onGoReview(activity.id)}
+            >
               후기 보기
             </Button>
           ))}
