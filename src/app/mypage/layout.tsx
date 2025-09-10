@@ -1,9 +1,8 @@
 'use client';
 import Spinner from '@/components/common/Spinner';
 import SideMenu from '@/components/pages/myPage/SideMenu';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 import { useScreenSize } from '@/hooks/useScreenSize';
-import { errorToast } from '@/lib/utils/toastUtils';
-import { useUserStore } from '@/store/userStore';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useLayoutEffect, useState, useTransition } from 'react';
@@ -13,7 +12,6 @@ interface MyPageCommonLayoutProps {
 }
 
 const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
-  const { user } = useUserStore();
   const { isMobile } = useScreenSize();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -52,12 +50,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
     }
   }, [isMobile, isMobileMenuPage, router, mounted]);
 
-  useLayoutEffect(() => {
-    if (user === null) {
-      router.push('/login');
-      errorToast.run('로그인 세션이 만료되었습니다.');
-    }
-  }, [user, router]);
+  useMypageRedirect();
 
   return (
     <div
