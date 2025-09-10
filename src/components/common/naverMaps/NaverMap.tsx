@@ -1,8 +1,7 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useId } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import Script from 'next/script';
 import NaverMapSkeleton from './NaverMapSkeleton';
 import NaverMapError from './NaverMapError';
 import NaverMapCore from './NaverMapCore';
@@ -42,27 +41,10 @@ export default function NaverMap({
   onRetry,
   children,
 }: NaverMapProps) {
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const reactId = useId();
+  const mapId = `naver-map${reactId.replace(/:/g, '-')}`;
 
-  // 스크립트가 로드되지 않은 경우 스켈레톤 표시
-  if (!isScriptLoaded) {
-    return (
-      <>
-        <Script
-          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID}&submodules=geocoder`}
-          strategy='afterInteractive'
-          onLoad={() => {
-            setIsScriptLoaded(true);
-          }}
-          onError={() => {
-            console.error('❌ [SCRIPT] 네이버 지도 스크립트 로드 실패');
-          }}
-        />
-        <NaverMapSkeleton width={width} height={height} className={className} />
-      </>
-    );
-  }
-
+  // 스크립트 준비 완료 후 실제 지도 컴포넌트 렌더링
   return (
     <ErrorBoundary
       fallback={
@@ -76,6 +58,7 @@ export default function NaverMap({
           height={height}
           className={className}
           zoom={zoom}
+          mapId={mapId}
         >
           {children}
         </NaverMapCore>
