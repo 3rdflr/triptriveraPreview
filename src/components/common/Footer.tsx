@@ -17,8 +17,8 @@ export default function Footer() {
       <Image
         src={'/images/icons/logo.svg'}
         alt='트리베라 로고'
-        width={204}
-        height={52}
+        width={0}
+        height={0}
         className='w-[204px] h-auto'
       />
 
