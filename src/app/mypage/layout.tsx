@@ -17,7 +17,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
       <div className={sideMenuClass}>
         <SideMenu />
       </div>
-      <div className={`pt-2.5 ${mypageMain ? 'hidden md:flex-1 min-w-0' : 'flex-1 min-w-0'}`}>
+      <div className={`pt-2.5 min-w-0 ${mypageMain ? 'hidden md:flex-1' : 'flex-1'}`}>
         {children}
       </div>
     </div>
