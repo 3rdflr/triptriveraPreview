@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Label } from '@/components/ui/label';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 import { useOverlay } from '@/hooks/useOverlay';
 import { reservationStatusAll, ReservationStatusWithAll } from '@/lib/constants/reservation';
 import {
@@ -161,6 +162,9 @@ const ReservationListPage = () => {
       setIsFirstLoad(false);
     }
   }, [isLoading, isFirstLoad]);
+
+  // 마이페이지 미로그인 리디렉트
+  useMypageRedirect();
 
   return (
     <div className='flex flex-col gap-7.5'>
