@@ -18,7 +18,7 @@ const badgeVariants = cva(
           'border-[var(--grayscale-100)] text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
       },
       selected: {
-        true: 'bg-[var(--primary-500)] text-white border-none',
+        true: 'bg-[var(--primary-500)] text-white border-none hover:text-accent-foreground',
       },
       size: {
         xs: 'text-[13px] font-bold px-2 py-0.5',
