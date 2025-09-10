@@ -7,6 +7,7 @@ import MyExperienceCardSkeleton from '@/components/pages/myPage/MyExperienceSkel
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useOverlay } from '@/hooks/useOverlay';
+import { successToast } from '@/lib/utils/toastUtils';
 import { ApiResponse } from '@/types/myActivity.type';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -56,6 +57,7 @@ const MyExperiencePage = () => {
     retry: 1,
     retryDelay: 300,
     onSuccess: () => {
+      successToast.run('체험 삭제가 완료되었습니다.');
       queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
     },
     onError: (error) => {
