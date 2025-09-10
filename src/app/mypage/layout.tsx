@@ -53,7 +53,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   return (
     <div
       className={clsx(
-        'justify-center mx-auto pb-9 px-6 pt-4 tablet:pt-13 max-w-[500px] tablet:max-w-[684px] pc:max-w-[980px]',
+        'justify-center mx-auto pb-9 px-6 tablet:px-0 pt-4 tablet:pt-13 max-w-[500px] tablet:max-w-[684px] pc:max-w-[980px]',
       )}
     >
       <div className={clsx('flex justify-center gap-7.5 pc:gap-12.5')}>
