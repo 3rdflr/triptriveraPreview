@@ -13,7 +13,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   const sideMenuClass = mypageMain ? 'xs:block sm:hidden' : 'hidden md:block';
 
   return (
-    <div className='flex justify-center px-6 lg:px-0 md:max-w-[684px] lg:max-w-[980px] mx-auto py-7.5 gap-7.5 lg:gap-12.5'>
+    <div className='flex justify-center px-6 lg:px-0 md:max-w-[684px] lg:max-w-[980px] mx-auto pt-4 md:pt-13 pb-9 gap-7.5 lg:gap-12.5'>
       <div className={sideMenuClass}>
         <SideMenu />
       </div>

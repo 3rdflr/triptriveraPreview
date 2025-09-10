@@ -91,10 +91,13 @@ const ReservationListPage = () => {
   };
 
   const onClickReview = (reservation: Reservation) => {
-    console.log(`id:${reservation.id},` + '후기 작성 버튼 클릭 시 리뷰 모달 호출');
     overlay.open(({ isOpen, close }) => (
       <ReviewModal data={reservation} isOpen={isOpen} onClose={close} />
     ));
+  };
+
+  const onClickGoReview = (id: number) => {
+    router.push(`/my-activities/activity/${id}`);
   };
 
   const ReservationEmpty = ({ text }: ReservationEmptyProps) => {
@@ -143,6 +146,7 @@ const ReservationListPage = () => {
               data={reservation}
               onCancel={onClickShowCancelModal}
               onReview={onClickReview}
+              onGoReview={onClickGoReview}
             />
           ))
         ) : (

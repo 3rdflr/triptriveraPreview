@@ -19,10 +19,12 @@ interface MyExperienceCardProps {
   data: Reservation;
   onCancel: (id: number) => void;
   onReview: (reservation: Reservation) => void;
+  onGoReview: (id: number) => void;
 }
 
-const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps) => {
-  const { id, activity, status, totalPrice, headCount, date, startTime, endTime } = data;
+const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperienceCardProps) => {
+  const { id, activity, status, totalPrice, headCount, date, startTime, endTime, reviewSubmitted } =
+    data;
 
   const { bannerImageUrl, title } = activity;
   const [isError, setIsError] = useState(false);
@@ -50,16 +52,21 @@ const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps
             <div className='flex-1 flex items-end justify-between pb-7.5'>
               <CardContent className='pb-0 flex-1'>
                 <p className='text-18-bold'>
-                  ₩{totalPrice.toLocaleString()}
+                  ₩{(totalPrice / headCount).toLocaleString()}
                   <span className='text-16-medium text-grayscale-400'> / {headCount}명</span>
                 </p>
               </CardContent>
               <CardFooter className='gap-2 hidden lg:flex lg:px-0 pb-0'>
-                {status === 'completed' && (
-                  <Button size='xs' onClick={() => onReview(data)}>
-                    후기 작성
-                  </Button>
-                )}
+                {status === 'completed' &&
+                  (!reviewSubmitted ? (
+                    <Button size='xs' onClick={() => onReview(data)}>
+                      후기 작성
+                    </Button>
+                  ) : (
+                    <Button size='xs' onClick={() => onGoReview(id)}>
+                      후기 보기
+                    </Button>
+                  ))}
 
                 {(status === 'pending' || status === 'confirmed') && (
                   <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
@@ -88,11 +95,16 @@ const ReservationListCard = ({ data, onCancel, onReview }: MyExperienceCardProps
         </div>
       </Card>
       <div className='flex gap-3 lg:hidden'>
-        {status === 'completed' && (
-          <Button size='sm' className='w-full' onClick={() => onReview(data)}>
-            후기 작성
-          </Button>
-        )}
+        {status === 'completed' &&
+          (!reviewSubmitted ? (
+            <Button size='sm' className='w-full' onClick={() => onReview(data)}>
+              후기 작성
+            </Button>
+          ) : (
+            <Button size='sm' className='w-full' onClick={() => onGoReview(id)}>
+              후기 보기
+            </Button>
+          ))}
 
         {(status === 'pending' || status === 'confirmed') && (
           <Button variant='secondary' size='sm' className='flex-1' onClick={() => onCancel(id)}>
