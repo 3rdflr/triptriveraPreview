@@ -12,6 +12,7 @@ import { ko } from 'date-fns/locale';
 import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 import clsx from 'clsx';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 const badgeClassMap: Record<string, string> = {
   완료: 'bg-gray-100 text-gray-600',
@@ -47,6 +48,8 @@ const ReservationStatusCalendar = ({
   onNavigate,
   onClickDate,
 }: ReservationStatusCalendarProps) => {
+  const { isDesktop, isTablet, isMobile } = useScreenSize();
+
   const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
     const formatted = format(label, 'yyyy년 M월', { locale: ko });
 
@@ -122,7 +125,12 @@ const ReservationStatusCalendar = ({
   };
 
   return (
-    <div className='w-full h-170 sm:w-119 sm:h-195 lg:w-160 sm:shadow-lg sm:border sm:border-grayscale-100 rounded-2xl'>
+    <div
+      className={clsx('w-full h-170 rounded-2xl', {
+        'w-119 h-195': isMobile,
+        'w-160 border border-grayscale-100 shadow-lg': isDesktop || isTablet,
+      })}
+    >
       <BigCalendar
         selectable
         localizer={localizer}

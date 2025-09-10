@@ -7,12 +7,14 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ProfileImageUploader from './ProfileImageUploader';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 interface SideMenuProps {
   className?: string;
 }
 
 export default function SideMenu({ className }: SideMenuProps) {
+  const { isMobile, isTablet, isDesktop } = useScreenSize();
   const pathname = usePathname();
 
   const menuItems = [
@@ -30,16 +32,26 @@ export default function SideMenu({ className }: SideMenuProps) {
   return (
     <Card
       className={clsx(
-        'w-80 md:w-44 lg:w-72 sm:h-auto md:h-[380px] lg:h-[500px] px-4 py-6 md:px-3.5 md:py-2 lg:px-4 lg:py-6 shadow-lg',
+        'shadow-lg',
+        {
+          'w-80 px-4 py-6 h-auto': isMobile,
+          'w-44 h-[400px] px-3.5 py-2': isTablet,
+          'w-72 h-[500px] px-4 py-6': isDesktop,
+        },
         className,
       )}
     >
-      <div className='flex flex-col gap-6 md:gap-3 lg:gap-6'>
+      <div
+        className={clsx('flex flex-col', {
+          'gap-6': isMobile || isDesktop,
+          'gap-3': isTablet,
+        })}
+      >
         {/* 프로필 영역 */}
         <ProfileImageUploader />
 
         {/* 메뉴 리스트 */}
-        <nav className='flex flex-col gap-2.5 md:gap-0.5 lg:gap-2.5'>
+        <nav className={clsx('flex flex-col gap-2.5')}>
           {menuItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
 
@@ -53,17 +65,13 @@ export default function SideMenu({ className }: SideMenuProps) {
                   isActive
                     ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
                     : 'text-grayscale-600 hover:bg-[#FFF9FB]',
+                  {
+                    'py-6.5': isDesktop,
+                    'py-6': isMobile || isTablet,
+                  },
                 )}
               >
-                <Link
-                  href={href}
-                  className={clsx(
-                    'group justify-start gap-2 py-6.5 text-base',
-                    isActive
-                      ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
-                      : 'text-grayscale-600 hover:bg-[#FFF9FB]',
-                  )}
-                >
+                <Link href={href}>
                   <Icon
                     className={clsx(
                       'h-4 w-4',
@@ -78,7 +86,12 @@ export default function SideMenu({ className }: SideMenuProps) {
           <Button
             asChild
             variant='ghost'
-            className='sm:hidden group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base'
+            className={clsx(
+              'group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base',
+              {
+                hidden: !isMobile,
+              },
+            )}
             onClick={onLogout}
           >
             <Link href=''>

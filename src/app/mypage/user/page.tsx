@@ -16,7 +16,7 @@ import { UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
-import Spinner from '@/components/common/Spinner';
+import clsx from 'clsx';
 
 type UserFormValues = {
   nickname: string;
@@ -100,13 +100,13 @@ const UserPage = () => {
   }, [userData, reset, setUser]);
 
   if (isLoading) {
-    return <Spinner />;
+    return null;
   }
 
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
-      <div className='flex flex-col w-full items-start gap-4 md:gap-16'>
+      <div className={clsx('flex flex-col w-full items-start gap-8')}>
         <div className='flex flex-col gap-2.5'>
           <Label className='text-[18px] font-bold'>내 정보</Label>
           <span className='text-14-medium text-grayscale-500'>

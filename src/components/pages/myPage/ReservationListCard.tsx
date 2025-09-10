@@ -55,9 +55,12 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
             </CardHeader>
             <div className='flex-1 flex items-end justify-between pb-7.5'>
               <CardContent className='pb-0 flex-1'>
-                <p className='text-18-bold'>
+                <p className='text-16-bold md:text-18-bold'>
                   ₩{(totalPrice / headCount).toLocaleString()}
-                  <span className='text-16-medium text-grayscale-400'> / {headCount}명</span>
+                  <span className='text-14-medium md:text-16-medium text-grayscale-400'>
+                    {' '}
+                    / {headCount}명
+                  </span>
                 </p>
               </CardContent>
               <CardFooter className='gap-2 hidden lg:flex lg:px-0 pb-0'>

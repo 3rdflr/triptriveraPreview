@@ -1,6 +1,5 @@
 'use client';
 import { getMyActivitiesList } from '@/app/api/myActivities';
-import Spinner from '@/components/common/Spinner';
 import ActivitySelect from '@/components/pages/myPage/ActivitySelect';
 import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStatusCalendar';
 import { Label } from '@/components/ui/label';
@@ -13,8 +12,11 @@ import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleMod
 import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
+import clsx from 'clsx';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 const ReservationStatusPage = () => {
+  const { isMobile } = useScreenSize();
   const overlay = useOverlay();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -122,7 +124,11 @@ const ReservationStatusPage = () => {
     }
 
     return (
-      <div className='flex flex-col sm:gap-4'>
+      <div
+        className={clsx('flex flex-col', {
+          'gap-4': !isMobile,
+        })}
+      >
         <div className='px-4 sm:px-0'>
           <ActivitySelect
             value={activityId ?? undefined}
@@ -153,7 +159,7 @@ const ReservationStatusPage = () => {
   }, [activityListData]);
 
   if (isInitialLoading) {
-    return <Spinner />;
+    return null;
   }
 
   return (

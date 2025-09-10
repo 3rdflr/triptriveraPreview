@@ -9,8 +9,12 @@ import { getUserInfo, updateUserInfo, uploadProfileImage } from '@/app/api/user'
 import { UploadProfileImageResponse, UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import clsx from 'clsx';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 const ProfileImageUploader = () => {
+  const { isMobile, isTablet, isDesktop } = useScreenSize();
+
   const { setUser } = useUserStore();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
@@ -122,7 +126,12 @@ const ProfileImageUploader = () => {
   }, [userData, setUser]);
 
   return (
-    <div className='relative flex justify-center mt-4 w-[120px] h-[120px] md:w-[70px] md:h-[70px] lg:w-[120px] lg:h-[120px] mx-auto'>
+    <div
+      className={clsx('relative flex justify-center mt-4 mx-auto', {
+        'w-[120px] h-[120px]': isMobile || isDesktop,
+        'w-[70px] h-[70px]': isTablet,
+      })}
+    >
       {!profileImageUrl && !previewImageUrl ? (
         <Image
           src={PROFILE_IMG_URL}
@@ -145,7 +154,11 @@ const ProfileImageUploader = () => {
 
       <RoundButton
         mode='edit'
-        className='absolute bottom-[8px] right-[4px] md:bottom-[4px] md:right-[0px] lg:bottom-[6px] lg:right-[2px]'
+        className={clsx('absolute', {
+          'bottom-[8px] right-[4px]': isMobile,
+          'bottom-[4px] right-[0px]': isTablet,
+          'bottom-[6px] right-[2px]': isDesktop,
+        })}
         onClick={handleUploadClick}
       />
       <input
