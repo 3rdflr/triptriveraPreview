@@ -63,7 +63,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
                       후기 작성
                     </Button>
                   ) : (
-                    <Button size='xs' onClick={() => onGoReview(id)}>
+                    <Button size='xs' onClick={() => onGoReview(activity.id)}>
                       후기 보기
                     </Button>
                   ))}
@@ -101,7 +101,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               후기 작성
             </Button>
           ) : (
-            <Button size='sm' className='w-full' onClick={() => onGoReview(id)}>
+            <Button size='sm' className='w-full' onClick={() => onGoReview(activity.id)}>
               후기 보기
             </Button>
           ))}
