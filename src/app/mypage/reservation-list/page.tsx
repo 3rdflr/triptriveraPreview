@@ -97,7 +97,7 @@ const ReservationListPage = () => {
   };
 
   const onClickGoReview = (id: number) => {
-    router.push(`/my-activities/activity/${id}`);
+    router.push(`/activities/${id}`);
   };
 
   const ReservationEmpty = ({ text }: ReservationEmptyProps) => {
