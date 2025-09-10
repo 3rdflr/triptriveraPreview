@@ -3,6 +3,7 @@ import Spinner from '@/components/common/Spinner';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { useUserStore } from '@/store/userStore';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useLayoutEffect, useState, useTransition } from 'react';
@@ -12,6 +13,7 @@ interface MyPageCommonLayoutProps {
 }
 
 const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
+  const { user } = useUserStore();
   const { isMobile } = useScreenSize();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -43,12 +45,12 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   }, []);
 
   useLayoutEffect(() => {
-    if (mounted && !isMobile && isMobileMenuPage) {
+    if (mounted && !isMobile && isMobileMenuPage && user) {
       startTransition(() => {
         router.push('/mypage/user');
       });
     }
-  }, [isMobile, isMobileMenuPage, router, mounted]);
+  }, [isMobile, isMobileMenuPage, router, mounted, user]);
 
   useMypageRedirect();
 
