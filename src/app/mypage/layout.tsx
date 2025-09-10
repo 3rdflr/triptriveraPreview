@@ -2,21 +2,43 @@
 import Spinner from '@/components/common/Spinner';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { errorToast } from '@/lib/utils/toastUtils';
+import { useUserStore } from '@/store/userStore';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useLayoutEffect, useState } from 'react';
+import { ReactNode, useEffect, useLayoutEffect, useState, useTransition } from 'react';
 
 interface MyPageCommonLayoutProps {
   children: ReactNode;
 }
 
 const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
-  const { isDesktop, isTablet, isMobile } = useScreenSize();
+  const { user } = useUserStore();
+  const { isMobile } = useScreenSize();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
   const isMobileMenuPage = pathname === '/mypage';
-  const showSideMenu = isMobileMenuPage || !isMobile;
+
+  const MyPageContent = () => {
+    return (
+      <>
+        <div className={clsx(isMobileMenuPage ? 'block' : 'hidden tablet:block')}>
+          <SideMenu />
+        </div>
+
+        <div
+          className={clsx(
+            'pt-2.5 flex-1 min-w-0 min-h-70 tablet:block',
+            isMobileMenuPage && 'mobile:hidden',
+          )}
+        >
+          {isPending ? <Spinner /> : children}
+        </div>
+      </>
+    );
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -24,34 +46,27 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
 
   useLayoutEffect(() => {
     if (mounted && !isMobile && isMobileMenuPage) {
-      router.push('/mypage/user');
+      startTransition(() => {
+        router.push('/mypage/user');
+      });
     }
   }, [isMobile, isMobileMenuPage, router, mounted]);
 
+  useLayoutEffect(() => {
+    if (user === null) {
+      router.push('/login');
+      errorToast.run('로그인 세션이 만료되었습니다.');
+    }
+  }, [user, router]);
+
   return (
     <div
-      className={clsx('justify-center mx-auto pb-9', {
-        'max-w-[500px] px-6 pt-4': isMobile,
-        'max-w-[684px] pt-13': isTablet,
-        'max-w-[980px] pt-13': isDesktop,
-      })}
+      className={clsx(
+        'justify-center mx-auto pb-9 px-6 pt-4 tablet:pt-13 max-w-[500px] tablet:max-w-[684px] pc:max-w-[980px]',
+      )}
     >
-      <div
-        className={clsx('flex justify-center', {
-          'gap-7.5': isMobile || isTablet,
-          'gap-12.5': isDesktop,
-        })}
-      >
-        {showSideMenu && <SideMenu />}
-        <div className='pt-2.5 flex-1 min-w-0 min-h-70'>
-          {!mounted || (isMobile && isMobileMenuPage) ? (
-            <div className='flex justify-center items-center w-full h-full'>
-              <Spinner />
-            </div>
-          ) : (
-            children
-          )}
-        </div>
+      <div className={clsx('flex justify-center gap-7.5 pc:gap-12.5')}>
+        <MyPageContent />
       </div>
     </div>
   );

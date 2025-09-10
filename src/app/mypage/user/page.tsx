@@ -16,6 +16,7 @@ import { UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
+import Spinner from '@/components/common/Spinner';
 import clsx from 'clsx';
 
 type UserFormValues = {
@@ -100,7 +101,7 @@ const UserPage = () => {
   }, [userData, reset, setUser]);
 
   if (isLoading) {
-    return null;
+    return <Spinner />;
   }
 
   return (

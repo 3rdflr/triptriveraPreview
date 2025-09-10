@@ -3,18 +3,18 @@ import { Button } from '@/components/ui/button';
 
 import { FaUser, FaCommentDots, FaCog, FaCalendarAlt, FaHeart } from 'react-icons/fa';
 import { FaArrowRightFromBracket } from 'react-icons/fa6';
+import { logout } from '@/lib/utils/logoutUtils';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import ProfileImageUploader from './ProfileImageUploader';
-import { useScreenSize } from '@/hooks/useScreenSize';
 
 interface SideMenuProps {
   className?: string;
 }
 
 export default function SideMenu({ className }: SideMenuProps) {
-  const { isMobile, isTablet, isDesktop } = useScreenSize();
+  const router = useRouter();
   const pathname = usePathname();
 
   const menuItems = [
@@ -25,33 +25,25 @@ export default function SideMenu({ className }: SideMenuProps) {
     { href: '/mypage/wishlist', label: '위시리스트', icon: FaHeart },
   ];
 
-  const onLogout = () => {
-    console.log('TODO: 로그아웃 처리');
+  const onLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    logout();
+    router.push('/');
   };
 
   return (
     <Card
       className={clsx(
-        'shadow-lg',
-        {
-          'w-80 px-4 py-6 h-auto': isMobile,
-          'w-44 h-[400px] px-3.5 py-2': isTablet,
-          'w-72 h-[500px] px-4 py-6': isDesktop,
-        },
+        'shadow-lg w-80 px-4 py-6 h-auto tablet:w-44 tablet:h-[400px] tablet:px-3.5 tablet:py-2 pc:w-72 pc:h-[500px] pc:px-4 pc:py-6',
         className,
       )}
     >
-      <div
-        className={clsx('flex flex-col', {
-          'gap-6': isMobile || isDesktop,
-          'gap-3': isTablet,
-        })}
-      >
+      <div className={'flex flex-col gap-6 tablet:gap-3 pc:gap-6'}>
         {/* 프로필 영역 */}
         <ProfileImageUploader />
 
         {/* 메뉴 리스트 */}
-        <nav className={clsx('flex flex-col gap-2.5')}>
+        <nav className={'flex flex-col gap-2.5'}>
           {menuItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
 
@@ -61,14 +53,10 @@ export default function SideMenu({ className }: SideMenuProps) {
                 asChild
                 variant='ghost'
                 className={clsx(
-                  'group justify-start gap-2 py-6.5 text-base',
+                  'group justify-start gap-2 text-base py-6 pc:py-6.5',
                   isActive
                     ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
                     : 'text-grayscale-600 hover:bg-[#FFF9FB]',
-                  {
-                    'py-6.5': isDesktop,
-                    'py-6': isMobile || isTablet,
-                  },
                 )}
               >
                 <Link href={href}>
@@ -87,10 +75,7 @@ export default function SideMenu({ className }: SideMenuProps) {
             asChild
             variant='ghost'
             className={clsx(
-              'group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base',
-              {
-                hidden: !isMobile,
-              },
+              'group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base tablet:hidden',
             )}
             onClick={onLogout}
           >
