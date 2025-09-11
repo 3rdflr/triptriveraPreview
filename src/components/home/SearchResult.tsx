@@ -3,7 +3,7 @@
 import { Activity } from '@/types/activities.type';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useInfiniteList } from '@/hooks/useInfiniteList';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NaverMap from '../common/naverMaps/NaverMap';
 import Marker from '../common/naverMaps/Marker';
 import ActivitySheet from './ActivitySheet';
@@ -21,10 +21,15 @@ export default function SearchResult({
 }) {
   const [activeMarkerId, setActiveMarkerId] = useState<number | null>(null);
   const [address, setAddress] = useState('서울특별시 종로구 세종대로 172');
+  const [mobileAddress, setMobileAddress] = useState('서울특별시 종로구 세종대로 172');
 
   const { isDesktop } = useScreenSize();
 
   const { allActivities } = useInfiniteList(initialActivities, initalCursorId);
+
+  useEffect(() => {
+    if (allActivities) setMobileAddress(allActivities[0]?.address);
+  }, [allActivities]);
 
   return (
     <>
@@ -72,7 +77,7 @@ export default function SearchResult({
         ) : (
           <>
             <div className='h-screen sticky top-0'>
-              <NaverMap address={'서울특별시 종로구 세종대로 172'} height='100%' zoom={11}>
+              <NaverMap address={mobileAddress} height='100%' zoom={11}>
                 {allActivities.map((activity, index) => (
                   <Marker
                     key={activity.id}
