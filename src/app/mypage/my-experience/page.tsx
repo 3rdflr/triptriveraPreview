@@ -6,6 +6,7 @@ import MyExperienceCard from '@/components/pages/myPage/MyExperienceCard';
 import MyExperienceCardSkeleton from '@/components/pages/myPage/MyExperienceSkeleton';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 import { useOverlay } from '@/hooks/useOverlay';
 import { successToast } from '@/lib/utils/toastUtils';
 import { ApiResponse } from '@/types/myActivity.type';
@@ -110,6 +111,9 @@ const MyExperiencePage = () => {
       </div>
     );
   };
+
+  // 마이페이지 미로그인 리디렉트
+  useMypageRedirect();
 
   return (
     <div className='flex flex-col gap-7.5'>

@@ -17,6 +17,8 @@ import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
 import Spinner from '@/components/common/Spinner';
+import clsx from 'clsx';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 
 type UserFormValues = {
   nickname: string;
@@ -99,6 +101,9 @@ const UserPage = () => {
     }
   }, [userData, reset, setUser]);
 
+  // 마이페이지 미로그인 리디렉트
+  useMypageRedirect();
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -106,7 +111,7 @@ const UserPage = () => {
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
-      <div className='flex flex-col w-full items-start gap-4 md:gap-16'>
+      <div className={clsx('flex flex-col w-full items-start gap-8')}>
         <div className='flex flex-col gap-2.5'>
           <Label className='text-[18px] font-bold'>내 정보</Label>
           <span className='text-14-medium text-grayscale-500'>

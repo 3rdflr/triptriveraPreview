@@ -9,6 +9,7 @@ import { getUserInfo, updateUserInfo, uploadProfileImage } from '@/app/api/user'
 import { UploadProfileImageResponse, UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import clsx from 'clsx';
 
 const ProfileImageUploader = () => {
   const { setUser } = useUserStore();
@@ -122,7 +123,11 @@ const ProfileImageUploader = () => {
   }, [userData, setUser]);
 
   return (
-    <div className='relative flex justify-center mt-4 w-[120px] h-[120px] md:w-[70px] md:h-[70px] lg:w-[120px] lg:h-[120px] mx-auto'>
+    <div
+      className={clsx(
+        'relative flex justify-center mt-4 mx-auto w-[120px] h-[120px] tablet:w-[70px] tablet:h-[70px] pc:w-[120px] pc:h-[120px]',
+      )}
+    >
       {!profileImageUrl && !previewImageUrl ? (
         <Image
           src={PROFILE_IMG_URL}
@@ -145,7 +150,7 @@ const ProfileImageUploader = () => {
 
       <RoundButton
         mode='edit'
-        className='absolute bottom-[8px] right-[4px] md:bottom-[4px] md:right-[0px] lg:bottom-[6px] lg:right-[2px]'
+        className='absolute bottom-[8px] right-[4px] tablet:bottom-[4px] tablet:right-[0px] pc:bottom-[6px] pc:right-[2px]'
         onClick={handleUploadClick}
       />
       <input

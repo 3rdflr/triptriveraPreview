@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 import { User } from '@/types/user.type';
 
 interface UserStore {
-  user: User | null;
+  user: User | null | undefined;
   setUser: (user: User) => void;
   clearUser: () => void;
 }
@@ -19,7 +19,7 @@ interface UserStore {
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      user: null,
+      user: undefined,
       setUser: (user) => set({ user }),
       clearUser: () => set({ user: null }),
     }),

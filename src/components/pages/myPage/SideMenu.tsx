@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button';
 
 import { FaUser, FaCommentDots, FaCog, FaCalendarAlt, FaHeart } from 'react-icons/fa';
 import { FaArrowRightFromBracket } from 'react-icons/fa6';
+import { logout } from '@/lib/utils/logoutUtils';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import ProfileImageUploader from './ProfileImageUploader';
 
 interface SideMenuProps {
@@ -13,6 +14,7 @@ interface SideMenuProps {
 }
 
 export default function SideMenu({ className }: SideMenuProps) {
+  const router = useRouter();
   const pathname = usePathname();
 
   const menuItems = [
@@ -23,23 +25,25 @@ export default function SideMenu({ className }: SideMenuProps) {
     { href: '/mypage/wishlist', label: '위시리스트', icon: FaHeart },
   ];
 
-  const onLogout = () => {
-    console.log('TODO: 로그아웃 처리');
+  const onLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    logout();
+    router.push('/');
   };
 
   return (
     <Card
       className={clsx(
-        'w-80 md:w-44 lg:w-72 sm:h-auto md:h-[380px] lg:h-[500px] px-4 py-6 md:px-3.5 md:py-2 lg:px-4 lg:py-6 shadow-lg',
+        'shadow-lg w-80 px-4 py-6 h-auto tablet:w-44 tablet:h-[400px] tablet:px-3.5 tablet:py-2 pc:w-72 pc:h-[500px] pc:px-4 pc:py-6',
         className,
       )}
     >
-      <div className='flex flex-col gap-6 md:gap-3 lg:gap-6'>
+      <div className={'flex flex-col gap-6 tablet:gap-3 pc:gap-6'}>
         {/* 프로필 영역 */}
         <ProfileImageUploader />
 
         {/* 메뉴 리스트 */}
-        <nav className='flex flex-col gap-2.5 md:gap-0.5 lg:gap-2.5'>
+        <nav className={'flex flex-col gap-2.5'}>
           {menuItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
 
@@ -49,21 +53,13 @@ export default function SideMenu({ className }: SideMenuProps) {
                 asChild
                 variant='ghost'
                 className={clsx(
-                  'group justify-start gap-2 py-6.5 text-base',
+                  'group justify-start gap-2 text-base py-6 pc:py-6.5',
                   isActive
                     ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
                     : 'text-grayscale-600 hover:bg-[#FFF9FB]',
                 )}
               >
-                <Link
-                  href={href}
-                  className={clsx(
-                    'group justify-start gap-2 py-6.5 text-base',
-                    isActive
-                      ? 'bg-primary-100 text-primary-600 hover:bg-primary-100'
-                      : 'text-grayscale-600 hover:bg-[#FFF9FB]',
-                  )}
-                >
+                <Link href={href}>
                   <Icon
                     className={clsx(
                       'h-4 w-4',
@@ -78,7 +74,9 @@ export default function SideMenu({ className }: SideMenuProps) {
           <Button
             asChild
             variant='ghost'
-            className='sm:hidden group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base'
+            className={clsx(
+              'group hover:bg-primary-100 justify-start gap-2 py-6.5 text-grayscale-600 text-base tablet:hidden',
+            )}
             onClick={onLogout}
           >
             <Link href=''>

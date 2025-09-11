@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Label } from '@/components/ui/label';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 import { useOverlay } from '@/hooks/useOverlay';
 import { reservationStatusAll, ReservationStatusWithAll } from '@/lib/constants/reservation';
 import {
@@ -91,10 +92,13 @@ const ReservationListPage = () => {
   };
 
   const onClickReview = (reservation: Reservation) => {
-    console.log(`id:${reservation.id},` + '후기 작성 버튼 클릭 시 리뷰 모달 호출');
     overlay.open(({ isOpen, close }) => (
       <ReviewModal data={reservation} isOpen={isOpen} onClose={close} />
     ));
+  };
+
+  const onClickGoReview = (id: number) => {
+    router.push(`/activities/${id}`);
   };
 
   const ReservationEmpty = ({ text }: ReservationEmptyProps) => {
@@ -143,6 +147,7 @@ const ReservationListPage = () => {
               data={reservation}
               onCancel={onClickShowCancelModal}
               onReview={onClickReview}
+              onGoReview={onClickGoReview}
             />
           ))
         ) : (
@@ -158,16 +163,19 @@ const ReservationListPage = () => {
     }
   }, [isLoading, isFirstLoad]);
 
+  // 마이페이지 미로그인 리디렉트
+  useMypageRedirect();
+
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
       <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>
-        <div className='flex flex-col gap-2.5'>
+        <div className='flex flex-col gap-2.5 flex-1 min-w-0 max-w-full'>
           <Label className='text-[18px] font-bold'>예약내역</Label>
           <span className='text-14-medium text-grayscale-500'>
             예약내역을 변경 및 취소할 수 있습니다.
           </span>
-          <div className='flex pt-3.5 gap-2'>
+          <div className='flex pt-3.5 gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide'>
             {!(isFirstLoad && !data?.reservations?.length) &&
               (Object.entries(reservationStatusAll) as [ReservationStatusWithAll, string][])
                 .filter(([value]) => value !== 'declined')
