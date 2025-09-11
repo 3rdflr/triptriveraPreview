@@ -82,8 +82,8 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
   }, [user, activity]);
 
   return (
-    <div className='container mx-auto px-4 py-8 xl:pb-8'>
-      <div className='max-w-[1200px] mx-auto'>
+    <div className='mx-auto px-4 py-8'>
+      <div className=' max-w-[1200px] mx-auto'>
         {/* 그리드 레이아웃 컨테이너 */}
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
