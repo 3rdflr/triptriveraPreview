@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRef, useEffect, ReactNode } from 'react';
 import { useGeocoding } from '@/hooks/useGeocoding';
 import { useMarkers } from '@/hooks/useMarkers';
@@ -74,18 +75,29 @@ export default function NaverMapCore({
 
   // 지도 렌더링
   return (
-    <div className={`w-full relative ${className}`} style={{ width, height }}>
-      <Script
-        id='naver-maps-sdk'
-        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NCP_CLIENT_ID}&submodules=geocoder&callback=__naverInit`}
-        strategy='afterInteractive'
-        onReady={initMap}
-        onError={() => {
-          console.error('❌ [SCRIPT] 네이버 지도 스크립트 로드 실패');
-        }}
-      />
-      {!scriptReady && <NaverMapSkeleton width={width} height={height} className={className} />}
-      <div id={mapId} className='w-full h-full rounded-3xl overflow-hidden' />
-    </div>
+    <AnimatePresence mode='wait'>
+      <motion.div
+        key={address}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className='h-full'
+      >
+        <div className={`w-full relative ${className}`} style={{ width, height }}>
+          <Script
+            id='naver-maps-sdk'
+            src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NCP_CLIENT_ID}&submodules=geocoder&callback=__naverInit`}
+            strategy='afterInteractive'
+            onReady={initMap}
+            onError={() => {
+              console.error('❌ [SCRIPT] 네이버 지도 스크립트 로드 실패');
+            }}
+          />
+          {!scriptReady && <NaverMapSkeleton width={width} height={height} className={className} />}
+          <div id={mapId} className='w-full h-full rounded-3xl overflow-hidden' />
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
