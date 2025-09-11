@@ -11,14 +11,14 @@ export default function Footer() {
     return null;
   }
   return (
-    <footer className='bg-grayscale-25 w-full h-120 flex flex-col items-center justify-start text-12-regular text-subtitle text-center'>
+    <footer className='bg-grayscale-25 w-full h-120 flex flex-col items-center justify-start text-12-regular text-subtitle text-center pb-[118px]'>
       <div className='bg-white w-full h-20 rounded-b-full shadow-lg mb-30'></div>
 
       <Image
         src={'/images/icons/logo.svg'}
         alt='트리베라 로고'
-        width={204}
-        height={52}
+        width={0}
+        height={0}
         className='w-[204px] h-auto'
       />
 

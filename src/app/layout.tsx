@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang='ko' className={`${pretendard.variable}`}>
       <body suppressHydrationWarning={true}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
           <ClientLayout>{children}</ClientLayout>
         </Suspense>
       </body>

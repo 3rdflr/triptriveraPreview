@@ -119,7 +119,7 @@ async function handleRequest(method: string, req: Request, path: string[]) {
     resHeaders.set('Access-Control-Allow-Origin', getAllowedOrigin());
     resHeaders.set('Access-Control-Allow-Credentials', 'true');
 
-    return new NextResponse(JSON.stringify(response.data), {
+    return new NextResponse(method === 'DELETE' ? undefined : JSON.stringify(response.data), {
       status: response.status,
       headers: resHeaders,
     });
