@@ -53,7 +53,7 @@ export default function MapCard({ activity, onClose }: MapCardProps) {
               <button
                 type='button'
                 onClick={onClose}
-                className='absolute top-[12px] right-[12px] z-[200] w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition'
+                className='absolute top-[12px] right-[12px] z-[200] w-8 h-8 flex items-center justify-center rounded-full bg-grayscale-25 text-gray-700 hover:bg-gray-300 transition'
               >
                 <X width={16} height={16} />
               </button>
@@ -116,7 +116,7 @@ export default function MapCard({ activity, onClose }: MapCardProps) {
               <button
                 type='button'
                 onClick={onClose}
-                className='absolute top-2 right-2 z-[200] w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition'
+                className='absolute top-2 right-2 z-[200] w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-300 transition'
               >
                 <X width={14} height={14} />
               </button>
