@@ -52,7 +52,7 @@ export default function SearchResult({
                     }}
                   >
                     <div
-                      className='px-3 py-1 max-w-[200px] bg-gray-100 text-gray-600 text-[13px] font-semibold rounded-2xl
+                      className='px-3 py-1 bg-gray-100 text-gray-600 text-[13px] font-semibold rounded-2xl
              transition-transform duration-200 ease-in-out hover:scale-105 shadow-lg animate-fade-in-scale'
                     >
                       {activity.price.toLocaleString()}원
@@ -72,7 +72,7 @@ export default function SearchResult({
         ) : (
           <>
             <div className='h-screen sticky top-0'>
-              <NaverMap address={address} height='100%' zoom={11}>
+              <NaverMap address={'서울특별시 종로구 세종대로 172'} height='100%' zoom={11}>
                 {allActivities.map((activity, index) => (
                   <Marker
                     key={activity.id}
@@ -84,7 +84,7 @@ export default function SearchResult({
                   >
                     <div
                       className='px-3 py-1 bg-gray-100 text-gray-600 text-[13px] font-semibold rounded-2xl
-             transition-transform duration-200 ease-in-out hover:scale-105 shadow-lg'
+             transition-transform duration-200 ease-in-out hover:scale-105 shadow-lg animate-fade-in-scale'
                     >
                       {activity.price.toLocaleString()}원
                     </div>
