@@ -13,9 +13,11 @@ import Image from 'next/image';
 export default function ActivityList({
   initialActivities,
   initalCursorId,
+  onMouseEnter,
 }: {
   initialActivities: Activity[];
   initalCursorId: number;
+  onMouseEnter?: (address: string) => void;
 }) {
   // 유저 확인
   const user = useUserStore((state) => state.user);
@@ -72,7 +74,12 @@ export default function ActivityList({
         className={`${!hasFilters ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 lg:gap-x-[12px] lg:gap-y-[80px]' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 lg:gap-x-[12px] lg:gap-y-[80px]'} grid gap-[24px]`}
       >
         {allActivities.map((activity: Activity) => (
-          <ActivityCard key={activity.id} userId={user?.id} activity={activity} />
+          <ActivityCard
+            key={activity.id}
+            userId={user?.id}
+            activity={activity}
+            onMouseEnter={(addr) => onMouseEnter?.(addr)}
+          />
         ))}
       </div>
       <div className='flex items-center justify-center w-full'>

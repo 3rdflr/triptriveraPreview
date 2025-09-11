@@ -15,10 +15,12 @@ export default function ActivityCard({
   activity,
   userId,
   isDelete,
+  onMouseEnter = () => {},
 }: {
   activity: Activity;
   userId?: number;
   isDelete?: boolean;
+  onMouseEnter?: (address: string) => void;
 }) {
   const router = useRouter();
   const [isError, setIsError] = useState(false);
@@ -42,6 +44,7 @@ export default function ActivityCard({
             className='object-cover cursor-pointer hover:scale-105 transition-soft duration-500'
             onClick={() => router.push(`/activities/${activity.id}`)}
             onError={() => setIsError(true)}
+            onMouseEnter={() => onMouseEnter?.(activity.address!)}
             blurDataURL={BASE_IMG_URL}
           />
         </div>
