@@ -1,10 +1,13 @@
+'use client';
+
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 /**
  * NaverMapSkeleton 컴포넌트
  * - 네이버 지도 로딩 중 표시되는 스켈레톤 UI
  * - Suspense fallback으로 사용
- *
+ * - lottie 애니메이션 적용
  */
 
 interface NaverMapSkeletonProps {
@@ -26,24 +29,24 @@ export default function NaverMapSkeleton({
       className={`w-full relative bg-gray-100 flex justify-center items-center rounded-3xl ${className}`}
       style={{ width, height }}
     >
-      <div className='flex'>
-        {'지도를 로드하는 중...'.split('').map((char, index) => (
-          <motion.span
-            key={index}
-            className='text-sm text-gray-600'
-            initial={{ opacity: 0.3 }}
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              delay: index * 0.1,
-              ease: 'easeInOut',
-            }}
-          >
-            {char === ' ' ? '\u00A0' : char}
-          </motion.span>
-        ))}
-      </div>
+      <motion.div
+        initial={{ opacity: 0.5, scale: 1 }}
+        animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.5] }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className='w-full h-full'
+      >
+        <Image
+          src='/images/mapInitImage.png'
+          alt='지도 로딩 중'
+          width={150}
+          height={150}
+          className=' object-cover w-full h-full'
+        />
+      </motion.div>
     </div>
   );
 }

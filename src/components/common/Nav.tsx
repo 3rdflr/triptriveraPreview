@@ -10,6 +10,7 @@ import CategoryList from '../home/CategoryList';
 import SearchFilters from '../home/SearchFilters';
 import LoginSection from '../home/LoginSection';
 import NavMobileView from '../home/NavMobileView';
+import NavSkeleton from '../home/Skeleton/NavSkeleton';
 
 export default function Nav() {
   const pathname = usePathname();
@@ -40,10 +41,7 @@ export default function Nav() {
 
   useEffect(() => setIsClient(true), []);
 
-  if (!isClient)
-    return (
-      <div className='w-full h-[79px] flex items-center justify-center bg-grayscale-25 shadow-md animate-pulse'></div>
-    );
+  if (!isClient) return <NavSkeleton />;
 
   if (withOutNav) return null;
 
@@ -73,13 +71,7 @@ export default function Nav() {
                 className='w-[40px] h-auto'
               />
             ) : (
-              <Image
-                src='/images/icons/logo.svg'
-                alt='Logo'
-                width={105}
-                height={26}
-                className='w-[105px] h-auto'
-              />
+              <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
             )}
           </Link>
 
