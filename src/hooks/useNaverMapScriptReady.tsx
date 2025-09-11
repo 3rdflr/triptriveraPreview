@@ -19,7 +19,6 @@ export function useNaverMapScriptReady() {
     // 주기적으로 naver.maps.Map이 사용 가능한지 체크
     const intervalId = setInterval(() => {
       if (checkReady()) {
-        console.log('✅ [NAVER MAP] Script ready detected');
         clearInterval(intervalId);
         clearTimeout(timeoutId);
       }

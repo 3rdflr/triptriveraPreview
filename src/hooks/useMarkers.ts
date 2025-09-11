@@ -18,7 +18,6 @@ interface UseMarkersProps {
  * - 마커 이벤트 처리 및 정리
  */
 export function useMarkers({ map, children, isReady = false }: UseMarkersProps) {
-  console.log('🗺️ [MARKERS] useMarkers 호출', { map, isReady });
   // children에서 Marker 컴포넌트들 추출 (기존 로직 유지)
   const extractMarkers = useCallback(() => {
     if (!children) return [];
@@ -43,7 +42,6 @@ export function useMarkers({ map, children, isReady = false }: UseMarkersProps) 
       return;
     }
 
-    console.log('📍 [MARKERS] 마커 생성 시작', { count: markers.length });
     const naverMarkers: naver.maps.Marker[] = [];
 
     // 마커 생성 함수
@@ -156,8 +154,6 @@ export function useMarkers({ map, children, isReady = false }: UseMarkersProps) 
             });
           }
         }
-
-        console.log('✅ [MARKERS] 마커 생성 완료', { count: naverMarkers.length });
       } catch (error) {
         console.error('❌ [MARKERS] 마커 생성 중 에러 발생', error);
       }

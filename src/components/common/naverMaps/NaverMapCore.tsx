@@ -67,7 +67,6 @@ export default function NaverMapCore({
   // 지오코딩 결과로 지도 중심점 업데이트
   useEffect(() => {
     if (mapRef.current && coordinates && scriptReady) {
-      console.log('🎯3. [MAP] 지도 중심점 업데이트', coordinates);
       const location = new naver.maps.LatLng(coordinates.y, coordinates.x);
       mapRef.current.setCenter(location);
     }
