@@ -9,7 +9,7 @@ export const useNotifications = () => {
   const user = useUserStore((state) => state.user);
 
   return useQuery({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', user?.id],
     queryFn: getNotifications,
     staleTime: 1000 * 60, // 1분
     gcTime: 1000 * 60 * 5, // 5분
