@@ -148,7 +148,6 @@ function InfinityScrollRoot<T>({
     virtualizer,
     virtualItems,
   };
-  console.log('virTotalSize', virtualizer.getTotalSize());
 
   return (
     <InfinityScrollContext.Provider value={contextValue}>

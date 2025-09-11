@@ -20,7 +20,7 @@ interface ActivityInfoProps {
   className?: string;
   onEdit?: () => void;
   onDelete?: () => void;
-  isOwner?: boolean;
+  isOwner: boolean;
 }
 
 export default function ActivityInfo({

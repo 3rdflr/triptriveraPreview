@@ -1,16 +1,21 @@
 import { NotificationItem } from '@/types/notification.type';
 import { useNotifications, useDeleteNotification } from '@/hooks/useNotification';
+import { useUserStore } from '@/store/userStore';
 import { X } from 'lucide-react';
 import formatTime from '@/hooks/useFormatTime';
 import Spinner from '../common/Spinner';
 
 export default function NotificationModal() {
+  const user = useUserStore((state) => state.user);
+
   const { data: notificationData, isLoading, error } = useNotifications();
   const deleteNotification = useDeleteNotification();
 
   const handleDeleteNotification = (id: number) => {
     deleteNotification.mutate(id);
   };
+
+  if (!user) return null;
 
   return (
     <>

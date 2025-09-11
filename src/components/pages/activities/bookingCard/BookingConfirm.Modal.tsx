@@ -81,6 +81,7 @@ const BookingConfirmModal = ({
       }
 
       // 기타 에러인 경우 재시도 옵션 제공
+      //@todo: 이미 예약한경우 구체적인 에러메시지 노출
       overlay.open(({ isOpen, close }) => (
         <ConfirmActionModal
           isOpen={isOpen}
