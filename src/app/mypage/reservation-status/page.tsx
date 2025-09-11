@@ -13,6 +13,8 @@ import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleMod
 import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
+import clsx from 'clsx';
+import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -122,7 +124,7 @@ const ReservationStatusPage = () => {
     }
 
     return (
-      <div className='flex flex-col sm:gap-4'>
+      <div className={clsx('flex flex-col tablet:gap-4')}>
         <div className='px-4 sm:px-0'>
           <ActivitySelect
             value={activityId ?? undefined}
@@ -151,6 +153,9 @@ const ReservationStatusPage = () => {
       setActivityId(String(activityListData?.activities[0].id));
     }
   }, [activityListData]);
+
+  // 마이페이지 미로그인 리디렉트
+  useMypageRedirect();
 
   if (isInitialLoading) {
     return <Spinner />;

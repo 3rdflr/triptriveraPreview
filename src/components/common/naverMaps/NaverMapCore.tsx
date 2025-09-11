@@ -39,7 +39,7 @@ export default function NaverMapCore({
   mapId,
 }: NaverMapCoreProps) {
   const NCP_CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
-  if (!NCP_CLIENT_ID) {
+  if (typeof window !== 'undefined' && !NCP_CLIENT_ID) {
     throw new Error('네이버 지도 클라이언트 ID가 설정되지 않았습니다.');
   }
   const mapRef = useRef<naver.maps.Map | null>(null);

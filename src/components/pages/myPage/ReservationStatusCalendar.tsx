@@ -122,7 +122,11 @@ const ReservationStatusCalendar = ({
   };
 
   return (
-    <div className='w-full h-170 sm:w-94 sm:h-170 md:w-119 md:h-195 lg:w-160 sm:shadow-lg sm:border sm:border-grayscale-100 rounded-2xl'>
+    <div
+      className={clsx(
+        'w-full h-170 rounded-2xl mobile:w-119 mobile:h-195 tablet:w-160 tablet:border tablet:border-grayscale-100 tablet:shadow-lg',
+      )}
+    >
       <BigCalendar
         selectable
         localizer={localizer}

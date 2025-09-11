@@ -58,7 +58,7 @@ const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => 
         </div>
 
         {/* 체험 이미지 */}
-        <div className='pt-9 mr-6 lg:mr-7.5 flex-shrink-0'>
+        <div className='pt-9 pr-6 lg:pr-7.5 flex-shrink-0'>
           <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] flex-shrink-0'>
             <Image
               src={image}

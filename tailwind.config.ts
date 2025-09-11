@@ -62,6 +62,11 @@ const config: Config = {
           950: 'var(--grayscale-950)',
         },
       },
+      screens: {
+        mobile: '0px',
+        tablet: '744px',
+        pc: '1024px',
+      },
     },
   },
   plugins: [scrollbarHide],
