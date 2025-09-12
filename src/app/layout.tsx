@@ -4,7 +4,7 @@ import { pretendard } from '@/lib/fonts';
 import ClientLayout from '@/components/common/ClientLayout';
 import './globals.css';
 
-const nextOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const nextOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://triptrivera.vercel.app/';
 
 export const metadata: Metadata = {
   title: 'Trivera',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  themeColor: '#ffffff', // 모바일 브라우저 상단 색상 (브랜드 컬러 확정되면 수정)
+  themeColor: '#e60e68',
 };
 
 export default function RootLayout({
