@@ -14,7 +14,6 @@ import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
 import clsx from 'clsx';
-import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -153,9 +152,6 @@ const ReservationStatusPage = () => {
       setActivityId(String(activityListData?.activities[0].id));
     }
   }, [activityListData]);
-
-  // 마이페이지 미로그인 리디렉트
-  useMypageRedirect();
 
   if (isInitialLoading) {
     return <Spinner />;
