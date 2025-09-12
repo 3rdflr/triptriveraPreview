@@ -101,7 +101,6 @@ function InfinityScrollRoot<T>({
     if (displayItems.length > 0 && !isLoading && !hasRestoredScroll) {
       restoreScrollPosition();
       setHasRestoredScroll(true);
-      console.log('스크롤 위치 복원 완료 :', { scrollKey });
     }
   }, [displayItems.length, isLoading, hasRestoredScroll, restoreScrollPosition]);
 
