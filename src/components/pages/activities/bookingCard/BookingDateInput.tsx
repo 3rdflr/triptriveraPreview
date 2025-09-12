@@ -23,6 +23,7 @@ export function BookingDateInput({
   const [isHovering, setIsHovering] = useState(false);
   const [inputRect, setInputRect] = useState<DOMRect | null>(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // 개별 입력 필드 state
   const [yearValue, setYearValue] = useState('');
@@ -78,11 +79,16 @@ export function BookingDateInput({
       const rect = inputRef.current.getBoundingClientRect();
       setInputRect(rect);
     }
-    setIsModalOpen(true);
+    // 토글 기능: 클릭 시 열림/닫힘 전환
+    setIsModalOpen(!isModalOpen);
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = (fromXButton: boolean = false) => {
     setIsModalOpen(false);
+    // X 버튼으로 닫을 때는 호버도 함께 비활성화하여 자연스러운 애니메이션
+    if (fromXButton) {
+      setIsHovering(false);
+    }
     setInputRect(null);
   };
 
@@ -103,16 +109,56 @@ export function BookingDateInput({
     setIsHovering(false);
   };
 
+  // 외부 클릭 감지 (TimeList 제외)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+
+      // TimeList 컴포넌트 클릭 시 모달 유지
+      if (target.closest('[data-booking-timelist]')) {
+        return;
+      }
+
+      // input이나 modal 외부 클릭 시 모달 닫기
+      if (
+        inputRef.current &&
+        modalRef.current &&
+        !inputRef.current.contains(target) &&
+        !modalRef.current.contains(target)
+      ) {
+        setIsModalOpen(false);
+        setIsHovering(false);
+      }
+    };
+
+    if (isModalOpen || isHovering) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isModalOpen, isHovering]);
+
+  // 공통 input 스타일
+  const baseInputStyles = cn(
+    'text-center bg-transparent border-b-2 border-primary-200',
+    'focus:outline-none focus:border-primary-500 transition-colors',
+    'text-lg font-semibold',
+    '[appearance:textfield]',
+    '[&::-webkit-outer-spin-button]:appearance-none',
+    '[&::-webkit-inner-spin-button]:appearance-none',
+  );
+
   // 모달 표시 조건: 클릭해서 열린 상태이거나 호버 중일 때
   const shouldShowModal = isModalOpen || isHovering;
 
   return (
     <div className='relative w-full'>
-      {/* [년][월][일] 형태의 미니멀한 날짜 input */}
       <motion.div
         ref={inputRef}
         className={cn(
-          'w-full p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer',
+          'p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer flex justify-center',
           'bg-white',
           isHovering || shouldShowModal
             ? 'border-primary-400 bg-primary-50 shadow-lg scale-[1.02]'
@@ -131,13 +177,9 @@ export function BookingDateInput({
           value={yearValue}
           onChange={handleYearChange}
           placeholder='2025'
-          min='2020'
+          min='2025'
           max='2030'
-          className={cn(
-            'w-16 text-center bg-transparent border-b-2 border-primary-200',
-            'focus:outline-none focus:border-primary-500 transition-colors',
-            'text-lg font-semibold',
-          )}
+          className={cn('w-16', baseInputStyles)}
           onClick={(e) => e.stopPropagation()}
           whileFocus={{ scale: 1.05 }}
         />
@@ -151,11 +193,7 @@ export function BookingDateInput({
           placeholder='09'
           min='1'
           max='12'
-          className={cn(
-            'w-12 text-center bg-transparent border-b-2 border-primary-200',
-            'focus:outline-none focus:border-primary-500 transition-colors',
-            'text-lg font-semibold',
-          )}
+          className={cn('w-12', baseInputStyles)}
           onClick={(e) => e.stopPropagation()}
           whileFocus={{ scale: 1.05 }}
         />
@@ -169,11 +207,7 @@ export function BookingDateInput({
           placeholder='16'
           min='1'
           max='31'
-          className={cn(
-            'w-12 text-center bg-transparent border-b-2 border-primary-200',
-            'focus:outline-none focus:border-primary-500 transition-colors',
-            'text-lg font-semibold',
-          )}
+          className={cn('w-12', baseInputStyles)}
           onClick={(e) => e.stopPropagation()}
           whileFocus={{ scale: 1.05 }}
         />
@@ -181,7 +215,7 @@ export function BookingDateInput({
 
         {/* 캘린더 아이콘 */}
         <motion.div
-          className='ml-auto p-2 rounded-xl hover:bg-white/80 transition-colors pointer-events-none'
+          className='ml-auto p-2 rounded-xl hover:bg-white/80 transition-colors pointer-events-none hidden xl:block'
           animate={{
             scale: selectedDate ? 1.1 : 1,
             rotate: shouldShowModal ? 10 : 0,
@@ -198,7 +232,7 @@ export function BookingDateInput({
       </motion.div>
 
       {/* 모달 */}
-      <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div ref={modalRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <BookingDateModal
           isOpen={shouldShowModal}
           onClose={handleModalClose}

@@ -10,7 +10,6 @@ type Level = 0 | 1 | 2 | 3 | 4;
 const LABELS = ['평점 없음', '보통', '다소 만족', '만족', '매우 만족'] as const;
 
 export function ReviewHero({ reviewCount = 1000, rating = 5 }: ReviewHeroProps) {
-  console.log({ reviewCount, rating });
   const level = Math.max(0, Math.min(4, Math.floor(rating))) as Level;
   const summary = LABELS[level];
 

@@ -31,14 +31,14 @@ export default function BookingCardDesktop({
   return (
     <div
       className={clsx(
-        'bg-white border border-card-border rounded-3xl p-[20px] xl:p-[30px] shadow-sm',
+        'bg-white border border-card-border rounded-3xl p-4 shadow-sm',
         'flex flex-col gap-6',
       )}
     >
       {/* 가격 */}
       <div className='flex items-center gap-1'>
-        <span className='text-2xl font-bold'>₩{price.toLocaleString()}</span>
-        <span className='text-xl text-gray-500'> / 인</span>
+        <span className='text-xl font-bold'>₩{price.toLocaleString()}</span>
+        <span className='text-lg text-gray-500'> / 인</span>
       </div>
       <BookingDateInput
         selectedDate={selectedDate}

@@ -71,7 +71,7 @@ export function useScrollPosition(
       const scrollTop = parseInt(savedScrollTop, 10);
       if (scrollTop > 0) {
         const startTime = Date.now();
-        const maxWaitTime = 1000; // 1초 최대 대기
+        const maxWaitTime = 5000; // 5초 최대 대기
 
         const attemptRestore = () => {
           // DOM 준비 상태 확인

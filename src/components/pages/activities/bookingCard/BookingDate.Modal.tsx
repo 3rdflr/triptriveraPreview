@@ -7,7 +7,7 @@ import { SchedulesByDate } from '@/types/activities.type';
 
 interface BookingDateModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (fromXButton?: boolean) => void;
   schedulesByDate: SchedulesByDate;
   selectedDate?: Date;
   onSelectDate: (date: Date | undefined) => void;
@@ -92,7 +92,7 @@ export function BookingDateModal({
                   <p className='text-sm text-primary-600 mt-1'>체험할 날짜를 선택해주세요</p>
                 </div>
                 <motion.button
-                  onClick={onClose}
+                  onClick={() => onClose(true)}
                   className='p-2 hover:bg-white/50 rounded-full transition-colors'
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}

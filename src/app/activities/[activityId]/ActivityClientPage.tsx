@@ -14,7 +14,7 @@ import { activityQueryKeys } from './queryClients';
 import NaverMap from '@/components/common/naverMaps/NaverMap';
 import Marker from '@/components/common/naverMaps/Marker';
 import ImageMarker from '@/components/common/naverMaps/ImageMarker';
-import { useRouter } from 'next/navigation';
+
 import { useUserStore } from '@/store/userStore';
 /**
  * ActivityClient 컴포넌트
@@ -26,7 +26,6 @@ interface ActivityClientProps {
 }
 
 export default function ActivityClient({ activityId }: ActivityClientProps) {
-  const router = useRouter();
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const user = useUserStore((state) => state.user);
 
@@ -61,17 +60,6 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
   //   enabled: !!activity, // activity 로드 후 실행
   // });
 
-  const handleDelete = () => {
-    //삭제 모달 추가
-    console.log('삭제 시도: ', { activityId });
-    router.push('/my-activities');
-  };
-
-  const handleEdit = () => {
-    console.log('수정 시도: ', { activityId });
-    router.push(`/my-activities/activity/${activityId}`);
-  };
-
   useEffect(() => {
     if (user?.id === activity.userId) {
       // 활동의 소유자인 경우
@@ -95,14 +83,8 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
                 subImages={activity.subImages}
                 title={activity.title}
               />
-              <ActivityInfo
-                className='block lg:hidden'
-                activity={activity}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-                isOwner={isOwner}
-              />
-              <hr className='border-gray-100 block lg:hidden' />
+              <ActivityInfo activity={activity} isOwner={isOwner} />
+              <hr className='border-gray-100' />
               <section className='flex flex-col gap-3'>
                 <h2 className='text-lg font-semibold'>체험 설명</h2>
                 <p>{activity.description}</p>
@@ -131,15 +113,8 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
           </div>
 
           {/* SideBar */}
-          <div className='lg:col-span-1'>
-            <div className='sticky top-30 flex flex-col gap-10 z-105'>
-              <ActivityInfo
-                className='hidden lg:block'
-                activity={activity}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-                isOwner={isOwner}
-              />
+          <div className='lg:col-span-1 '>
+            <div className='flex flex-col gap-10 z-105 sticky top-24'>
               <BookingCardContainer
                 activityId={activityId}
                 price={activity.price}
