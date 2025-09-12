@@ -68,12 +68,12 @@ const ScheduleTab = ({
         return (
           <TabsContent key={tab} value={tab} className='flex flex-col gap-5'>
             {schedules.length === 0 ? (
-              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-71'>
+              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-75'>
                 <p>예약 내역이 없습니다.</p>
               </div>
             ) : (
               <div
-                className={`${isTablet ? 'flex-row items-start' : 'flex-col items-center'} flex gap-7.5 min-h-71`}
+                className={`${isTablet ? 'flex-row items-start' : 'flex-col items-center'} flex gap-7.5 min-h-75`}
               >
                 <div className={`flex flex-col gap-2.5`}>
                   <Label className='text-lg font-bold'>예약 시간</Label>
@@ -87,7 +87,7 @@ const ScheduleTab = ({
                 </div>
 
                 <div
-                  className={`${isTablet ? 'flex-1 w-auto' : 'w-auto'} pc:w-full flex flex-col gap-2.5`}
+                  className={`${isTablet ? 'flex-1 w-auto' : 'w-auto min-w-[330px]'} mobile:pl-2 pc:w-full pc:min-w-0 pc:p-0 flex flex-col gap-2.5`}
                 >
                   <Label className='text-lg font-bold'>예약 내역</Label>
                   <InfinityScroll
@@ -98,8 +98,8 @@ const ScheduleTab = ({
                     }}
                     isLoading={isLoading}
                     isFetchingNextPage={isFetchingNextPage}
-                    height={200}
-                    itemHeightEstimate={110}
+                    height={isTablet ? 260 : 135}
+                    itemHeightEstimate={120}
                   >
                     {/* 초기 로딩 스켈레톤 */}
                     <InfinityScroll.Skeleton count={3}>
