@@ -158,7 +158,7 @@ export default function BottomNav() {
           </div>
         )}
       </motion.nav>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} modalClassName='m-15'>
         <NotificationModal />
       </Modal>
     </>

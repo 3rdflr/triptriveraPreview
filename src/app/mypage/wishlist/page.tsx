@@ -8,7 +8,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Spinner from '@/components/common/Spinner';
 import ActivityLike from '@/components/home/ActivityLike';
-import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 
 export default function WishList() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +22,6 @@ export default function WishList() {
     }
     setIsLoading(false);
   }, [user, initializeUser]);
-
-  // 마이페이지 미로그인 리디렉트
-  useMypageRedirect();
 
   if (isLoading) {
     return (

@@ -41,7 +41,7 @@ export default function Nav() {
 
   useEffect(() => setIsClient(true), []);
 
-  if (!isClient) return <NavSkeleton />;
+  if (!isClient && !withOutNav) return <NavSkeleton />;
 
   if (withOutNav) return null;
 
@@ -68,7 +68,7 @@ export default function Nav() {
                 alt='Logo'
                 width={40}
                 height={40}
-                className='w-[40px] h-auto'
+                className='w-[40px] h-[40px]'
               />
             ) : (
               <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />

@@ -118,7 +118,12 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
           ))}
 
         {(status === 'pending' || status === 'confirmed') && (
-          <Button variant='secondary' size='sm' className='flex-1' onClick={() => onCancel(id)}>
+          <Button
+            variant='secondary'
+            size='sm'
+            className='flex-1 min-w-[300px]'
+            onClick={() => onCancel(id)}
+          >
             예약 취소
           </Button>
         )}

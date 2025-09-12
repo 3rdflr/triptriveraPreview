@@ -2,6 +2,7 @@
 import Spinner from '@/components/common/Spinner';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { useUserStore } from '@/store/userStore';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useLayoutEffect, useState, useTransition } from 'react';
@@ -18,6 +19,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   const pathname = usePathname() as string;
   const isMobileMenuPage = pathname === '/mypage';
   const isUserPage = pathname === '/mypage/user';
+  const user = useUserStore((v) => v.user);
 
   const MyPageContent = () => {
     return (
@@ -39,6 +41,12 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   };
 
   useEffect(() => {
+    if (mounted && !user) {
+      router.push('/login');
+    }
+  }, [mounted, user, router]);
+
+  useEffect(() => {
     setMounted(true);
   }, []);
 
@@ -53,7 +61,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   return (
     <div
       className={clsx(
-        'justify-center mx-auto pb-9 px-6 pt-4 tablet:pt-13 max-w-[500px] tablet:max-w-[684px] pc:max-w-[980px]',
+        'justify-center mx-auto pb-9 px-6 tablet:px-0 pt-4 tablet:pt-13 max-w-[500px] tablet:max-w-[684px] pc:max-w-[980px]',
       )}
     >
       <div className={clsx('flex justify-center gap-7.5 pc:gap-12.5')}>

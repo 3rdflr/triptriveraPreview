@@ -103,8 +103,6 @@ export function useScrollPosition(
 
         attemptRestore();
       }
-    } else {
-      console.log(`⚠️ [SCROLL] 복원 건너뜀: savedScrollTop이 없거나 0 (${savedScrollTop})`);
     }
   };
 

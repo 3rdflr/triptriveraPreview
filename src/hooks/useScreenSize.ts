@@ -17,7 +17,7 @@ function getScreenType(width: number): ScreenType {
 }
 
 export function useScreenSize() {
-  const [screenType, setScreenType] = useState<ScreenType>('desktop'); // 초기값을 데스크탑으로 설정
+  const [screenType, setScreenType] = useState<ScreenType>('desktop'); // 초기값을 데스크탑
 
   // resize handler - screenType이 변경될 때만 상태 업데이트
   const handleResize = useCallback(() => {
@@ -36,7 +36,7 @@ export function useScreenSize() {
     // 초기 설정
     handleResize();
 
-    // 직접 resize listener - 조건부 상태 업데이트로 이미 최적화됨
+    // 직접 resize listener
     window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
