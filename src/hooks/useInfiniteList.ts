@@ -4,7 +4,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { getActivitiesList } from '@/app/api/activities';
 import { Activity, ActivitiesCategoryType } from '@/types/activities.type';
-import { normalize } from '@/components/home/SearchFilters';
 
 export interface ActivitiesPage {
   activities: Activity[];
@@ -33,13 +32,23 @@ export function useInfiniteList(initialActivities: Activity[], initalCursorId: n
         ...(keyword && { keyword }),
       });
 
+      const normalize = (s: string) => {
+        if (!s) return '';
+
+        return s
+          .replace(/(특별자치도|특별자치시|광역시|특별)$/g, '')
+          .replace(/(전라남도)$/g, '전남')
+          .trim()
+          .toLowerCase();
+      };
+
       const filteredActivities = data.activities.filter((item: Activity) => {
         const normalizedSearch = normalize(place);
 
         if (place) {
           const words = item.address.split(' '); // 주소 단어별 분리
           const firstWord = normalize(words[0]);
-          if (firstWord !== normalizedSearch) return false; // 첫 단어와 비교
+          if (!firstWord.includes(normalizedSearch)) return false; // 첫 단어와 비교
         }
 
         const priceOk = item.price >= minPrice && item.price <= maxPrice;
