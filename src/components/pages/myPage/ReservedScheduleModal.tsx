@@ -39,10 +39,13 @@ const ReservedScheduleModal = ({
   const overlay = useOverlay();
   const queryClient = useQueryClient();
   const [showNoDatatoast, setShowNoDatatoast] = useState(false);
-  const { status, setStatus, setActiveSchedule, activeScheduleId, setScheduleList } =
-    useScheduleStore();
-
-  const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
+  const {
+    status,
+    setStatus,
+    setActiveSchedule,
+    activeScheduleId: _activeScheduleId,
+    setScheduleList,
+  } = useScheduleStore();
 
   const { data: reservedScheduleData, isFetched: isReservedScheduleFetched } = useQuery({
     queryKey: ['reserved-schedule', activityId, date],
@@ -52,32 +55,8 @@ const ReservedScheduleModal = ({
     refetchOnMount: 'always',
   });
 
-  const {
-    reservationStatusListData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    refetch: refetchReservationStatusList,
-  } = useInfiniteScheduleList({ initialCursorId: null, activityId, scheduleId, status });
-
-  // const {
-  //   data: reservationStatusListData,
-  //   refetch: refetchReservationStatusList,
-  //   isLoading,
-  // } = useQuery<ReservationListResponse, Error>({
-  //   queryKey: ['reservation-schedule-list', activityId, scheduleId, status],
-  //   queryFn: () => {
-  //     if (!activityId || !scheduleId) {
-  //       return Promise.resolve({ reservations: [], totalCount: 0, cursorId: 0 });
-  //     }
-  //     return getReservationsList(Number(activityId), {
-  //       scheduleId: Number(scheduleId),
-  //       status: status as ReservationListStatus,
-  //     });
-  //   },
-  //   enabled: !!activityId && !!scheduleId,
-  // });
+  const { reservationStatusListData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteScheduleList({ initialCursorId: null, activityId, status });
 
   const { mutate: updateSchedule } = useMutation<
     MyReservationUpdateResponse,
@@ -113,7 +92,7 @@ const ReservedScheduleModal = ({
     },
   });
 
-  const handleScheduleSelect = (value: string, tab: keyof typeof activeScheduleId) => {
+  const handleScheduleSelect = (value: string, tab: keyof typeof _activeScheduleId) => {
     setActiveSchedule(tab, value);
   };
 
@@ -144,12 +123,6 @@ const ReservedScheduleModal = ({
       setShowNoDatatoast(true);
     }
   }, [isOpen, isReservedScheduleFetched, reservedScheduleData, showNoDatatoast]);
-
-  useEffect(() => {
-    if (scheduleId) {
-      refetchReservationStatusList();
-    }
-  }, [scheduleId, refetchReservationStatusList]);
 
   useEffect(() => {
     if (!isOpen) setShowNoDatatoast(false);

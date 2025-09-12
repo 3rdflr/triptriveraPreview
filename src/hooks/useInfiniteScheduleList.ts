@@ -2,20 +2,22 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { ReservationListResponse, ReservationListStatus } from '@/types/myReservation.type';
 import { getReservationsList } from '@/app/api/myReservations';
+import { useScheduleStore } from '@/store/reservedScheduleStore';
 
 interface useInfiniteScheduleListProps {
   initialCursorId: number | null;
   activityId: string | null;
-  scheduleId: string | null;
   status: ReservationListStatus;
 }
 
 const useInfiniteScheduleList = ({
   initialCursorId,
   activityId,
-  scheduleId,
   status,
 }: useInfiniteScheduleListProps) => {
+  const { activeScheduleId } = useScheduleStore();
+  const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
+
   const {
     data,
     fetchNextPage,
@@ -43,9 +45,8 @@ const useInfiniteScheduleList = ({
     },
     enabled: !!activityId && !!scheduleId,
     initialPageParam: initialCursorId,
-    getNextPageParam: (lastPage) => {
-      return lastPage.cursorId ?? undefined;
-    },
+    getNextPageParam: (lastPage) => lastPage.cursorId ?? undefined,
+    staleTime: 0,
   });
 
   const reservationStatusListData = useMemo(() => {
