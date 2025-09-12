@@ -4,10 +4,18 @@ import { Badge } from '@/components/ui/badge';
 
 import { Label } from '@/components/ui/label';
 import { reservationStatusAll, ReservationStatusWithAll } from '@/lib/constants/reservation';
-import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const ReservationListPage = () => {
+  const queryClient = useQueryClient();
+  const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState<ReservationStatusWithAll>('all');
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['reservation-list', selectedStatus] });
+  }, [pathname, selectedStatus, queryClient]);
 
   return (
     <div className='flex flex-col gap-7.5'>

@@ -36,7 +36,6 @@ const useInfiniteReservationList = (
 
       return lastPage.cursorId;
     },
-    // refetchOnMount: true,
   });
 
   const reservationListData = useMemo(() => {
