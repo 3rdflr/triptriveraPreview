@@ -25,6 +25,12 @@ type Props = {
 type Place = { src: string; name: string; description: string };
 type Section = 'place' | 'price' | 'keyword';
 
+// 검색어 접미사 제거 함수
+export const normalize = (s: string) => {
+  if (!s) return '';
+  return s.replace(/(특별자치도|특별자치시|광역시|특별|도|시)$/g, '').trim();
+};
+
 export default function SearchFilters({ scrollY, isSearching, setIsSearching }: Props) {
   const router = useRouter();
   const { isTablet } = useScreenSize();
@@ -40,15 +46,6 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
   const [price, setPrice] = useState<[number, number]>([0, 300_000]);
   const [keyword, setKeyword] = useState('');
   const [isShrunk, setIsShrunk] = useState(false);
-
-  // 검색어 접미사 제거
-  const normalize = (s: string) => {
-    if (!s) return '';
-    return s
-      .replace(/(특별자치도|특별자치시|광역시|특별|도|시)$/g, '')
-      .trim()
-      .toLowerCase();
-  };
 
   // --------------------
   // Refs
@@ -272,10 +269,13 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                     setPlace(val);
 
                     const normalizedVal = normalize(val);
+
                     setFilteredPlaces(
                       PLACES.filter((p) => {
-                        const normalizedName = normalize(p.name);
-                        return normalizedName.includes(normalizedVal);
+                        // 주소를 공백으로 분리해서 마지막 단어만 비교
+                        const words = p.name.split(' ');
+                        const lastWord = words[words.length - 1];
+                        return normalize(lastWord) === normalizedVal;
                       }),
                     );
 
