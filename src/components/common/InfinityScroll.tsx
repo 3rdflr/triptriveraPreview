@@ -96,18 +96,9 @@ function InfinityScrollRoot<T>({
     }
   }, [items, maxItems]);
 
-  useEffect(() => {
-    console.log('스크롤 위치 복원 스위칭', hasRestoredScroll);
-  }, [hasRestoredScroll]);
-
   // 최초 데이터 로딩 완료 후에만 스크롤 위치 복원
   useEffect(() => {
     if (displayItems.length > 0 && !isLoading && !hasRestoredScroll) {
-      console.log('🔄 스크롤 위치 복원 시도', {
-        'displayItems.length': displayItems.length,
-        'isLoading ': isLoading,
-        hasRestoredScroll: hasRestoredScroll,
-      });
       restoreScrollPosition();
       setHasRestoredScroll(true);
       console.log('스크롤 위치 복원 완료 :', { scrollKey });
