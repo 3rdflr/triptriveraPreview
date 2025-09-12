@@ -1,16 +1,20 @@
-// hooks/useNotifications.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, deleteNotification } from '@/app/api/notifications';
 import { useUserStore } from '@/store/userStore';
 import { NotificationItem } from '@/types/notification.type';
 
+interface NotificationsResponse {
+  totalCount: number;
+  notifications: NotificationItem[];
+}
+
 // 알림 조회 훅
 export const useNotifications = () => {
   const user = useUserStore((state) => state.user);
 
-  return useQuery({
+  return useQuery<NotificationsResponse>({
     queryKey: ['notifications', user?.id],
-    queryFn: getNotifications,
+    queryFn: () => getNotifications(99),
     staleTime: 1000 * 60, // 1분
     gcTime: 1000 * 60 * 5, // 5분
     enabled: !!user,
@@ -18,24 +22,24 @@ export const useNotifications = () => {
 };
 
 // 알림 삭제 훅
-
 export const useDeleteNotification = () => {
   const queryClient = useQueryClient();
+  const user = useUserStore((state) => state.user);
 
   return useMutation({
     mutationFn: (id: number) => deleteNotification(id),
 
-    // 낙관적 업데이트
     onMutate: async (deletedId: number) => {
-      await queryClient.cancelQueries({ queryKey: ['notifications'] });
+      if (!user) return;
 
-      const previousData = queryClient.getQueryData<{
-        totalCount: number;
-        notifications: NotificationItem[];
-      }>(['notifications']);
+      const queryKey = ['notifications', user.id];
+
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousData = queryClient.getQueryData<NotificationsResponse>(queryKey);
 
       if (previousData) {
-        queryClient.setQueryData(['notifications'], {
+        queryClient.setQueryData<NotificationsResponse>(queryKey, {
           ...previousData,
           notifications: previousData.notifications.filter((n) => n.id !== deletedId),
           totalCount: previousData.totalCount - 1,
@@ -46,13 +50,13 @@ export const useDeleteNotification = () => {
     },
 
     onError: (_err, _variables, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(['notifications'], context.previousData);
+      if (context?.previousData && user) {
+        queryClient.setQueryData(['notifications', user.id], context.previousData);
       }
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      if (user) queryClient.invalidateQueries({ queryKey: ['notifications', user.id] });
     },
   });
 };
