@@ -124,7 +124,7 @@ const ReservationStatusCalendar = ({
   return (
     <div
       className={clsx(
-        'w-full h-170 rounded-2xl mobile:w-119 mobile:h-195 tablet:w-160 tablet:border tablet:border-grayscale-100 tablet:shadow-lg',
+        'w-full h-170 rounded-2xl tablet:w-119 mobile:h-195 pc:w-160 tablet:border tablet:border-grayscale-100 tablet:shadow-lg',
       )}
     >
       <BigCalendar
