@@ -45,7 +45,8 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
   const normalize = (s: string) => {
     if (!s) return '';
     return s
-      .replace(/(특별자치도|특별자치시|광역시|특별|도|시)$/g, '')
+      .replace(/(특별자치도|특별자치시|광역시|특별)$/g, '')
+      .replace(/(전라남도)$/g, '전남')
       .trim()
       .toLowerCase();
   };
