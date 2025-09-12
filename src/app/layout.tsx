@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   creator: '파트4 2팀',
   publisher: 'Trivera',
   icons: {
-    icon: '/images/favicon.svg',
+    icon: '/images/favicon.png',
     apple: '/apple-touch-icon.png',
   },
   metadataBase: new URL(nextOrigin),
