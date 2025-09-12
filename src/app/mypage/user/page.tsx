@@ -18,7 +18,6 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
 import Spinner from '@/components/common/Spinner';
 import clsx from 'clsx';
-import { useMypageRedirect } from '@/hooks/useMypageRedirect';
 
 type UserFormValues = {
   nickname: string;
@@ -100,9 +99,6 @@ const UserPage = () => {
       });
     }
   }, [userData, reset, setUser]);
-
-  // 마이페이지 미로그인 리디렉트
-  useMypageRedirect();
 
   if (isLoading) {
     return <Spinner />;

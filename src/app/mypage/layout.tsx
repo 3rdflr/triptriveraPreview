@@ -2,6 +2,7 @@
 import Spinner from '@/components/common/Spinner';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { useUserStore } from '@/store/userStore';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useLayoutEffect, useState, useTransition } from 'react';
@@ -18,6 +19,7 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
   const pathname = usePathname() as string;
   const isMobileMenuPage = pathname === '/mypage';
   const isUserPage = pathname === '/mypage/user';
+  const user = useUserStore((v) => v.user);
 
   const MyPageContent = () => {
     return (
@@ -37,6 +39,12 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
       </>
     );
   };
+
+  useEffect(() => {
+    if (mounted && !user) {
+      router.push('/login');
+    }
+  }, [mounted, user, router]);
 
   useEffect(() => {
     setMounted(true);
