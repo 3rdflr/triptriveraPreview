@@ -148,7 +148,7 @@ const ReservationStatusPage = () => {
   }, [isActivityListLoading, isReservationListLoading]);
 
   useEffect(() => {
-    if (activityListData && activityListData.activities.length > 0) {
+    if (activityListData && activityListData?.activities?.length > 0) {
       setActivityId(String(activityListData?.activities[0].id));
     }
   }, [activityListData]);

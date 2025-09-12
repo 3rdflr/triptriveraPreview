@@ -21,11 +21,11 @@ const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
         size: 3,
       });
 
-      return response;
+      return { ...response, activities: response.activities ?? [] };
     },
     initialPageParam: initialCursorId,
     getNextPageParam: (lastPage) => {
-      if (!lastPage.activities || lastPage.activities.length === 0) {
+      if (!lastPage?.activities || lastPage.activities.length === 0) {
         return undefined;
       }
 
@@ -34,7 +34,8 @@ const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
   });
 
   const myExperienceListData = useMemo(() => {
-    return data?.pages?.flatMap((page) => page.activities) ?? [];
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page.activities ?? []);
   }, [data?.pages]);
 
   return {
