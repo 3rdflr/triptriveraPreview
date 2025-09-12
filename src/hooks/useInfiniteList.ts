@@ -32,10 +32,27 @@ export function useInfiniteList(initialActivities: Activity[], initalCursorId: n
         ...(keyword && { keyword }),
       });
 
+      const normalize = (s: string) => {
+        if (!s) return '';
+
+        return s
+          .replace(/(특별자치도|특별자치시|광역시|특별)$/g, '')
+          .replace(/(전라남도)$/g, '전남')
+          .trim()
+          .toLowerCase();
+      };
+
       const filteredActivities = data.activities.filter((item: Activity) => {
+        const normalizedSearch = normalize(place);
+
+        if (place) {
+          const words = item.address.split(' '); // 주소 단어별 분리
+          const firstWord = normalize(words[0]);
+          if (!firstWord.includes(normalizedSearch)) return false; // 첫 단어와 비교
+        }
+
         const priceOk = item.price >= minPrice && item.price <= maxPrice;
-        const placeOk = place ? item.address.includes(place) : true;
-        return priceOk && placeOk;
+        return priceOk;
       });
 
       return { activities: filteredActivities, cursorId: data.cursorId ?? null };
@@ -53,9 +70,8 @@ export function useInfiniteList(initialActivities: Activity[], initalCursorId: n
       pageParams: [undefined],
     },
 
-    // (옵션) 검색 시 즉시 새로고침을 강제하고 싶으면:
-    // refetchOnWindowFocus: false,
-    // refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 
   const allActivities = queryResult.data?.pages.flatMap((page) => page.activities) || [];

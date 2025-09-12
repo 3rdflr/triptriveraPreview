@@ -13,7 +13,6 @@ interface RecentViewedState {
   clearViewed: () => void;
 }
 
-const MAX_ITEMS = 10;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const STORAGE_KEY = 'recent-viewed';
 
@@ -80,10 +79,7 @@ export const useRecentViewedStore = create<RecentViewedState>((set) => {
           (a) => a.id !== activity.id && new Date(a.viewedAt).getTime() >= weekAgo,
         );
 
-        let newItems = [{ ...activity, viewedAt: now.toISOString() }, ...filtered];
-        if (newItems.length > MAX_ITEMS) {
-          newItems = newItems.slice(0, MAX_ITEMS);
-        }
+        const newItems = [{ ...activity, viewedAt: now.toISOString() }, ...filtered];
 
         saveRecent(newItems);
         return { recentViewed: newItems, grouped: groupByLabel(newItems) };
