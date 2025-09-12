@@ -1,6 +1,4 @@
-import useInfiniteReservationList from '@/hooks/useInfiniteReservationList';
 import { InfinityScroll } from '@/components/common/InfinityScroll';
-import { ReservationStatusWithAll } from '@/lib/constants/reservation';
 import MyExperienceCardSkeleton from './MyExperienceSkeleton';
 import {
   MyReservationUpdateRequest,
@@ -15,40 +13,26 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { updateReservation } from '@/app/api/myReservations';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-interface ReservationEmptyProps {
-  text: string;
-}
-
+import EmptyList from './EmptyList';
 interface ReservationListProps {
-  initialCursorId: number | null;
-  status: ReservationStatusWithAll;
+  reservationList: Reservation[];
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  isLoading: boolean;
+  isFetchingNextPage: boolean;
 }
 
-const ReservationList = ({ initialCursorId, status }: ReservationListProps) => {
+const ReservationList = ({
+  reservationList,
+  hasNextPage,
+  fetchNextPage,
+  isLoading,
+  isFetchingNextPage,
+}: ReservationListProps) => {
   const router = useRouter();
   const overlay = useOverlay();
   const queryClient = useQueryClient();
-
-  const { reservationListData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteReservationList(initialCursorId, status);
-
-  const ReservationEmpty = ({ text }: ReservationEmptyProps) => {
-    return (
-      <div className='flex flex-col mx-auto items-center'>
-        <Image
-          src={'/images/icons/_empty.png'}
-          width={182}
-          height={182}
-          priority
-          alt='체험 관리 디폴트 이미지'
-        />
-        <span className='text-18-medium text-grayscale-600'>{text}</span>
-      </div>
-    );
-  };
 
   const updateReservationMutation = useMutation<
     MyReservationUpdateResponse,
@@ -107,7 +91,7 @@ const ReservationList = ({ initialCursorId, status }: ReservationListProps) => {
 
   return (
     <InfinityScroll
-      items={reservationListData}
+      items={reservationList}
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       isLoading={isLoading}
@@ -121,7 +105,7 @@ const ReservationList = ({ initialCursorId, status }: ReservationListProps) => {
       <InfinityScroll.Skeleton count={3}>
         <MyExperienceCardSkeleton />
       </InfinityScroll.Skeleton>
-      <InfinityScroll.Contents loadingText='더 많은 후기를 불러오는 중입니다...'>
+      <InfinityScroll.Contents loadingText='더 많은 예약내역을 불러오는 중입니다...'>
         {(reservation: Reservation) => (
           <ReservationListCard
             key={reservation.id}
@@ -134,7 +118,7 @@ const ReservationList = ({ initialCursorId, status }: ReservationListProps) => {
       </InfinityScroll.Contents>
 
       <InfinityScroll.Empty className='flex flex-col items-center justify-center gap-3 text-gray-500'>
-        <ReservationEmpty text='예약내역이 없어요' />
+        <EmptyList text='예약내역이 없어요' />
       </InfinityScroll.Empty>
     </InfinityScroll>
   );

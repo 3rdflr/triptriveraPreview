@@ -39,7 +39,7 @@ const useInfiniteReservationList = (
   });
 
   const reservationListData = useMemo(() => {
-    return data?.pages.flatMap((page) => page.reservations) ?? [];
+    return data?.pages?.flatMap((page) => page.reservations) ?? [];
   }, [data?.pages]);
 
   return {
