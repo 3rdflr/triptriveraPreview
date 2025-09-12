@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { Suspense, useId } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import NaverMapSkeleton from './NaverMapSkeleton';
@@ -51,18 +52,31 @@ export default function NaverMap({
         <NaverMapError width={width} height={height} className={className} onRetry={onRetry} />
       }
     >
-      <Suspense fallback={<NaverMapSkeleton width={width} height={height} className={className} />}>
-        <NaverMapCore
-          address={address}
-          width={width}
-          height={height}
-          className={className}
-          zoom={zoom}
-          mapId={mapId}
+      <AnimatePresence mode='wait'>
+        <motion.div
+          key={address}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className='h-full'
         >
-          {children}
-        </NaverMapCore>
-      </Suspense>
+          <Suspense
+            fallback={<NaverMapSkeleton width={width} height={height} className={className} />}
+          >
+            <NaverMapCore
+              address={address}
+              width={width}
+              height={height}
+              className={className}
+              zoom={zoom}
+              mapId={mapId}
+            >
+              {children}
+            </NaverMapCore>
+          </Suspense>
+        </motion.div>
+      </AnimatePresence>
     </ErrorBoundary>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 
 /**
  * NaverMapSkeleton 컴포넌트
@@ -25,28 +24,19 @@ export default function NaverMapSkeleton({
   className = '',
 }: NaverMapSkeletonProps) {
   return (
-    <div
-      className={`w-full relative bg-gray-100 flex justify-center items-center rounded-3xl ${className}`}
-      style={{ width, height }}
-    >
+    <div>
       <motion.div
-        initial={{ opacity: 0.5, scale: 1 }}
-        animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.5] }}
+        initial={{ opacity: 0.5 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{
-          duration: 2,
+          duration: 1,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className='w-full h-full'
-      >
-        <Image
-          src='/images/mapInitImage.png'
-          alt='지도 로딩 중'
-          width={150}
-          height={150}
-          className=' object-cover w-full h-full'
-        />
-      </motion.div>
+        className={`w-full h-full relative bg-gray-100 flex justify-center items-center rounded-3xl ${className}`}
+        style={{ width, height }}
+      ></motion.div>
     </div>
   );
 }
