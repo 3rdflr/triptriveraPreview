@@ -60,7 +60,7 @@ export default function SearchResult({
                       className='px-3 py-1 bg-gray-100 text-gray-600 text-[13px] font-semibold rounded-2xl
              transition-transform duration-200 ease-in-out hover:scale-105 shadow-lg animate-fade-in-scale'
                     >
-                      {activity.price.toLocaleString()}원
+                      {activity.price.toLocaleString()}
                     </div>
                   </Marker>
                 ))}
@@ -91,7 +91,7 @@ export default function SearchResult({
                       className='px-3 py-1 bg-gray-100 text-gray-600 text-[13px] font-semibold rounded-2xl
              transition-transform duration-200 ease-in-out hover:scale-105 shadow-lg animate-fade-in-scale'
                     >
-                      {activity.price.toLocaleString()}원
+                      {activity.price.toLocaleString()}
                     </div>
                   </Marker>
                 ))}
