@@ -88,7 +88,7 @@ export default function ActivityCard({
 
         {/* 주소 */}
         <section>
-          <address className='text-xs leading-[1.4] text-gray-500 not-italic'>
+          <address className='text-xs leading-[1.4] text-gray-500 not-italic flex-nowrap line-clamp-1 scrollbar-hide'>
             {activity.address || '대한민국'}
           </address>
         </section>
