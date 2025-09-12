@@ -41,7 +41,7 @@ export default function Nav() {
 
   useEffect(() => setIsClient(true), []);
 
-  if (!isClient) return <NavSkeleton />;
+  if (!isClient && !withOutNav) return <NavSkeleton />;
 
   if (withOutNav) return null;
 

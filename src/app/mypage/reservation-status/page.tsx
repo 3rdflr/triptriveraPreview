@@ -26,7 +26,7 @@ const ReservationStatusPage = () => {
 
   const { data: activityListData, isLoading: isActivityListLoading } = useQuery({
     queryKey: ['my-activities-list'],
-    queryFn: () => getMyActivitiesList({}),
+    queryFn: () => getMyActivitiesList({ size: 9999 }),
     refetchOnMount: 'always',
   });
 
