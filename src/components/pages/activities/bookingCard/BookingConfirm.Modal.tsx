@@ -10,7 +10,6 @@ import ConfirmActionModal from '@/components/common/ConfirmActionModal';
 import { successToast } from '@/lib/utils/toastUtils';
 import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
-import PaymentsModal from './Payments.Modal';
 
 interface BookingConfirmModalProps {
   className?: string;
@@ -51,9 +50,7 @@ const BookingConfirmModal = ({
       console.log('🎫 [BookingConfirmModal] 예약 성공:', data);
       onClose();
       successToast.run('예약이 완료되었습니다!');
-      overlay.open(({ isOpen, close }) => (
-        <PaymentsModal isOpen={isOpen} onClose={close} title={title} totalPrice={totalPrice} />
-      ));
+      router.push('/mypage/reservation-list');
     },
     onError: (error: unknown) => {
       console.error('❗ [BookingConfirmModal] 예약 실패:', error);

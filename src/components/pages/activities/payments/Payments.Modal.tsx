@@ -6,6 +6,8 @@ import { nanoid } from 'nanoid';
 import { useUserStore } from '@/store/userStore';
 import { ErrorBoundary } from 'react-error-boundary';
 import PaymentsError from './Payments.Error';
+import { useOverlay } from '@/hooks/useOverlay';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 interface PaymentsModalProps {
   isOpen: boolean;
@@ -19,7 +21,9 @@ const CLIENT_KEY = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm';
 export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: PaymentsModalProps) {
   const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null);
   const [isRendered, setIsRendered] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const { user } = useUserStore();
+  const overlay = useOverlay();
 
   const amount = useMemo(() => {
     return {
@@ -53,11 +57,28 @@ export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: Pa
         customerName: user?.nickname || '홍길동',
         customerMobilePhone: '01012341234',
       })
-      .then(() => {
+      .then((result) => {
         onClose();
+        console.log('결제 성공, result:', result);
+        overlay.open(({ isOpen, close }) => (
+          <ConfirmModal
+            isOpen={isOpen}
+            onClose={close}
+            onAction={close}
+            title='결제가 완료되었습니다.'
+          />
+        ));
       })
       .catch((error) => {
         console.error('결제 실패:', error);
+        overlay.open(({ isOpen, close }) => (
+          <ConfirmModal
+            isOpen={isOpen}
+            onClose={close}
+            onAction={close}
+            title='결제에 실패했습니다.'
+          />
+        ));
       });
   };
 
@@ -76,6 +97,7 @@ export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: Pa
         setWidgets(tossPaymentsWidgets);
       } catch (error) {
         console.error('Failed to load payment widgets:', error);
+        setHasError(true);
       }
     }
 
@@ -109,6 +131,7 @@ export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: Pa
       } catch (error) {
         console.error('Failed to render payment widgets:', error);
         cleanupWidgets();
+        setHasError(true);
       }
     }
 
@@ -121,6 +144,11 @@ export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: Pa
       cleanupWidgets();
     };
   }, []);
+
+  // 에러 상태일 때 에러 모달 표시
+  if (hasError) {
+    return <PaymentsError isOpen={isOpen} onClose={onClose} />;
+  }
 
   return (
     <ErrorBoundary fallback={<PaymentsError isOpen={isOpen} onClose={onClose} />}>
