@@ -14,7 +14,7 @@ const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
     error,
     refetch,
   } = useInfiniteQuery<MyActivitiesListResponse>({
-    queryKey: ['my-activities-list'],
+    queryKey: ['my-activities-list-infinite'],
     queryFn: async ({ pageParam }): Promise<MyActivitiesListResponse> => {
       const response = await getMyActivitiesList({
         ...(pageParam ? { cursorId: Number(pageParam) } : {}),
@@ -25,19 +25,16 @@ const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
     },
     initialPageParam: initialCursorId ?? null,
     getNextPageParam: (lastPage) => {
-      if (!lastPage || !Array.isArray(lastPage.activities) || lastPage.activities.length === 0) {
+      if (!lastPage.activities || lastPage.activities.length === 0) {
         return undefined;
       }
-      if (lastPage.cursorId === null || lastPage.cursorId === undefined) {
-        return undefined;
-      }
+
       return lastPage.cursorId;
     },
   });
 
   const myExperienceListData = useMemo(() => {
-    if (!data?.pages || data.pages.length === 0) return [];
-    return data.pages.flatMap((page) => page?.activities ?? []);
+    return data?.pages?.flatMap((page) => page.activities) ?? [];
   }, [data?.pages]);
 
   return {
