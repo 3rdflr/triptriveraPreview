@@ -62,6 +62,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     update,
     append,
     remove,
+    insert,
   } = useFieldArray({
     control,
     name: 'schedules',
@@ -228,6 +229,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     update,
     append,
     remove,
+    insert,
     detailData,
     isDetailLoading,
     isDetailFetching,

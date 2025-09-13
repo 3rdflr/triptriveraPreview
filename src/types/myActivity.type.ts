@@ -1,7 +1,7 @@
 import { Activity } from './activities.type';
 
 export interface MyActivitySchedule {
-  id?: number;
+  id?: number | string;
   date: string;
   startTime: string;
   endTime: string;

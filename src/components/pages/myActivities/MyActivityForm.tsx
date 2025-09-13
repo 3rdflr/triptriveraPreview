@@ -21,6 +21,7 @@ import { toInputDate } from '@/lib/utils/dateUtils';
 import useMyActivityForm from '@/hooks/useMyActivityForm';
 import ImageUploadSection from './ImageUploadSection';
 import Script from 'next/script';
+import { isBefore, parse } from 'date-fns';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -37,8 +38,8 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     setValue,
     trigger,
     update,
-    append,
     remove,
+    insert,
     detailData,
     isDetailLoading,
     isDetailFetching,
@@ -76,16 +77,43 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     if (mode === 'EDIT') {
       if (!detailData || isDetailLoading || isDetailFetching) return;
 
-      const detailSchedules = detailData.schedules.map((schedule) => ({
-        ...schedule,
-        date: toInputDate(schedule.date),
-      }));
+      const now = new Date();
+
+      const detailSchedules = detailData.schedules
+        .map((schedule) => ({
+          ...schedule,
+          date: toInputDate(schedule.date),
+        }))
+        .filter((schedule) => {
+          if (!schedule.date || !schedule.startTime) return false;
+
+          const scheduleDateTime = parse(
+            `${schedule.date} ${schedule.startTime}`,
+            'yy/MM/dd HH:mm',
+            new Date(),
+          );
+
+          return !isBefore(scheduleDateTime, now);
+        });
+
+      console.log(detailSchedules);
 
       setOriginalSchedules(detailSchedules);
+
+      const emptyFirstRow: MyActivitySchedule = {
+        id: crypto.randomUUID(),
+        date: '',
+        startTime: '',
+        endTime: '',
+      };
+
+      const schedulesToReset =
+        detailSchedules.length > 0 ? [emptyFirstRow, ...detailSchedules] : [emptyFirstRow];
+
       const formData: MyActivityFormData = {
         ...detailData,
         price: String(detailData.price),
-        schedules: detailSchedules,
+        schedules: schedulesToReset,
         subImages: detailData.subImages ?? [],
         bannerImages: [{ imageUrl: detailData.bannerImageUrl }],
         subImageUrls: [] as string[],
@@ -226,7 +254,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
             <Label>예약 가능한 시간대</Label>
             {scheduleFields.map((scheduleField, index) => (
               <div
-                key={index}
+                key={scheduleField.id}
                 className={clsx(
                   'w-full',
                   index === 0 ? 'pt-4' : '',
@@ -234,17 +262,18 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                 )}
               >
                 <DateTimeRow
-                  key={index}
+                  key={scheduleField.id}
                   data={scheduleField}
                   onChange={(val) => {
                     update(index, val);
-                    trigger('schedules');
+                    trigger(`schedules.${index}`);
                   }}
                   onBlur={() => {
-                    trigger('schedules');
+                    trigger(`schedules.${index}`);
                   }}
                   onAdd={() =>
-                    append({
+                    insert(0, {
+                      id: crypto.randomUUID(),
                       date: '',
                       startTime: '',
                       endTime: '',
