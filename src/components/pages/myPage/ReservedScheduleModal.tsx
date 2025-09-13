@@ -6,15 +6,9 @@ import ScheduleTab from './ScheduleTab';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import {
   MyReservationUpdateResponse,
-  ReservationListResponse,
-  ReservationListStatus,
   UpdateReservedScheduleBody,
 } from '@/types/myReservation.type';
-import {
-  getReservationsList,
-  getReservedSchedule,
-  updateReservedSchedule,
-} from '@/app/api/myReservations';
+import { getReservedSchedule, updateReservedSchedule } from '@/app/api/myReservations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
@@ -23,6 +17,7 @@ import { errorToast, successToast } from '@/lib/utils/toastUtils';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import BottomSheet from '@/components/common/BottomSheet';
 import { useEffect, useState } from 'react';
+import useInfiniteScheduleList from '@/hooks/useInfiniteScheduleList';
 
 interface ReservedScheduleModalProps {
   activityId: string;
@@ -44,10 +39,13 @@ const ReservedScheduleModal = ({
   const overlay = useOverlay();
   const queryClient = useQueryClient();
   const [showNoDatatoast, setShowNoDatatoast] = useState(false);
-  const { status, setStatus, setActiveSchedule, activeScheduleId, setScheduleList } =
-    useScheduleStore();
-
-  const scheduleId = activeScheduleId[status as keyof typeof activeScheduleId];
+  const {
+    status,
+    setStatus,
+    setActiveSchedule,
+    activeScheduleId: _activeScheduleId,
+    setScheduleList,
+  } = useScheduleStore();
 
   const { data: reservedScheduleData, isFetched: isReservedScheduleFetched } = useQuery({
     queryKey: ['reserved-schedule', activityId, date],
@@ -57,23 +55,8 @@ const ReservedScheduleModal = ({
     refetchOnMount: 'always',
   });
 
-  const {
-    data: reservationStatusListData,
-    refetch: refetchReservationStatusList,
-    isLoading,
-  } = useQuery<ReservationListResponse, Error>({
-    queryKey: ['reservation-schedule-list', activityId, scheduleId, status],
-    queryFn: () => {
-      if (!activityId || !scheduleId) {
-        return Promise.resolve({ reservations: [], totalCount: 0, cursorId: 0 });
-      }
-      return getReservationsList(Number(activityId), {
-        scheduleId: Number(scheduleId),
-        status: status as ReservationListStatus,
-      });
-    },
-    enabled: !!activityId && !!scheduleId,
-  });
+  const { reservationStatusListData, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteScheduleList({ initialCursorId: null, activityId, status });
 
   const { mutate: updateSchedule } = useMutation<
     MyReservationUpdateResponse,
@@ -109,9 +92,8 @@ const ReservedScheduleModal = ({
     },
   });
 
-  const handleScheduleSelect = (value: string, tab: keyof typeof activeScheduleId) => {
+  const handleScheduleSelect = (value: string, tab: keyof typeof _activeScheduleId) => {
     setActiveSchedule(tab, value);
-    refetchReservationStatusList();
   };
 
   const handleConfirmReservation = (activityId: number, reservationId: number) => {
@@ -174,6 +156,7 @@ const ReservedScheduleModal = ({
         onClose={onClose}
         modalClassName={clsx('bg-white !py-7.5 !px-6 !rounded-3xl', className)}
         buttonClassName='!hidden'
+        containerClassName='bg-transparent'
       >
         <div className='flex flex-col items-center gap-3 w-73'>
           <header className='flex justify-between items-center w-full'>
@@ -183,8 +166,11 @@ const ReservedScheduleModal = ({
             <IoClose size={18} onClick={onClose} />
           </header>
           <ScheduleTab
-            reservations={reservationStatusListData?.reservations ?? []}
+            reservations={reservationStatusListData ?? []}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
             isLoading={isLoading}
+            isFetchingNextPage={isFetchingNextPage}
             onConfirm={handleConfirmReservation}
             onDecline={handleDeclineReservation}
             onSelectSchedule={handleScheduleSelect}
@@ -200,8 +186,11 @@ const ReservedScheduleModal = ({
       title={date ? format(new Date(date), 'yy년 M월 d일') : ''}
     >
       <ScheduleTab
-        reservations={reservationStatusListData?.reservations ?? []}
+        reservations={reservationStatusListData ?? []}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
         isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
         onConfirm={handleConfirmReservation}
         onDecline={handleDeclineReservation}
         onSelectSchedule={handleScheduleSelect}

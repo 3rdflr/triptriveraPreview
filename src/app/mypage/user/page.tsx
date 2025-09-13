@@ -107,7 +107,7 @@ const UserPage = () => {
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
-      <div className={clsx('flex flex-col w-full items-start gap-8')}>
+      <div className={clsx('flex flex-col w-full items-start gap-8 pl-4')}>
         <div className='flex flex-col gap-2.5'>
           <Label className='text-[18px] font-bold'>내 정보</Label>
           <span className='text-14-medium text-grayscale-500'>
@@ -141,7 +141,7 @@ const UserPage = () => {
                 <FormInput
                   type='password'
                   id='password'
-                  label='비밀번호'
+                  label='새 비밀번호'
                   placeholder='8자 이상 입력해 주세요'
                   autoComplete='new-password'
                   aria-invalid={isSubmitted ? (errors.password ? 'true' : 'false') : undefined}
@@ -160,7 +160,7 @@ const UserPage = () => {
                 <FormInput
                   type='password'
                   id='confirmPassword'
-                  label='비밀번호 확인'
+                  label='새 비밀번호 확인'
                   placeholder='비밀번호를 한 번 더 입력해 주세요'
                   autoComplete='new-password'
                   aria-invalid={

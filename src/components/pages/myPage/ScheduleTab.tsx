@@ -5,23 +5,31 @@ import { TabsList } from '@radix-ui/react-tabs';
 import ScheduleDropdown from './ScheduleDropdown';
 import { ReservationListStatus, ReservedReservation } from '@/types/myReservation.type';
 import ScheduleReservationCard from './ScheduleReservationCard';
-import Spinner from '@/components/common/Spinner';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { InfinityScroll } from '@/components/common/InfinityScroll';
+import MyExperienceCardSkeleton from './MyExperienceSkeleton';
+import EmptyList from './EmptyList';
 
 interface ScheduleTabProps {
   reservations: ReservedReservation[];
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  isLoading: boolean;
+  isFetchingNextPage: boolean;
   onConfirm: (activityId: number, reservationId: number) => void;
   onDecline: (activityId: number, reservationId: number) => void;
   onSelectSchedule: (value: string, tab: 'pending' | 'confirmed' | 'declined') => void;
-  isLoading: boolean;
 }
 
 const ScheduleTab = ({
   reservations,
+  hasNextPage,
+  fetchNextPage,
+  isLoading,
+  isFetchingNextPage,
   onConfirm,
   onDecline,
   onSelectSchedule,
-  isLoading,
 }: ScheduleTabProps) => {
   const { isDesktop, isTablet } = useScreenSize();
   const { status, setStatus, activeScheduleId, scheduleLists } = useScheduleStore();
@@ -60,12 +68,12 @@ const ScheduleTab = ({
         return (
           <TabsContent key={tab} value={tab} className='flex flex-col gap-5'>
             {schedules.length === 0 ? (
-              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-71'>
+              <div className='flex flex-col items-center justify-center py-10 text-gray-500 min-h-75'>
                 <p>예약 내역이 없습니다.</p>
               </div>
             ) : (
               <div
-                className={`${isTablet ? 'flex-row items-start' : 'flex-col items-center'} flex gap-7.5 min-h-71`}
+                className={`${isTablet ? 'flex-row items-start' : 'flex-col items-center'} flex gap-7.5 min-h-75`}
               >
                 <div className={`flex flex-col gap-2.5`}>
                   <Label className='text-lg font-bold'>예약 시간</Label>
@@ -79,21 +87,38 @@ const ScheduleTab = ({
                 </div>
 
                 <div
-                  className={`${isTablet ? 'flex-1 w-auto' : 'w-auto'} pc:w-full flex flex-col gap-2.5`}
+                  className={`${isTablet ? 'flex-1 w-auto' : 'w-auto min-w-[330px]'} mobile:pl-2 pc:w-full pc:min-w-0 pc:p-0 flex flex-col gap-2.5`}
                 >
                   <Label className='text-lg font-bold'>예약 내역</Label>
-                  {isLoading ? (
-                    <Spinner />
-                  ) : (
-                    reservations?.map((reservation: ReservedReservation) => (
-                      <ScheduleReservationCard
-                        key={reservation.id}
-                        reservationData={reservation}
-                        onConfirm={onConfirm}
-                        onDecline={onDecline}
-                      />
-                    ))
-                  )}
+                  <InfinityScroll
+                    items={reservations}
+                    hasNextPage={hasNextPage}
+                    fetchNextPage={fetchNextPage}
+                    isLoading={isLoading}
+                    isFetchingNextPage={isFetchingNextPage}
+                    height={isTablet ? 300 : 135}
+                    itemHeightEstimate={120}
+                    enableScrollPosition={false}
+                  >
+                    {/* 초기 로딩 스켈레톤 */}
+                    <InfinityScroll.Skeleton count={3}>
+                      <MyExperienceCardSkeleton />
+                    </InfinityScroll.Skeleton>
+                    <InfinityScroll.Contents loadingText='더 많은 예약내역을 불러오는 중입니다...'>
+                      {(reservation: ReservedReservation) => (
+                        <ScheduleReservationCard
+                          key={reservation.id}
+                          reservationData={reservation}
+                          onConfirm={onConfirm}
+                          onDecline={onDecline}
+                        />
+                      )}
+                    </InfinityScroll.Contents>
+
+                    <InfinityScroll.Empty className='flex flex-col items-center justify-center gap-3 pt-6 text-gray-500'>
+                      <EmptyList text='예약내역이 없어요' />
+                    </InfinityScroll.Empty>
+                  </InfinityScroll>
                 </div>
               </div>
             )}

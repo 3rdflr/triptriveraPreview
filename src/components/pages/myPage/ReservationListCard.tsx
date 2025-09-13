@@ -90,7 +90,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               <Image
                 src={image}
                 alt='체험 관리 썸네일'
-                layout='fill'
+                fill
                 className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
                 onError={() => {
                   setIsError(true);

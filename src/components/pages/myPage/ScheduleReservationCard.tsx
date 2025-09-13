@@ -19,7 +19,7 @@ const ScheduleReservationCard = ({
   const { id: reservationId, activityId, headCount, nickname, status } = reservationData;
   return (
     <div
-      className={`${isMobile ? 'w-[327px]' : 'w-full'} flex justify-between items-center border border-grayscale-100 px-4 py-5 rounded-2xl`}
+      className={`${isMobile ? 'w-[305px]' : 'w-full'} flex justify-between items-center border border-grayscale-100 px-4 py-5 rounded-2xl`}
     >
       <div className='flex gap-2'>
         <div className='flex flex-col text-16-bold text-grayscale-500'>

@@ -3,6 +3,7 @@ import ReservationList from '@/components/pages/myPage/ReservationList';
 import { Badge } from '@/components/ui/badge';
 
 import { Label } from '@/components/ui/label';
+import useInfiniteReservationList from '@/hooks/useInfiniteReservationList';
 import { reservationStatusAll, ReservationStatusWithAll } from '@/lib/constants/reservation';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
@@ -13,9 +14,18 @@ const ReservationListPage = () => {
   const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState<ReservationStatusWithAll>('all');
 
+  const {
+    reservationListData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+  } = useInfiniteReservationList(null, selectedStatus);
+
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['reservation-list', selectedStatus] });
-  }, [pathname, selectedStatus, queryClient]);
+    refetch();
+  }, [pathname, selectedStatus, queryClient, refetch]);
 
   return (
     <div className='flex flex-col gap-7.5'>
@@ -27,25 +37,32 @@ const ReservationListPage = () => {
             예약내역을 변경 및 취소할 수 있습니다.
           </span>
           <div className='flex pt-3.5 gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide'>
-            {(Object.entries(reservationStatusAll) as [ReservationStatusWithAll, string][])
-              .filter(([value]) => value !== 'declined')
-              .map(([value, label]) => (
-                <Badge
-                  key={value}
-                  variant='outline'
-                  selected={selectedStatus === value}
-                  onClick={() => setSelectedStatus(value)}
-                >
-                  {label}
-                </Badge>
-              ))}
+            {reservationListData.length > 0 &&
+              (Object.entries(reservationStatusAll) as [ReservationStatusWithAll, string][])
+                .filter(([value]) => value !== 'declined')
+                .map(([value, label]) => (
+                  <Badge
+                    key={value}
+                    variant='outline'
+                    selected={selectedStatus === value}
+                    onClick={() => setSelectedStatus(value)}
+                  >
+                    {label}
+                  </Badge>
+                ))}
           </div>
         </div>
       </div>
 
       {/* 예약 내역 카드 목록 */}
       <div className='flex flex-col gap-6 items-center'>
-        <ReservationList initialCursorId={null} status={selectedStatus} />
+        <ReservationList
+          reservationList={reservationListData}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          isLoading={isLoading}
+          isFetchingNextPage={isFetchingNextPage}
+        />
       </div>
     </div>
   );

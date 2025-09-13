@@ -11,7 +11,7 @@ interface ScheduleDropdownProps {
 
 const ScheduleDropdown = ({ value, scheduleList, onChange }: ScheduleDropdownProps) => {
   const { isTablet, isMobile } = useScreenSize();
-  const dropdownWidth = isMobile ? 'w-[327px]' : isTablet ? 'w-[338px]' : 'w-[292px]';
+  const dropdownWidth = isMobile ? 'w-[305px]' : isTablet ? 'w-[338px]' : 'w-[292px]';
   const selected = scheduleList?.find((s) => String(s.scheduleId) === value);
 
   const handleSelect = (val: string) => {

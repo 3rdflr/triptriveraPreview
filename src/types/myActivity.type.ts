@@ -13,7 +13,7 @@ export interface MyActivitiesListRequest {
 }
 
 export interface MyActivitiesListResponse {
-  cursorId: number;
+  cursorId: number | null;
   totalCount: number;
   activities: Activity[];
 }
