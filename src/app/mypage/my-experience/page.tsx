@@ -3,13 +3,11 @@ import MyExperienceList from '@/components/pages/myPage/MyExperienceList';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import useInfiniteMyExperienceList from '@/hooks/useInfiniteMyExperienceList';
-import { useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const MyExperiencePage = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const pathname = usePathname();
 
   const {
@@ -23,7 +21,7 @@ const MyExperiencePage = () => {
 
   useEffect(() => {
     refetch();
-  }, [pathname, queryClient, refetch]);
+  }, [pathname, refetch]);
 
   return (
     <div className='flex flex-col gap-7.5'>

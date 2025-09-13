@@ -81,7 +81,7 @@ const MyExperienceList = ({
 
   return (
     <InfinityScroll
-      items={experienceList}
+      items={experienceList ?? []}
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       isLoading={isLoading}
@@ -96,10 +96,10 @@ const MyExperienceList = ({
         <MyExperienceCardSkeleton />
       </InfinityScroll.Skeleton>
       <InfinityScroll.Contents loadingText='더 많은 체험을 불러오는 중입니다...'>
-        {(reservation: Activity) => (
+        {(activity: Activity) => (
           <MyExperienceCard
-            key={reservation.id}
-            data={reservation}
+            key={activity.id}
+            data={activity}
             onEdit={onClickEdit}
             onDelete={onClickShowDeleteModal}
           />

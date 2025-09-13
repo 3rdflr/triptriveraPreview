@@ -93,13 +93,12 @@ const ScheduleTab = ({
                   <InfinityScroll
                     items={reservations}
                     hasNextPage={hasNextPage}
-                    fetchNextPage={() => {
-                      if (!isFetchingNextPage) fetchNextPage();
-                    }}
+                    fetchNextPage={fetchNextPage}
                     isLoading={isLoading}
                     isFetchingNextPage={isFetchingNextPage}
-                    height={isTablet ? 260 : 135}
+                    height={500}
                     itemHeightEstimate={120}
+                    enableScrollPosition={false}
                   >
                     {/* 초기 로딩 스켈레톤 */}
                     <InfinityScroll.Skeleton count={3}>

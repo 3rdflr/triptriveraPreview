@@ -5,7 +5,7 @@ import { MyActivitiesListResponse } from '@/types/myActivity.type';
 
 const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
   const {
-    data,
+    data = { pages: [], pageParams: [] },
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -21,21 +21,23 @@ const useInfiniteMyExperienceList = (initialCursorId: number | null) => {
         size: 3,
       });
 
-      return { ...response, activities: response.activities ?? [] };
+      return response;
     },
-    initialPageParam: initialCursorId,
+    initialPageParam: initialCursorId ?? null,
     getNextPageParam: (lastPage) => {
-      if (!lastPage?.activities || lastPage.activities.length === 0) {
+      if (!lastPage || !Array.isArray(lastPage.activities) || lastPage.activities.length === 0) {
         return undefined;
       }
-
+      if (lastPage.cursorId === null || lastPage.cursorId === undefined) {
+        return undefined;
+      }
       return lastPage.cursorId;
     },
   });
 
   const myExperienceListData = useMemo(() => {
-    if (!data?.pages) return [];
-    return data.pages.flatMap((page) => page.activities ?? []);
+    if (!data?.pages || data.pages.length === 0) return [];
+    return data.pages.flatMap((page) => page?.activities ?? []);
   }, [data?.pages]);
 
   return {
