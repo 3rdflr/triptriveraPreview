@@ -156,6 +156,7 @@ const ReservedScheduleModal = ({
         onClose={onClose}
         modalClassName={clsx('bg-white !py-7.5 !px-6 !rounded-3xl', className)}
         buttonClassName='!hidden'
+        containerClassName='bg-transparent'
       >
         <div className='flex flex-col items-center gap-3 w-73'>
           <header className='flex justify-between items-center w-full'>

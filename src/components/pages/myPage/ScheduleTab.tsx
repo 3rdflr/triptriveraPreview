@@ -96,7 +96,7 @@ const ScheduleTab = ({
                     fetchNextPage={fetchNextPage}
                     isLoading={isLoading}
                     isFetchingNextPage={isFetchingNextPage}
-                    height={500}
+                    height={200}
                     itemHeightEstimate={120}
                     enableScrollPosition={false}
                   >
