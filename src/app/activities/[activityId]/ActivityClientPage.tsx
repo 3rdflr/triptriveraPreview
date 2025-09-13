@@ -1,21 +1,18 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
 import { useRecentViewedStore } from '@/store/recentlyWatched';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
-
 import BookingCardContainer from '@/components/pages/activities/bookingCard/BookingContainer';
-
 import ReviewList from '@/components/pages/activities/ReviewList';
-
-import { activityQueryKeys } from './queryClients';
 import NaverMap from '@/components/common/naverMaps/NaverMap';
 import Marker from '@/components/common/naverMaps/Marker';
 import ImageMarker from '@/components/common/naverMaps/ImageMarker';
-
+import { activityQueryKeys } from './queryKeys';
 import { useUserStore } from '@/store/userStore';
+
 /**
  * ActivityClient 컴포넌트
  * - CSR로 동작하며, 실시간 가격 및 스케줄 정보를 주기적으로 갱신
@@ -30,13 +27,43 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const user = useUserStore((state) => state.user);
 
-  // 기본 체험 정보 조회 (서버에서 prefetch된 데이터 사용)
-  const { data: activity } = useSuspenseQuery({
-    queryKey: activityQueryKeys.detail(activityId),
+  // 1. 정적 데이터 (이미지, 주소, 제목, 설명) - 긴 캐시
+  const { data: staticInfo } = useSuspenseQuery({
+    queryKey: [...activityQueryKeys.detail(activityId), 'static'],
     queryFn: () => getActivityDetail(Number(activityId)),
-    staleTime: 5 * 60 * 1000, // 5분 캐시 (기본 정보)
-    gcTime: 30 * 60 * 1000, // 30분 메모리 보관
+    select: (data) => ({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      address: data.address,
+      bannerImageUrl: data.bannerImageUrl,
+      subImages: data.subImages,
+      category: data.category,
+      userId: data.userId,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    }),
+    staleTime: 30 * 60 * 1000, // 30분 캐시 (정적 정보)
+    gcTime: 60 * 60 * 1000, // 1시간 메모리 보관
   });
+
+  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시
+  const { data: dynamicInfo } = useSuspenseQuery({
+    queryKey: [...activityQueryKeys.detail(activityId), 'dynamic'],
+    queryFn: () => getActivityDetail(Number(activityId)),
+    select: (data) => ({
+      price: data.price,
+      schedules: data.schedules,
+      rating: data.rating,
+      reviewCount: data.reviewCount,
+    }),
+    staleTime: 1 * 60 * 1000, // 1분 캐시 (동적 정보)
+    gcTime: 5 * 60 * 1000, // 5분 메모리 보관
+    refetchInterval: 2 * 60 * 1000, // 2분마다 자동 갱신
+  });
+
+  // 3. 합성된 activity 객체 (useMemo로 불필요한 리렌더링 방지)
+  const activity = useMemo(() => ({ ...staticInfo, ...dynamicInfo }), [staticInfo, dynamicInfo]);
 
   // activity로드 후 최근 본 목록에 추가
   const addViewed = useRecentViewedStore((s) => s.addViewed);
@@ -47,19 +74,6 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
       console.log('👀 최근 본 목록에 추가됨', activity.title);
     }
   }, [activity, addViewed]);
-
-  // // 실시간 가격 정보 (30초마다 자동 갱신)
-  // const { data: realtimePrice } = useQuery({
-  //   queryKey: activityQueryKeys.price(activityId),
-  //   queryFn: async () => {
-  //     console.log('💰 [CSR] 실시간 가격 정보 조회', { activityId });
-  //   },
-  //   staleTime: 0, // 항상 최신 데이터
-  //   gcTime: 0, // 캐시 안함
-  //   refetchInterval: 30000, // 30초마다 자동 갱신
-  //   refetchOnWindowFocus: true, // 창 포커스시 갱신
-  //   enabled: !!activity, // activity 로드 후 실행
-  // });
 
   useEffect(() => {
     if (user?.id === activity.userId) {
