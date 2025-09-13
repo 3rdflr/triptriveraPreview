@@ -23,9 +23,10 @@ import { useUserStore } from '@/store/userStore';
  */
 interface ActivityClientProps {
   activityId: number;
+  blurImage?: { banner?: string; sub?: (string | undefined)[] };
 }
 
-export default function ActivityClient({ activityId }: ActivityClientProps) {
+export default function ActivityClient({ activityId, blurImage }: ActivityClientProps) {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const user = useUserStore((state) => state.user);
 
@@ -82,6 +83,7 @@ export default function ActivityClient({ activityId }: ActivityClientProps) {
                 bannerImageUrl={activity.bannerImageUrl}
                 subImages={activity.subImages}
                 title={activity.title}
+                blurImage={blurImage}
               />
               <ActivityInfo activity={activity} isOwner={isOwner} />
               <hr className='border-gray-100' />
