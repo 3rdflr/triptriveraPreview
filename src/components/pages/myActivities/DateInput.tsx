@@ -31,19 +31,19 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
   };
 
   return (
-    <div className='flex items-start'>
-      <div className='flex flex-col'>
+    <div className='flex items-start w-full'>
+      <div className='flex flex-col flex-1 w-full'>
         {showLabel && (
           <Label htmlFor='date' className='mb-2.5'>
             날짜
           </Label>
         )}
-        <div className='relative'>
+        <div className='w-full relative'>
           <Input
             id='date'
             value={value}
             placeholder='yy/mm/dd'
-            className='bg-background pr-10 min-w-[327px]'
+            className='bg-background pr-10 w-full'
             onChange={(e) => {
               const val = e.target.value;
               onChange?.(val);

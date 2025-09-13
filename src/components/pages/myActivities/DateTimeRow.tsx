@@ -9,19 +9,10 @@ interface DateTimeRowProps {
   isFirstRow?: boolean;
   onChange: (newData: Omit<MyActivitySchedule, 'id'>) => void;
   onBlur: () => void;
-  onAdd?: () => void;
   onRemove?: () => void;
 }
 
-const DateTimeRow = ({
-  data,
-  errors,
-  isFirstRow = false,
-  onChange,
-  onBlur,
-  onAdd,
-  onRemove,
-}: DateTimeRowProps) => {
+const DateTimeRow = ({ data, errors, onChange, onBlur, onRemove }: DateTimeRowProps) => {
   const handleDateInputChange = (value: string): void => {
     let currentDate = value;
     currentDate = currentDate.replace(/\D/g, '');
@@ -35,11 +26,11 @@ const DateTimeRow = ({
   };
 
   return (
-    <div className='flex flex-col md:flex-row items-start gap-3.5'>
-      <div>
+    <div className='flex flex-col tablet:flex-row items-start tablet:gap-3.5 gap-0 w-full'>
+      <div className='flex-col flex flex-1 w-full tablet:max-w-[344px] pc:max-w-[360px]'>
         <DateInput
           value={data.date}
-          showLabel={isFirstRow}
+          showLabel={false}
           onChange={handleDateInputChange}
           onBlur={onBlur}
         />
@@ -48,19 +39,16 @@ const DateTimeRow = ({
         </small>
       </div>
 
-      <div className='flex flex-row items-end gap-3.5'>
+      <div className='w-full flex flex-row items-end gap-3.5 flex-1'>
         <StartEndTimeSelect
           value={{ start: data.startTime, end: data.endTime }}
-          showLabel={isFirstRow}
+          showLabel={false}
           onChange={(newVal) => {
             onChange({ ...data, startTime: newVal.start, endTime: newVal.end });
           }}
         />
         <div className='flex flex-col justify-center h-[3.375rem]'>
-          <RoundButton
-            mode={isFirstRow ? 'plus' : 'minus'}
-            onClick={isFirstRow ? onAdd : onRemove}
-          />
+          <RoundButton mode={'minus'} onClick={onRemove} />
         </div>
       </div>
     </div>

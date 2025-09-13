@@ -22,6 +22,7 @@ import useMyActivityForm from '@/hooks/useMyActivityForm';
 import ImageUploadSection from './ImageUploadSection';
 import Script from 'next/script';
 import { isBefore, parse } from 'date-fns';
+import RoundButton from './RoundButton';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -38,8 +39,8 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     setValue,
     trigger,
     update,
+    append,
     remove,
-    insert,
     detailData,
     isDetailLoading,
     isDetailFetching,
@@ -107,8 +108,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
         endTime: '',
       };
 
-      const schedulesToReset =
-        detailSchedules.length > 0 ? [emptyFirstRow, ...detailSchedules] : [emptyFirstRow];
+      const schedulesToReset = detailSchedules.length > 0 ? [...detailSchedules] : [emptyFirstRow];
 
       const formData: MyActivityFormData = {
         ...detailData,
@@ -126,7 +126,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
   }, [detailData, isDetailLoading, isDetailFetching, mode]);
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex-1 flex flex-col'>
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
           <div className='flex flex-col gap-6'>
@@ -252,15 +252,37 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
           {/* 예약 가능한 시간대 */}
           <div className='mt-7.5'>
             <Label>예약 가능한 시간대</Label>
+            <div className='flex justify-between items-center py-3 mb-6 border-b border-grayscale-100 tablet:max-w-none tablet:w-full'>
+              <div className='flex flex-1 tablet:gap-3.5'>
+                <div className='w-full tablet:w-[343px] flex-shrink-0'>
+                  <Label className='gap-0'>날짜</Label>
+                </div>
+                <div className='hidden tablet:flex flex-1'>
+                  <div className='flex-1 min-w-0'>
+                    <Label className='gap-0'>시작시간</Label>
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <Label className='gap-0'>종료시간</Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className='flex-shrink-0'>
+                <RoundButton
+                  mode={'plus'}
+                  onClick={() => {
+                    append({
+                      id: crypto.randomUUID(),
+                      date: '',
+                      startTime: '',
+                      endTime: '',
+                    });
+                  }}
+                />
+              </div>
+            </div>
             {scheduleFields.map((scheduleField, index) => (
-              <div
-                key={scheduleField.id}
-                className={clsx(
-                  'w-full',
-                  index === 0 ? 'pt-4' : '',
-                  index === 1 ? 'pt-5 border-t border-grayscale-100' : '',
-                )}
-              >
+              <div key={scheduleField.id} className={clsx('w-full pb-2.5')}>
                 <DateTimeRow
                   key={scheduleField.id}
                   data={scheduleField}
@@ -271,15 +293,13 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                   onBlur={() => {
                     trigger(`schedules.${index}`);
                   }}
-                  onAdd={() =>
-                    insert(0, {
-                      id: crypto.randomUUID(),
-                      date: '',
-                      startTime: '',
-                      endTime: '',
-                    })
-                  }
-                  onRemove={() => remove(index)}
+                  onRemove={() => {
+                    remove(index);
+                    // 최소 한 행 유지
+                    if (scheduleFields.length === 1) {
+                      append({ id: crypto.randomUUID(), date: '', startTime: '', endTime: '' });
+                    }
+                  }}
                   isFirstRow={index === 0}
                   errors={
                     errors?.schedules?.[index] as Merge<
