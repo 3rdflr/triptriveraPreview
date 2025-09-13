@@ -158,7 +158,7 @@ const ReservationStatusPage = () => {
   }
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className='flex flex-col gap-5 pl-4'>
       {/* 헤더 */}
       <div className='px-6 sm:px-0 flex flex-col gap-4'>
         <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>

@@ -107,7 +107,7 @@ const UserPage = () => {
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
-      <div className={clsx('flex flex-col w-full items-start gap-8')}>
+      <div className={clsx('flex flex-col w-full items-start gap-8 pl-4')}>
         <div className='flex flex-col gap-2.5'>
           <Label className='text-[18px] font-bold'>내 정보</Label>
           <span className='text-14-medium text-grayscale-500'>
