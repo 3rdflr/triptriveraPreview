@@ -22,7 +22,7 @@ const ActivitySelect = ({ value, activityList, className, onChange }: ActivitySe
       <SelectTrigger className={clsx('w-full', className)}>
         <SelectValue placeholder='체험을 선택해 주세요' />
       </SelectTrigger>
-      <SelectContent className='max-h-50 overflow-y-auto'>
+      <SelectContent className='max-h-50'>
         <SelectGroup>
           {activityList?.map((activity) => (
             <SelectItem key={`${activity.id}`} value={String(activity.id)}>

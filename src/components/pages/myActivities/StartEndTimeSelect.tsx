@@ -33,7 +33,7 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
           <SelectTrigger className='w-full'>
             <SelectValue placeholder='0:00' />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className='max-h-50'>
             <SelectGroup>
               {hours.map((hour, index) => (
                 <SelectItem key={`${hour}-${index}`} value={hour}>
@@ -54,7 +54,7 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
           <SelectTrigger className='w-full'>
             <SelectValue placeholder='0:00' />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className='max-h-50'>
             <SelectGroup>
               {hours.map((hour, index) => (
                 <SelectItem key={`${hour}-${index}`} value={hour}>
