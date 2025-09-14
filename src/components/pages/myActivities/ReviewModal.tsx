@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReservationReview } from '@/app/api/myReservations';
 import { Stars } from '@/components/common/Stars';
 import { Reservation } from '@/types/myReservation.type';
-import { toCardDate } from '@/lib/utils/dateUtils';
+import { toFullDot } from '@/lib/utils/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Modal } from 'react-simplified-package';
 import { successToast, errorToast } from '@/lib/utils/toastUtils';
@@ -71,7 +71,7 @@ export function ReviewModal({ data, isOpen, onClose, className }: ReviewModalPro
           <div className='w-full flex flex-col items-center gap-1'>
             <h2 className='text-lg font-bold'>{activity.title}</h2>
             <div className='flex items-center gap-0.5 pb-0 lg:pb-2 text-gray-500'>
-              {toCardDate(date)} / {`${startTime} - ${endTime} (${headCount}명)`}
+              {toFullDot(date)} / {`${startTime} - ${endTime} (${headCount}명)`}
             </div>
             <Stars initRate={rating} edit={true} onChange={setRating} size='lg' />
           </div>

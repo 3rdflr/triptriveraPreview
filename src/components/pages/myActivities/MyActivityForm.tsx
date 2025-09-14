@@ -10,7 +10,7 @@ import FormInput from '@/components/common/FormInput';
 import clsx from 'clsx';
 import { MyActivitySchedule } from '@/types/myActivity.type';
 import { useEffect } from 'react';
-import { toInputDate } from '@/lib/utils/dateUtils';
+import { fromISO } from '@/lib/utils/dateUtils';
 import useMyActivityForm from '@/hooks/useMyActivityForm';
 import ImageUploadSection from './ImageUploadSection';
 import Script from 'next/script';
@@ -72,7 +72,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
       const detailSchedules = detailData.schedules
         .map((schedule) => ({
           ...schedule,
-          date: toInputDate(schedule.date),
+          date: fromISO(schedule.date),
         }))
         .filter((schedule) => {
           if (!schedule.date || !schedule.startTime) return false;

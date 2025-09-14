@@ -14,7 +14,7 @@ import {
 } from '@/app/api/activities';
 import { ActivitiesCategoryType } from '@/types/activities.type';
 import { successToast } from '@/lib/utils/toastUtils';
-import { toApiDate } from '@/lib/utils/dateUtils';
+import { toISO } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { activityQueryKeys } from '@/app/activities/[activityId]/queryClients';
@@ -164,7 +164,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
       price: Number(values.price.replace(/,/g, '')),
       subImageUrls: values.subImageUrls ?? [],
       schedules: values.schedules.map(({ date, startTime, endTime }) => ({
-        date: toApiDate(date),
+        date: toISO(date),
         startTime,
         endTime,
       })),
@@ -205,7 +205,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
         );
       })
       .map(({ date, startTime, endTime }) => ({
-        date: toApiDate(date),
+        date: toISO(date),
         startTime,
         endTime,
       }));

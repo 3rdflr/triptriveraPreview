@@ -11,7 +11,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation';
-import { toCardDate } from '@/lib/utils/dateUtils';
+import { toFullDot } from '@/lib/utils/dateUtils';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
 
@@ -36,7 +36,7 @@ const ReservationListCard = ({
 
   return (
     <section className='flex flex-col w-full gap-3'>
-      <div className='text-16-bold lg:hidden'>{toCardDate(date)}</div>
+      <div className='text-16-bold lg:hidden'>{toFullDot(date)}</div>
       <Card className='w-full min-w-[300px] shadow-xl'>
         <div className='flex items-start justify-between w-full gap-7.5'>
           {/* 예약 내역 내용 */}
@@ -49,7 +49,7 @@ const ReservationListCard = ({
               <CardDescription>
                 <div className='flex items-center pb-0 lg:pb-2'>
                   <div className='lg:block hidden'>
-                    {toCardDate(date)}
+                    {toFullDot(date)}
                     <span className='text-lg px-1'>∙</span>
                   </div>
                   <div className='flex items-center'>{`${startTime} - ${endTime}`}</div>
