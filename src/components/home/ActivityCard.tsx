@@ -7,6 +7,7 @@ import { BASE_IMG_URL } from '@/components/home/Constants';
 import { Activity } from '@/types/activities.type';
 import { useRecentViewedStore } from '@/store/recentlyWatched';
 import { successToast } from '@/lib/utils/toastUtils';
+import { wsrvLoader } from '../common/wsrvLoader';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import ActivityLike from './ActivityLike';
@@ -36,6 +37,8 @@ export default function ActivityCard({
         {/* 배너 이미지 (에러 시 기본 이미지 fallback) */}
         <div className='relative w-full aspect-square rounded-[20px] overflow-hidden bg-grayscale-25'>
           <Image
+            loader={wsrvLoader}
+            loading='lazy'
             src={bannerImg}
             alt={activity.title}
             fill

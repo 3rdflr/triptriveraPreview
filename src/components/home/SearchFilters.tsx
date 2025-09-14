@@ -11,10 +11,11 @@ import {
   MotionValue,
 } from 'framer-motion';
 import { X, SearchIcon } from 'lucide-react';
-import PriceFilter from './PriceFilter';
-import { PLACES } from './Constants';
-import Image from 'next/image';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { PLACES } from './Constants';
+import { wsrvLoader } from '../common/wsrvLoader';
+import PriceFilter from './PriceFilter';
+import Image from 'next/image';
 
 type Props = {
   scrollY: MotionValue<number>;
@@ -368,7 +369,14 @@ export default function SearchFilters({ scrollY, isSearching, setIsSearching }: 
                       setFilteredPlaces(PLACES);
                     }}
                   >
-                    <Image src={place.src} alt={place.name} width={56} height={56} />
+                    <Image
+                      loader={wsrvLoader}
+                      loading='lazy'
+                      src={place.src}
+                      alt={place.name}
+                      width={56}
+                      height={56}
+                    />
                     <div className='flex flex-col justify-center min-w-0'>
                       <span className='text-14-regular text-title truncate'>{place.name}</span>
                       <span className='block text-12-regular text-grayscale-500 truncate'>

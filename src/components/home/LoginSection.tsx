@@ -8,10 +8,11 @@ import { useUserStore } from '@/store/userStore';
 import { logout } from '@/lib/utils/logoutUtils';
 import { Bell, Heart, CircleUser, LogOut } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotification';
+import { useSaveCurrentUrl } from '@/lib/utils/useSaveCurrentUrl';
+import { wsrvLoader } from '../common/wsrvLoader';
 import Link from 'next/link';
 import Image from 'next/image';
 import NotificationModal from './NotificationModal';
-import { useSaveCurrentUrl } from '@/lib/utils/useSaveCurrentUrl';
 
 export default function LoginSection() {
   const { isDesktop } = useScreenSize();
@@ -38,6 +39,8 @@ export default function LoginSection() {
           <Dropdown.Trigger>
             <div className='w-[30px] h-[30px] rounded-full cursor-pointer overflow-hidden'>
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={
                   user.profileImageUrl ? user.profileImageUrl : '/images/icons/default_profile.svg'
                 }
@@ -73,7 +76,14 @@ export default function LoginSection() {
         </Link>
       )}
       <Link onClick={saveCurrentUrl} href='/login' className='cursor-pointer'>
-        <Image src='/images/icons/default_profile_gray.svg' alt='Profile' width={30} height={30} />
+        <Image
+          loader={wsrvLoader}
+          loading='lazy'
+          src='/images/icons/default_profile_gray.svg'
+          alt='Profile'
+          width={30}
+          height={30}
+        />
       </Link>
     </>
   );

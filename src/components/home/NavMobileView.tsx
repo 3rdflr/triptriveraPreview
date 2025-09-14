@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Search, SearchIcon, X, ArrowLeft, Share } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PLACES } from './Constants';
+import { wsrvLoader } from '../common/wsrvLoader';
 import MobileCategoryList from './MobileCategoryList';
 import PriceFilter from './PriceFilter';
 import Image from 'next/image';
@@ -112,6 +113,8 @@ export default function NavMobileView() {
         >
           <Link href='/' className='flex items-center justify-center gap-2 py-9'>
             <Image
+              loader={wsrvLoader}
+              loading='lazy'
               src='/images/icons/logo.svg'
               alt='기본로고'
               width={146}
@@ -193,7 +196,14 @@ export default function NavMobileView() {
                             setPlaceInput(p.name);
                           }}
                         >
-                          <Image src={p.src} alt={p.name} width={56} height={56} />
+                          <Image
+                            loader={wsrvLoader}
+                            loading='lazy'
+                            src={p.src}
+                            alt={p.name}
+                            width={56}
+                            height={56}
+                          />
                           <div className='flex flex-col justify-center min-w-0'>
                             <span className='text-14-regular text-title truncate'>{p.name}</span>
                             <span className='block text-12-regular text-grayscale-500 truncate'>

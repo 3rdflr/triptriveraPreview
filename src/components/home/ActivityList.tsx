@@ -6,6 +6,7 @@ import { useUserStore } from '@/store/userStore';
 import { useElementInView } from '@/hooks/useElemetInView';
 import { useInfiniteList } from '@/hooks/useInfiniteList';
 import { ChevronRight, MapPinCheckInside } from 'lucide-react';
+import { wsrvLoader } from '../common/wsrvLoader';
 import Spinner from '../common/Spinner';
 import ActivityCard from './ActivityCard';
 import Image from 'next/image';
@@ -44,17 +45,21 @@ export default function ActivityList({
       <div className='flex flex-col items-center justify-center gap-7 mt-50'>
         <div className='flex flex-col items-center justify-center'>
           <Image
+            loader={wsrvLoader}
             src={'/images/icons/Logo_top.svg'}
             alt='빈 체험 로고'
             width={234}
             height={337}
+            loading='lazy'
             className='animate-bounce w-[234px] h-auto'
           />
           <Image
+            loader={wsrvLoader}
             src={'/images/icons/Logo_bottom.svg'}
             alt='빈 체험 로고'
             width={45}
             height={16}
+            loading='lazy'
             className='w-[45px] h-auto'
           />
         </div>
