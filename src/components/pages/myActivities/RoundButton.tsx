@@ -17,9 +17,9 @@ const RoundButton = ({ mode = 'close', children, className, onClick }: RoundButt
 
   const getModeClass = (): string => {
     const modeClassMap: Record<string, string> = {
-      plus: 'w-[28px] h-[28px] tablet:w-[42px] tablet:h-[42px] bg-primary-500 hover:bg-[var(--primary-400)]',
+      plus: 'w-[28px] h-[28px] tablet:w-[36px] tablet:h-[36px] bg-primary-500 hover:bg-[var(--primary-400)]',
       minus:
-        'w-[28px] h-[28px] tablet:w-[42px] tablet:h-[42px] bg-grayscale-50 hover:bg-grayscale-25',
+        'w-[28px] h-[28px] tablet:w-[36px] tablet:h-[36px] bg-grayscale-50 hover:bg-grayscale-25',
       close: 'w-[20px] h-[20px] sm:w-[26px] sm:h-[26px] bg-grayscale-950 hover:bg-grayscale-800',
       edit: 'w-[30px] h-[30px] md:w-[24px] md:h-[24px] lg:w-[30px] lg:h-[30px] bg-grayscale-300 hover:bg-grayscale-200',
     };

@@ -7,6 +7,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   className?: string;
+  labelClassName?: string;
 }
 
 // 사용법 다시 적기
@@ -44,10 +45,10 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
  */
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
-  ({ type = 'text', id, label, error, className, ...props }, ref) => {
+  ({ type = 'text', id, label, error, className, labelClassName, ...props }, ref) => {
     return (
       <div className='flex flex-col w-full'>
-        <Label htmlFor={id} className='mb-[10px]'>
+        <Label htmlFor={id} className={clsx('mb-[10px]', labelClassName)}>
           {label}
         </Label>
         <Input

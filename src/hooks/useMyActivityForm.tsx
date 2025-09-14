@@ -1,7 +1,7 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MyActivityFormData, MyActivitySchema } from '@/lib/utils/myActivitySchema';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ActivityCreateRequest,
   ActivityCreateResponse,
@@ -28,6 +28,7 @@ interface useMyActivityForm {
 const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm) => {
   const router = useRouter();
   const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
+  const queryClient = useQueryClient();
 
   const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
@@ -112,8 +113,10 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     mutationFn: ({ activityId, data }) => updateActivity(activityId, data),
     retry: 1,
     retryDelay: 300,
-    onSuccess: (response) => {
-      router.push(`/activities/${response.id}`);
+    onSuccess: async (_response, variables) => {
+      const { activityId } = variables;
+      await queryClient.refetchQueries({ queryKey: activityQueryKeys.detail(activityId) });
+      router.push(`/activities/${activityId}`);
       successToast.run('수정이 완료되었습니다.');
     },
     onError: (error) => {

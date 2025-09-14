@@ -59,13 +59,11 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     }).open();
   };
 
-  const onSubmit = async (data: MyActivityFormData) => {
-    console.log('폼 유효성 통과', data);
+  const onSubmit = async () => {
     await uploadImageAndGetUrl();
     if (mode === 'REGISTER') {
       registerForm();
     } else {
-      console.log(data);
       updateForm();
     }
   };
@@ -96,8 +94,6 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
           return !isBefore(scheduleDateTime, now);
         });
-
-      console.log(detailSchedules);
 
       setOriginalSchedules(detailSchedules);
 
@@ -143,13 +139,14 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                 placeholder='제목을 입력해 주세요'
                 error={errors.title?.message}
                 maxLength={20}
+                labelClassName='font-bold'
                 {...register('title')}
               />
             </div>
 
             {/* 카테고리 */}
             <div className='flex flex-col gap-2.5'>
-              <Label>카테고리</Label>
+              <Label className='font-bold'>카테고리</Label>
               <Controller
                 name='category'
                 control={control}
@@ -179,7 +176,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
             {/* 설명 */}
             <div className='flex flex-col gap-2.5'>
-              <Label>설명</Label>
+              <Label className='font-bold'>설명</Label>
               <Textarea
                 {...register('description')}
                 error={errors.description?.message}
@@ -210,6 +207,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                     }}
                     error={errors.price?.message}
                     maxLength={8}
+                    labelClassName='font-bold'
                   />
                 )}
               />
@@ -234,6 +232,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                       onClick={handleOpenAddressSearch}
                       onBlur={() => {}}
                       error={fieldState.error?.message}
+                      labelClassName='font-bold'
                     />
                   )}
                 />
@@ -251,7 +250,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
           {/* 예약 가능한 시간대 */}
           <div className='mt-7.5'>
-            <Label>예약 가능한 시간대</Label>
+            <Label className='font-bold'>예약 가능한 시간대</Label>
             <div className='flex justify-between items-center py-3 mb-6 border-b border-grayscale-100 tablet:max-w-none tablet:w-full'>
               <div className='flex flex-1 tablet:gap-3.5'>
                 <div className='w-full tablet:w-[343px] flex-shrink-0'>
@@ -282,7 +281,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
               </div>
             </div>
             {scheduleFields.map((scheduleField, index) => (
-              <div key={scheduleField.id} className={clsx('w-full pb-2.5')}>
+              <div key={scheduleField.id} className={clsx('w-full pb-2.5 tablet:pb-0')}>
                 <DateTimeRow
                   key={scheduleField.id}
                   data={scheduleField}
