@@ -30,12 +30,12 @@ const ImageUploader = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    // 파일 용량 체크 (5MB 제한)
-    const maxSize = 5 * 1024 * 1024;
+    // 파일 용량 체크 (4MB 제한)
+    const maxSize = 4 * 1024 * 1024;
     const fileList = Array.from(e.target.files);
 
     if (fileList.some((file) => file.size > maxSize)) {
-      errorToast.run('5MB를 초과하는 파일은 등록이 불가합니다.');
+      errorToast.run('4MB를 초과하는 파일은 등록이 불가합니다.');
     }
 
     const validFiles = fileList.filter((file) => file.size <= maxSize);

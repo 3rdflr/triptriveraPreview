@@ -17,8 +17,8 @@ import { successToast } from '@/lib/utils/toastUtils';
 import { toISO } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { activityQueryKeys } from '@/app/activities/[activityId]/queryKeys';
 import { updateActivity } from '@/app/api/myActivities';
+import { activityQueryKeys } from '@/app/activities/[activityId]/queryKeys';
 
 interface useMyActivityForm {
   mode?: 'EDIT' | 'REGISTER';
