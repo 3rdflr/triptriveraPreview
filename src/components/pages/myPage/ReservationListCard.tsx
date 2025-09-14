@@ -15,16 +15,21 @@ import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
 import { useState } from 'react';
 
-interface MyExperienceCardProps {
-  data: Reservation;
+interface ReservationListCardProps {
+  reservation: Reservation;
   onCancel: (id: number) => void;
   onReview: (reservation: Reservation) => void;
   onGoReview: (id: number) => void;
 }
 
-const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperienceCardProps) => {
+const ReservationListCard = ({
+  reservation,
+  onCancel,
+  onReview,
+  onGoReview,
+}: ReservationListCardProps) => {
   const { id, activity, status, totalPrice, headCount, date, startTime, endTime, reviewSubmitted } =
-    data;
+    reservation;
 
   const { bannerImageUrl, title } = activity;
   const [isError, setIsError] = useState(false);
@@ -66,7 +71,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               <CardFooter className='gap-2 hidden lg:flex lg:px-0 pb-0'>
                 {status === 'completed' &&
                   (!reviewSubmitted ? (
-                    <Button size='xs' onClick={() => onReview(data)}>
+                    <Button size='xs' onClick={() => onReview(reservation)}>
                       후기 작성
                     </Button>
                   ) : (
@@ -104,7 +109,11 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
       <div className='flex gap-3 lg:hidden'>
         {status === 'completed' &&
           (!reviewSubmitted ? (
-            <Button size='sm' className='w-full min-w-[300px] ' onClick={() => onReview(data)}>
+            <Button
+              size='sm'
+              className='w-full min-w-[300px] '
+              onClick={() => onReview(reservation)}
+            >
               후기 작성
             </Button>
           ) : (
