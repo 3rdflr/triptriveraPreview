@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
-const MyExperienceCardSkeleton = () => {
+const MypageCardSkeleton = () => {
   return (
     <div className='flex justify-between items-start md:px-7.5 md:py-9 px-5 py-9'>
       <div className='space-y-3'>
@@ -20,4 +20,4 @@ const MyExperienceCardSkeleton = () => {
   );
 };
 
-export default MyExperienceCardSkeleton;
+export default MypageCardSkeleton;

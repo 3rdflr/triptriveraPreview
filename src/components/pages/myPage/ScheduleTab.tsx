@@ -7,7 +7,7 @@ import { ReservationListStatus, ReservedReservation } from '@/types/myReservatio
 import ScheduleReservationCard from './ScheduleReservationCard';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { InfinityScroll } from '@/components/common/InfinityScroll';
-import MyExperienceCardSkeleton from './MyExperienceSkeleton';
+import MyExperienceCardSkeleton from './MypageCardSkeleton';
 import EmptyList from './EmptyList';
 
 interface ScheduleTabProps {

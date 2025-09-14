@@ -1,4 +1,5 @@
 'use client';
+import { LoadErrorFallback } from '@/components/common/LoadErrorFallback';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +14,6 @@ import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation
 import { toCardDate } from '@/lib/utils/dateUtils';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
-import { useState } from 'react';
 
 interface ReservationListCardProps {
   reservation: Reservation;
@@ -32,9 +32,7 @@ const ReservationListCard = ({
     reservation;
 
   const { bannerImageUrl, title } = activity;
-  const [isError, setIsError] = useState(false);
   const baseImageUrl = '/images/icons/_empty.png';
-  const image = isError ? baseImageUrl : bannerImageUrl;
 
   return (
     <section className='flex flex-col w-full gap-3'>
@@ -89,19 +87,27 @@ const ReservationListCard = ({
             </div>
           </div>
 
-          {/* 체험 이미지 */}
+          {/* 예약내역 이미지 */}
           <div className='pt-9 pr-6 lg:pr-7.5 flex-shrink-0'>
             <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] box-border'>
-              <Image
-                src={image}
-                alt='체험 관리 썸네일'
-                fill
-                className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
-                onError={() => {
-                  setIsError(true);
-                }}
-                blurDataURL={baseImageUrl}
-              />
+              <LoadErrorFallback
+                fallback={
+                  <Image
+                    src={baseImageUrl}
+                    alt='이미지를 불러올 수 없습니다'
+                    fill
+                    className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                  />
+                }
+              >
+                <Image
+                  src={bannerImageUrl}
+                  alt='예약내역 썸네일'
+                  fill
+                  className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                  blurDataURL={baseImageUrl}
+                />
+              </LoadErrorFallback>
             </div>
           </div>
         </div>

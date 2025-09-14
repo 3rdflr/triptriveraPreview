@@ -1,5 +1,5 @@
 import { InfinityScroll } from '@/components/common/InfinityScroll';
-import MyExperienceCardSkeleton from './MyExperienceSkeleton';
+import MypageCardSkeleton from '@/components/pages/myPage/MypageCardSkeleton';
 import {
   MyReservationUpdateRequest,
   MyReservationUpdateResponse,
@@ -103,13 +103,13 @@ const ReservationList = ({
     >
       {/* 초기 로딩 스켈레톤 */}
       <InfinityScroll.Skeleton count={3}>
-        <MyExperienceCardSkeleton />
+        <MypageCardSkeleton />
       </InfinityScroll.Skeleton>
       <InfinityScroll.Contents loadingText='더 많은 예약내역을 불러오는 중입니다...'>
         {(reservation: Reservation) => (
           <ReservationListCard
             key={reservation.id}
-            data={reservation}
+            reservation={reservation}
             onCancel={onClickShowCancelModal}
             onReview={onClickReview}
             onGoReview={onClickGoReview}

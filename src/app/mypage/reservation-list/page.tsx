@@ -13,6 +13,7 @@ const ReservationListPage = () => {
   const queryClient = useQueryClient();
   const pathname = usePathname();
   const [selectedStatus, setSelectedStatus] = useState<ReservationStatusWithAll>('all');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const {
     reservationListData,
@@ -27,6 +28,12 @@ const ReservationListPage = () => {
     refetch();
   }, [pathname, selectedStatus, queryClient, refetch]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      setIsInitialLoad(false);
+    }
+  }, [isLoading]);
+
   return (
     <div className='flex flex-col gap-7.5'>
       {/* 헤더 */}
@@ -37,10 +44,10 @@ const ReservationListPage = () => {
             예약내역을 변경 및 취소할 수 있습니다.
           </span>
           <div className='flex pt-3.5 gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide'>
-            {reservationListData.length > 0 &&
+            {(!isInitialLoad || reservationListData.length > 0) &&
               (Object.entries(reservationStatusAll) as [ReservationStatusWithAll, string][])
                 .filter(([value]) => value !== 'declined')
-                .map(([value, label]) => (
+                .map(([value, label]: [ReservationStatusWithAll, string]) => (
                   <Badge
                     key={value}
                     variant='outline'
