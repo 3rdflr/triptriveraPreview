@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { wsrvLoader } from '../common/wsrvLoader';
 import Link from 'next/link';
 import Image from 'next/image';
 import CategoryList from '../home/CategoryList';
@@ -64,6 +65,8 @@ export default function Nav() {
           <Link href='/' className={`${isSearching ? 'z-[100]' : 'z-[120]'}`}>
             {isTablet ? (
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src='/images/icons/small_logo.svg'
                 alt='Logo'
                 width={40}
@@ -71,7 +74,14 @@ export default function Nav() {
                 className='w-[40px] h-[40px]'
               />
             ) : (
-              <Image src='/images/icons/logo.svg' alt='Logo' width={105} height={26} />
+              <Image
+                loader={wsrvLoader}
+                loading='lazy'
+                src='/images/icons/logo.svg'
+                alt='Logo'
+                width={105}
+                height={26}
+              />
             )}
           </Link>
 

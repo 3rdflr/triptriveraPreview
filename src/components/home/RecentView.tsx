@@ -5,6 +5,7 @@ import { useUserStore } from '@/store/userStore';
 import { ChevronLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { wsrvLoader } from '../common/wsrvLoader';
 import Image from 'next/image';
 import ActivityCard from './ActivityCard';
 
@@ -34,6 +35,8 @@ export default function RecentView() {
         </div>
         <div className='flex flex-col items-center justify-center'>
           <Image
+            loader={wsrvLoader}
+            loading='lazy'
             src={'/images/icons/Logo_top.svg'}
             alt='빈 체험 로고'
             width={234}
@@ -41,6 +44,8 @@ export default function RecentView() {
             className='animate-bounce w-[234px] h-auto'
           />
           <Image
+            loader={wsrvLoader}
+            loading='lazy'
             src={'/images/icons/Logo_bottom.svg'}
             alt='빈 체험 로고'
             width={45}

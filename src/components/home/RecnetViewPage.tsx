@@ -3,8 +3,9 @@
 import { useRecentViewedStore } from '@/store/recentlyWatched';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
+import { wsrvLoader } from '../common/wsrvLoader';
+import Image from 'next/image';
 
 export default function RecentViewPage() {
   const [mounted, setMounted] = useState(false);
@@ -51,6 +52,8 @@ export default function RecentViewPage() {
               }}
             >
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={a.bannerImageUrl || '/fallback.png'}
                 alt={a.title}
                 fill
