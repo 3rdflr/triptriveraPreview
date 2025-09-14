@@ -1,6 +1,7 @@
 import { QueryClient, dehydrate, type DehydratedState } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
 import { getBlurDataURL } from '@/lib/utils/blur';
+import { notFound } from 'next/navigation';
 
 /**
  * SSR prefetch용 통합 함수
@@ -36,7 +37,6 @@ export async function prefetchActivityData(activityId: string): Promise<Prefetch
     await queryClient.prefetchQuery({
       queryKey: ['activity-detail', activityId],
       queryFn: () => getActivityDetail(numericId),
-      // 필요시 staleTime/gcTime 부여 가능
     });
 
     // 캐시된 activity를 꺼내서 모든 이미지의 blur 생성
@@ -63,14 +63,18 @@ export async function prefetchActivityData(activityId: string): Promise<Prefetch
       };
 
       console.log(`🎨 [SSR] 블러 이미지 생성 완료: 배너 1개 + 서브 ${subBlurs.length}개`);
+    } else {
+      notFound();
     }
 
     console.log('✅ [SSR] Activity prefetch 성공', { activityId });
 
-    // CHANGED: dehydratedState + blur 함께 반환
     return { dehydratedState: dehydrate(queryClient), blur };
   } catch (error) {
     console.log('⚠️ [SSR] Activity prefetch 실패, 클라이언트에서 로드', { activityId, error });
+    if (error instanceof Error && error.message === 'NEXT_NOT_FOUND') {
+      notFound();
+    }
     // 에러여도 최소한 dehydratedState는 반환
     return { dehydratedState: dehydrate(queryClient) }; // CHANGED
   }

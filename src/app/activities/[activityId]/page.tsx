@@ -28,16 +28,10 @@ interface ActivityStaticParams {
 }
 
 const ActivityPage = async ({ params }: ActivityPageProps) => {
-  const startTime = performance.now();
-
   // params 추출
   const { activityId } = await params;
-
   // Activity 데이터 prefetch
   const { dehydratedState, blur } = await prefetchActivityData(activityId);
-
-  const duration = performance.now() - startTime;
-  console.log(`⏱️ [SSR] ActivityPage 완료: ${duration.toFixed(2)}ms`, { activityId });
 
   return (
     <HydrationBoundary state={dehydratedState}>
