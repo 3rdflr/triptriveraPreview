@@ -54,7 +54,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     new window.daum.Postcode({
       oncomplete: function (data) {
         const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-        setValue('address', addr, { shouldValidate: true });
+        setValue('address', addr, { shouldValidate: true, shouldDirty: true });
       },
     }).open();
   };
