@@ -105,11 +105,9 @@ const ReservationStatusCalendar = ({
     const hasEvent = events.some((event: RBCEvent) => {
       if (!event.start || !event.end) return false;
 
-      // 문자열이면 Date로 변환
       const startDate = event.start instanceof Date ? event.start : new Date(event.start);
       const endDate = event.end instanceof Date ? event.end : new Date(event.end);
 
-      // 유효한 날짜인지 체크
       if (!isValid(startDate) || !isValid(endDate)) return false;
 
       return isSameDay(startDate, date) || isSameDay(endDate, date);
