@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import useDateInput from '@/hooks/useDateInput';
-import { startOfToday, addMonths, isValid, parse } from 'date-fns';
+import { startOfToday, addMonths } from 'date-fns';
 import { BasicCalendar } from '@/components/common/BasicCalendar';
+import { ko } from 'date-fns/locale';
+import { formatDate, parseDate } from '@/lib/utils/dateUtils';
 
 interface DateInputProps {
   showLabel?: boolean;
@@ -19,15 +20,12 @@ interface DateInputProps {
 }
 
 export function DateInput({ showLabel = false, value = '', onChange, onBlur }: DateInputProps) {
-  const { date, month, setMonth, setDate, formatDate } = useDateInput();
   const [open, setOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
     const formatted = formatDate(selectedDate);
     if (!selectedDate) return;
-    setDate(selectedDate);
     onChange?.(formatted);
-    setOpen(false);
   };
 
   return (
@@ -47,14 +45,6 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
             onChange={(e) => {
               const val = e.target.value;
               onChange?.(val);
-
-              if (/^\d{2}\/\d{2}\/\d{2}$/.test(val)) {
-                const parsedDate = parse(val, 'yy/MM/dd', new Date());
-                if (isValid(parsedDate) && val.length === 8) {
-                  setDate(parsedDate);
-                  setMonth(parsedDate);
-                }
-              }
             }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowDown') {
@@ -84,14 +74,14 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
               sideOffset={20}
             >
               <BasicCalendar
+                isDateInput={true}
                 mode='single'
-                selected={date}
+                selected={parseDate(value)}
                 captionLayout='label'
                 required={false}
-                month={month}
-                onMonthChange={setMonth}
                 onSelect={handleSelectDate}
                 disabled={{ before: startOfToday(), after: addMonths(new Date(), 12) }}
+                locale={ko}
               />
             </PopoverContent>
           </Popover>
