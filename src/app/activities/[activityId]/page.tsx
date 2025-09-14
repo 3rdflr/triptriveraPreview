@@ -32,7 +32,7 @@ const ActivityPage = async ({ params }: ActivityPageProps) => {
   const { activityId } = await params;
   // Activity 데이터 prefetch
   const { dehydratedState, blur } = await prefetchActivityData(activityId);
-
+  return <ActivitySkeleton />;
   return (
     <HydrationBoundary state={dehydratedState}>
       <Suspense fallback={<ActivitySkeleton />}>
