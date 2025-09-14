@@ -30,8 +30,11 @@ export function BookingDateInput({
   const [monthValue, setMonthValue] = useState('');
   const [dayValue, setDayValue] = useState('');
 
+  const today = new Date();
+
   // selectedDate가 변경될 때 각 input value 업데이트
   useEffect(() => {
+    console.log('📅 selectedDate 변경:', selectedDate);
     if (selectedDate) {
       setYearValue(format(selectedDate, 'yyyy'));
       setMonthValue(format(selectedDate, 'MM'));
@@ -176,7 +179,7 @@ export function BookingDateInput({
           type='number'
           value={yearValue}
           onChange={handleYearChange}
-          placeholder='2025'
+          placeholder={format(today, 'yyyy')}
           min='2025'
           max='2030'
           className={cn('w-16', baseInputStyles)}
@@ -190,7 +193,7 @@ export function BookingDateInput({
           type='number'
           value={monthValue}
           onChange={handleMonthChange}
-          placeholder='09'
+          placeholder={format(today, 'MM')}
           min='1'
           max='12'
           className={cn('w-12', baseInputStyles)}
@@ -204,7 +207,7 @@ export function BookingDateInput({
           type='number'
           value={dayValue}
           onChange={handleDayChange}
-          placeholder='16'
+          placeholder={format(today, 'dd')}
           min='1'
           max='31'
           className={cn('w-12', baseInputStyles)}

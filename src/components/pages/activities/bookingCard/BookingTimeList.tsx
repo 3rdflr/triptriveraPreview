@@ -26,9 +26,9 @@ export default function BookingTimeList({
         {/* Time Slots */}
         <div className='font-bold flex items-center'>예약 가능한 시간</div>
 
-        {!selectedDate || !selectedSchedule ? (
+        {!selectedSchedule || selectedSchedule.length === 0 ? (
           <div className='p-4 text-center text-gray-500 '>
-            {!selectedDate ? '날짜를 선택해주세요' : '예약 가능한 시간이 없습니다'}
+            {selectedDate ? '예약 가능한 시간이 없습니다' : '날짜를 선택해주세요'}
           </div>
         ) : (
           <div className='flex flex-col gap-2 lg:gap-3 max-h-[150px] lg:max-h-[200px] overflow-y-auto'>

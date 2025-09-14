@@ -156,7 +156,6 @@ export function EditDropDown({ activityId, isOwner, open, setOpen }: EditDropDow
                 'hover:bg-gray-100 focus:bg-gray-100 focus:outline-none',
                 'disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-transparent',
               )}
-              whileHover={isOwner ? { backgroundColor: 'rgba(0, 0, 0, 0.05)' } : {}}
               whileTap={isOwner ? { scale: 0.98 } : {}}
             >
               수정하기
@@ -171,7 +170,6 @@ export function EditDropDown({ activityId, isOwner, open, setOpen }: EditDropDow
                 'hover:bg-red-50 hover:text-red-600 focus:bg-red-50 focus:text-red-600 focus:outline-none',
                 'disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-400',
               )}
-              whileHover={isOwner ? { backgroundColor: 'rgba(239, 68, 68, 0.1)' } : {}}
               whileTap={isOwner ? { scale: 0.98 } : {}}
             >
               삭제하기
