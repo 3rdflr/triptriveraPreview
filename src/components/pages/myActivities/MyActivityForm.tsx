@@ -44,6 +44,8 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     detailData,
     isDetailLoading,
     isDetailFetching,
+    isRegisterLoading,
+    isEditLoading,
     uploadImageAndGetUrl,
     registerForm,
     updateForm,
@@ -318,9 +320,16 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
             <Button
               type='submit'
               className='w-30'
-              disabled={!methods.formState.isDirty || !methods.formState.isValid}
+              disabled={
+                isRegisterLoading ||
+                isEditLoading ||
+                !methods.formState.isDirty ||
+                !methods.formState.isValid
+              }
             >
-              {mode === 'REGISTER' ? '등록' : '수정'}하기
+              {mode === 'REGISTER'
+                ? `등록${isRegisterLoading ? '중' : '하기'}`
+                : `수정${isEditLoading ? '중' : '하기'}`}
             </Button>
           </div>
         </form>

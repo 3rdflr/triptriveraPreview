@@ -92,7 +92,11 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     },
   });
 
-  const registerMutation = useMutation<ActivityCreateResponse, Error, ActivityCreateRequest>({
+  const { mutate: registerActivity, isPending: isRegisterLoading } = useMutation<
+    ActivityCreateResponse,
+    Error,
+    ActivityCreateRequest
+  >({
     mutationFn: (data: ActivityCreateRequest) => createActivity(data),
     retry: 1,
     retryDelay: 300,
@@ -105,7 +109,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     },
   });
 
-  const updateMutation = useMutation<
+  const { mutate: editActivity, isPending: isEditLoading } = useMutation<
     ActivityUpdateResponse,
     Error,
     { activityId: number; data: ActivityUpdateRequest }
@@ -166,7 +170,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
       })),
     };
 
-    registerMutation.mutate(params);
+    registerActivity(params);
   };
 
   const updateForm = async () => {
@@ -216,7 +220,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
       subImageUrlsToAdd: values.subImageUrlsToAdd ?? [],
     };
 
-    updateMutation.mutate({ activityId: Number(activityId), data: params });
+    editActivity({ activityId: Number(activityId), data: params });
   };
 
   return {
@@ -237,8 +241,8 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     isDetailLoading,
     isDetailFetching,
     uploadImageMutation,
-    registerMutation,
-    updateMutation,
+    isRegisterLoading,
+    isEditLoading,
     uploadImageAndGetUrl,
     registerForm,
     updateForm,
