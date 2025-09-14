@@ -25,7 +25,7 @@ interface ActivityClientProps {
 
 export default function ActivityClient({ activityId, blurImage }: ActivityClientProps) {
   const [isOwner, setIsOwner] = useState<boolean>(false);
-  const user = useUserStore((state) => state.user);
+  const { user } = useUserStore();
 
   // 1. 정적 데이터 (이미지, 주소, 제목, 설명) - 긴 캐시
   const { data: staticInfo } = useSuspenseQuery({
