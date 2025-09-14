@@ -46,8 +46,7 @@ const BookingConfirmModal = ({
       reservationData: ReservationRequest;
     }) => createReservation(activityId, reservationData),
 
-    onSuccess: async (data) => {
-      console.log('🎫 [BookingConfirmModal] 예약 성공:', data);
+    onSuccess: async () => {
       onClose();
       successToast.run('예약이 완료되었습니다!');
       router.push('/mypage/reservation-list');
@@ -63,7 +62,6 @@ const BookingConfirmModal = ({
 
       // 401 Unauthorized 에러인 경우 로그인 페이지로 리다이렉트
       if (axiosError?.response?.status === 401) {
-        console.log('🚨 예약 실패: 로그인 필요');
         overlay.open(({ isOpen, close }) => (
           <ConfirmActionModal
             isOpen={isOpen}
@@ -147,7 +145,6 @@ const BookingConfirmModal = ({
           <Button
             size='md'
             onClick={() => {
-              console.log('🔘 예약 확정 버튼 클릭됨');
               makeReservation({
                 activityId,
                 reservationData: {

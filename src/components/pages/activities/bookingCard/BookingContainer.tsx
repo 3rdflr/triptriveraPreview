@@ -87,7 +87,6 @@ export default function BookingContainer({
           ...prev,
           [dateStr]: newSchedule.times,
         }));
-        console.log(`✅ [BookingCard] ${dateStr} 스케줄 업데이트됨`);
       }
     }
   }, [scheduleByDate, isSuccess, selectedDate]);
@@ -112,12 +111,6 @@ export default function BookingContainer({
   const handleBooking = () => {
     if (!selectedScheduleTime) return;
 
-    console.log('🎫 [BookingCard] 예약 요청:', {
-      activityId,
-      selectedScheduleTime,
-      memberCount,
-      totalPrice: price * memberCount,
-    });
     overlay.open(({ isOpen, close }) => (
       <BookingConfirmModal
         isOpen={isOpen}

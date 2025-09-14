@@ -71,7 +71,6 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   useEffect(() => {
     if (activity) {
       addViewed(activity);
-      console.log('👀 최근 본 목록에 추가됨', activity.title);
     }
   }, [activity, addViewed]);
 

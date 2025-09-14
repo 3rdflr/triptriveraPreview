@@ -216,7 +216,7 @@ export default function ImageGalleryModal({
                           alt={`${title} - ${index + 1} 이미지`}
                           width={600}
                           height={400}
-                          className='object-cover'
+                          className='object-cover w-auto'
                           onLoad={() => handleImageLoad(index)}
                           onError={() => {
                             console.log('🖼️ Mobile image failed to load:', image.imageUrl);
@@ -235,7 +235,7 @@ export default function ImageGalleryModal({
                 <motion.div
                   key={currentIndex}
                   layoutId={`activity-image-${currentIndex}`}
-                  className='flex items-center justify-center w-full max-w-4xl max-h-[70vh]'
+                  className='relative flex items-center justify-center rounded-2xl shadow-lg w-full h-full max-w-[600px] max-h-[600px]'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
@@ -252,17 +252,12 @@ export default function ImageGalleryModal({
                     blurDataURL={allBlurImageURLs[currentIndex]}
                     src={getCurrentImageSrc(currentIndex)}
                     alt={`${title} - ${currentIndex + 1}`}
-                    width={600}
-                    height={400}
-                    className='object-contain rounded-2xl shadow-lg'
+                    fill
+                    className='object-cover rounded-2xl'
                     onLoad={() => {
                       handleImageLoad(currentIndex);
                     }}
                     onError={() => {
-                      console.log(
-                        '🖼️ Modal image failed to load:',
-                        allImages[currentIndex]?.imageUrl,
-                      );
                       setImageErrors((prev) => ({ ...prev, [currentIndex]: true }));
                     }}
                     priority={currentIndex === 0}
@@ -341,7 +336,6 @@ export default function ImageGalleryModal({
                         fill
                         className='object-cover'
                         onError={() => {
-                          console.log('🖼️ Thumbnail failed to load:', image.imageUrl);
                           setImageErrors((prev) => ({ ...prev, [index]: true }));
                         }}
                       />

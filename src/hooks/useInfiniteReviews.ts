@@ -23,10 +23,6 @@ export function useInfiniteReviews(activityId: string, pageSize: number = 10) {
   } = useInfiniteQuery({
     queryKey: ['reviews', activityId, pageSize],
     queryFn: async ({ pageParam = 1 }) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('📡 API 요청:', { activityId, pageParam, pageSize });
-      }
-
       const result = await getActivityReviews(Number(activityId), {
         page: Number(pageParam),
         size: pageSize,

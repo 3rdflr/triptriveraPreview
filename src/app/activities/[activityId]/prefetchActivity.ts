@@ -4,7 +4,7 @@ import { getBlurDataURL } from '@/lib/utils/blur';
 
 /**
  * SSR prefetch용 통합 함수
- * Activity 기본 정보를 서버에서 미리 로드 + 모든 이미지 LQIP(blur) 생성
+ * Activity 기본 정보를 서버에서 미리 로드 + 모든 이미지 blur 생성
  */
 
 // NEW: 반환 타입 정의
@@ -14,9 +14,6 @@ export interface PrefetchActivityResult {
 }
 
 export async function prefetchActivityData(activityId: string): Promise<PrefetchActivityResult> {
-  // CHANGED
-  console.log('📡 [SSR] Activity 데이터 prefetch 시작', { activityId });
-
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
