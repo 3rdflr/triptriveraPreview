@@ -11,15 +11,23 @@ import { startOfToday, addMonths } from 'date-fns';
 import { BasicCalendar } from '@/components/common/BasicCalendar';
 import { ko } from 'date-fns/locale';
 import { formatDate, parseDate } from '@/lib/utils/dateUtils';
+import clsx from 'clsx';
 
 interface DateInputProps {
   showLabel?: boolean;
   value?: string;
+  error?: string;
   onChange?: (val: string) => void;
   onBlur?: () => void;
 }
 
-export function DateInput({ showLabel = false, value = '', onChange, onBlur }: DateInputProps) {
+export function DateInput({
+  showLabel = false,
+  value = '',
+  error,
+  onChange,
+  onBlur,
+}: DateInputProps) {
   const [open, setOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
@@ -41,7 +49,11 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
             id='date'
             value={value}
             placeholder='yy/mm/dd'
-            className='bg-background pr-10 w-full'
+            className={clsx(
+              'bg-background pr-10 w-full',
+              error &&
+                'border-destructive/20 bg-destructive/10 dark:bg-destructive/20 placeholder:text-destructive/50',
+            )}
             onChange={(e) => {
               const val = e.target.value;
               onChange?.(val);
@@ -61,7 +73,7 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
               <Button
                 id='date-picker'
                 variant='ghost'
-                className='absolute top-1/2 right-2 size-6 -translate-y-1/2 border border-transparent focus:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[var(--primary-300)]/30 focus-visible:ring-[3px]'
+                className='absolute top-1/2 right-2 size-6 -translate-y-1/2 border border-transparent focus:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[var(--primary-300)]/30 focus-visible:ring-[3px] hover:bg-[var(--primary-200)]'
               >
                 <CalendarIcon className='size-3.5' />
                 <span className='sr-only'>Select date</span>

@@ -1,6 +1,6 @@
 'use client';
 import DateTimeRow from '@/components/pages/myActivities/DateTimeRow';
-import { Controller, FieldError, FieldErrorsImpl, FormProvider, Merge } from 'react-hook-form';
+import { Controller, FormProvider } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -152,10 +152,6 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                         field.onBlur();
                         trigger('category');
                       }}
-                      className={
-                        fieldState.error &&
-                        'border-destructive/20 bg-destructive/10 dark:bg-destructive/20'
-                      }
                     />
                     <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px] min-h-[20px]'>
                       {fieldState?.error?.message}
@@ -291,12 +287,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
                     }
                   }}
                   isFirstRow={index === 0}
-                  errors={
-                    errors?.schedules?.[index] as Merge<
-                      FieldError,
-                      FieldErrorsImpl<Omit<MyActivitySchedule, 'id'>>
-                    >
-                  }
+                  errors={errors?.schedules?.[index]}
                 />
               </div>
             ))}

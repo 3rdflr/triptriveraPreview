@@ -33,9 +33,10 @@ const DateTimeRow = ({ data, errors, onChange, onBlur, onRemove }: DateTimeRowPr
           showLabel={false}
           onChange={handleDateInputChange}
           onBlur={onBlur}
+          error={errors?.date?.message}
         />
         <small className='text-12-medium ml-2 text-[var(--secondary-red-500)] mt-[6px] leading-[12px] min-h-[20px]'>
-          {errors?.date?.message}
+          {errors?.date?.message || errors?.startTime?.message || errors?.endTime?.message}
         </small>
       </div>
 
@@ -46,6 +47,8 @@ const DateTimeRow = ({ data, errors, onChange, onBlur, onRemove }: DateTimeRowPr
           onChange={(newVal) => {
             onChange({ ...data, startTime: newVal.start, endTime: newVal.end });
           }}
+          startTimeError={errors?.startTime?.message}
+          endTimeError={errors?.endTime?.message}
         />
         <div className='flex flex-col justify-center h-[3.375rem]'>
           <RoundButton mode={'minus'} onClick={onRemove} />
