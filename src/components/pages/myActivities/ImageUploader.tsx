@@ -4,6 +4,8 @@ import { useRef } from 'react';
 import RoundButton from './RoundButton';
 import clsx from 'clsx';
 import { errorToast } from '@/lib/utils/toastUtils';
+import ConfirmActionModal from '@/components/common/ConfirmActionModal';
+import { useOverlay } from '@/hooks/useOverlay';
 
 interface FetchImage {
   id?: number;
@@ -25,6 +27,7 @@ const ImageUploader = ({
   onChange,
   onDeleteFetched,
 }: ImageUploaderProps) => {
+  const overlay = useOverlay();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +53,21 @@ const ImageUploader = ({
       return;
     }
     inputRef.current?.click();
+  };
+
+  const onClickShowDeleteModal = (index: number, onDelete: (index: number) => void) => {
+    overlay.open(({ isOpen, close }) => (
+      <ConfirmActionModal
+        title='이미지를 정말 삭제하시겠어요?'
+        actionText='삭제하기'
+        isOpen={isOpen}
+        onClose={close}
+        onAction={() => {
+          close();
+          onDelete(index);
+        }}
+      />
+    ));
   };
 
   const deleteFile = (index: number) => {
@@ -100,7 +118,7 @@ const ImageUploader = ({
             />
             <RoundButton
               className='absolute -right-2 -top-2 z-10'
-              onClick={() => deleteFetchedImage(index)}
+              onClick={() => onClickShowDeleteModal(index, deleteFetchedImage)}
             />
           </div>
         );
@@ -120,7 +138,7 @@ const ImageUploader = ({
             />
             <RoundButton
               className='absolute -right-2 -top-2 z-10'
-              onClick={() => deleteFile(index)}
+              onClick={() => onClickShowDeleteModal(index, deleteFile)}
             />
           </div>
         );
