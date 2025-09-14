@@ -1,15 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import { Activity } from '@/types/activities.type';
 import { useUserStore } from '@/store/userStore';
 import { BASE_IMG_URL } from './Constants';
-import { X } from 'lucide-react';
-import ActivityLike from './ActivityLike';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { wsrvLoader } from '../common/wsrvLoader';
+import Link from 'next/link';
+import Image from 'next/image';
+import ActivityLike from './ActivityLike';
 
 interface MapCardProps {
   activity: Activity;
@@ -88,13 +89,14 @@ export default function MapCard({ activity, onClose }: MapCardProps) {
               <Link href={`/activities/${activity.id}`}>
                 <div className='w-[126px] h-full relative flex-shrink-0'>
                   <Image
+                    loader={wsrvLoader}
+                    loading='lazy'
                     src={bannerImg}
                     alt={activity.title}
                     fill
                     className='object-cover rounded-l-2xl'
                     onError={() => setIsError(true)}
                     blurDataURL={BASE_IMG_URL}
-                    loading='lazy'
                   />
                 </div>
               </Link>

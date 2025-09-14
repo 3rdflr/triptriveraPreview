@@ -14,6 +14,8 @@ import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation
 import { toFullDot } from '@/lib/utils/dateUtils';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
+import { useOverlay } from '@/hooks/useOverlay';
+import PaymentsModal from '../activities/payments/Payments.Modal';
 
 interface ReservationListCardProps {
   reservation: Reservation;
@@ -30,9 +32,16 @@ const ReservationListCard = ({
 }: ReservationListCardProps) => {
   const { id, activity, status, totalPrice, headCount, date, startTime, endTime, reviewSubmitted } =
     reservation;
+  const overlay = useOverlay();
 
   const { bannerImageUrl, title } = activity;
   const baseImageUrl = '/images/icons/_empty.png';
+
+  const handlePayment = () => {
+    overlay.open(({ isOpen, close }) => (
+      <PaymentsModal isOpen={isOpen} onClose={close} title={title} totalPrice={totalPrice} />
+    ));
+  };
 
   return (
     <section className='flex flex-col w-full gap-3'>
@@ -79,9 +88,14 @@ const ReservationListCard = ({
                   ))}
 
                 {(status === 'pending' || status === 'confirmed') && (
-                  <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
-                    예약 취소
-                  </Button>
+                  <div className='flex gap-2'>
+                    <Button variant='secondary' size='xs' onClick={() => onCancel(id)}>
+                      예약 취소
+                    </Button>
+                    <Button onClick={handlePayment} size='xs'>
+                      결제하기
+                    </Button>
+                  </div>
                 )}
               </CardFooter>
             </div>
@@ -133,14 +147,14 @@ const ReservationListCard = ({
           ))}
 
         {(status === 'pending' || status === 'confirmed') && (
-          <Button
-            variant='secondary'
-            size='sm'
-            className='flex-1 min-w-[300px]'
-            onClick={() => onCancel(id)}
-          >
-            예약 취소
-          </Button>
+          <div className='flex-1 flex gap-3 min-w-[300px]'>
+            <Button variant='secondary' size='sm' className='flex-1 ' onClick={() => onCancel(id)}>
+              예약 취소
+            </Button>
+            <Button onClick={handlePayment} size='sm' className='flex-1'>
+              결제하기
+            </Button>
+          </div>
         )}
       </div>
     </section>

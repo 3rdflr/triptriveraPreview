@@ -8,6 +8,7 @@ import { Bell, Search, Heart } from 'lucide-react';
 import { useUserStore } from '@/store/userStore';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useNotifications } from '@/hooks/useNotification';
+import { wsrvLoader } from '../common/wsrvLoader';
 import Link from 'next/link';
 import Image from 'next/image';
 import NotificationModal from './NotificationModal';
@@ -118,6 +119,8 @@ export default function BottomNav() {
               href='/mypage'
             >
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={
                   user.profileImageUrl ? user.profileImageUrl : '/images/icons/default_profile.svg'
                 }
@@ -148,6 +151,8 @@ export default function BottomNav() {
               href='/login'
             >
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={'/images/icons/default_profile_gray.svg'}
                 alt='Profile'
                 width={20}

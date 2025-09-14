@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { wsrvLoader } from '../common/wsrvLoader';
 
 export default function Footer() {
   const searchParams = useSearchParams();
@@ -15,6 +16,8 @@ export default function Footer() {
       <div className='bg-white w-full h-20 rounded-b-full shadow-lg mb-30'></div>
 
       <Image
+        loader={wsrvLoader}
+        loading='lazy'
         src={'/images/icons/logo.svg'}
         alt='트리베라 로고'
         width={0}
