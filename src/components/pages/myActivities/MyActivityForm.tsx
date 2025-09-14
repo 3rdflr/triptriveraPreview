@@ -1,13 +1,6 @@
 'use client';
-import DateTimeRow from './DateTimeRow';
-import {
-  Controller,
-  FieldError,
-  FieldErrors,
-  FieldErrorsImpl,
-  FormProvider,
-  Merge,
-} from 'react-hook-form';
+import DateTimeRow from '@/components/pages/myActivities/DateTimeRow';
+import { Controller, FieldError, FieldErrorsImpl, FormProvider, Merge } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -70,10 +63,6 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
     }
   };
 
-  const onError = (errors: FieldErrors<MyActivityFormData>) => {
-    console.log('폼 에러 발생', errors);
-  };
-
   useEffect(() => {
     if (mode === 'EDIT') {
       if (!detailData || isDetailLoading || isDetailFetching) return;
@@ -121,12 +110,12 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
       methods.reset(formData);
     }
-  }, [detailData, isDetailLoading, isDetailFetching, mode]);
+  }, [detailData, isDetailLoading, isDetailFetching, mode, methods, setOriginalSchedules]);
 
   return (
     <div className='flex-1 flex flex-col'>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
           <div className='flex flex-col gap-6'>
             <Label className='text-[18px] font-bold'>
               {mode === 'REGISTER' ? '내 체험 등록' : '내 체험 수정'}

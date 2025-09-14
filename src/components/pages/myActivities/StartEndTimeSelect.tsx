@@ -8,7 +8,8 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
-const hours = Array.from({ length: 25 }, (_, i) => `${i}:00`);
+const startHours = Array.from({ length: 23 }, (_, i) => `${i}:00`);
+const endHours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
 interface TimeRange {
   start: string;
@@ -35,7 +36,7 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
           </SelectTrigger>
           <SelectContent className='max-h-50'>
             <SelectGroup>
-              {hours.map((hour, index) => (
+              {startHours.map((hour, index) => (
                 <SelectItem key={`${hour}-${index}`} value={hour}>
                   {hour}
                 </SelectItem>
@@ -56,7 +57,7 @@ const StartEndTimeSelect = ({ value, showLabel = false, onChange }: TimeSelectPr
           </SelectTrigger>
           <SelectContent className='max-h-50'>
             <SelectGroup>
-              {hours.map((hour, index) => (
+              {endHours.map((hour, index) => (
                 <SelectItem key={`${hour}-${index}`} value={hour}>
                   {hour}
                 </SelectItem>
