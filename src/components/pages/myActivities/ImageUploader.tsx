@@ -70,7 +70,7 @@ const ImageUploader = ({
       <button
         type='button'
         className={clsx(
-          'w-20 h-20 sm:w-31.5 sm:h-31.5 border border-grayscale-100  rounded-2xl gap-0.5 flex flex-col items-center justify-center focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]',
+          'w-20 h-20 sm:w-31.5 sm:h-31.5 border border-grayscale-100  rounded-2xl gap-0.5 flex flex-col items-center justify-center focus:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[var(--primary-300)]/30 focus-visible:ring-[3px]',
           {
             'bg-grayscale-25': files.length + fetchedImages.length === maxImages,
             'bg-white cursor-pointer': files.length + fetchedImages.length !== maxImages,

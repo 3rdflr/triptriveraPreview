@@ -61,7 +61,7 @@ export function DateInput({ showLabel = false, value = '', onChange, onBlur }: D
               <Button
                 id='date-picker'
                 variant='ghost'
-                className='absolute top-1/2 right-2 size-6 -translate-y-1/2 border border-transparent focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]'
+                className='absolute top-1/2 right-2 size-6 -translate-y-1/2 border border-transparent focus:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[var(--primary-300)]/30 focus-visible:ring-[3px]'
               >
                 <CalendarIcon className='size-3.5' />
                 <span className='sr-only'>Select date</span>
