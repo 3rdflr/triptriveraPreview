@@ -9,7 +9,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './status-calendar-custom.css';
 import { ko } from 'date-fns/locale';
-import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, isSameDay, isValid } from 'date-fns';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 import clsx from 'clsx';
 
@@ -48,7 +48,9 @@ const ReservationStatusCalendar = ({
   onClickDate,
 }: ReservationStatusCalendarProps) => {
   const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
-    const formatted = format(label, 'yyyy년 M월', { locale: ko });
+    const labelDate = typeof label === 'string' ? parse(label, 'yyyy-MM-dd', new Date()) : label;
+    if (!isValid(labelDate)) return null;
+    const formatted = format(labelDate, 'yyyy년 M월', { locale: ko });
 
     return (
       <div className='custom-toolbar flex items-center justify-center gap-4 p-7.5'>
@@ -64,7 +66,9 @@ const ReservationStatusCalendar = ({
   };
 
   const onClickEvent = (event: RBCEvent) => {
-    const date = format(event.start as Date, 'yyyy-MM-dd');
+    const startDate = new Date(event.start as Date);
+    if (!isValid(startDate)) return;
+    const date = format(startDate, 'yyyy-MM-dd');
     onClickDate(date);
   };
 
@@ -98,10 +102,18 @@ const ReservationStatusCalendar = ({
   };
 
   const CustomDateHeader = ({ label, date }: { label: string; date: Date }) => {
-    const hasEvent = events.some(
-      (event: RBCEvent) =>
-        event.start && event.end && (isSameDay(event.start, date) || isSameDay(event.end, date)),
-    );
+    const hasEvent = events.some((event: RBCEvent) => {
+      if (!event.start || !event.end) return false;
+
+      // 문자열이면 Date로 변환
+      const startDate = event.start instanceof Date ? event.start : new Date(event.start);
+      const endDate = event.end instanceof Date ? event.end : new Date(event.end);
+
+      // 유효한 날짜인지 체크
+      if (!isValid(startDate) || !isValid(endDate)) return false;
+
+      return isSameDay(startDate, date) || isSameDay(endDate, date);
+    });
     return (
       <div className='relative flex items-center justify-center'>
         <span>{label}</span>

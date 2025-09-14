@@ -6,7 +6,7 @@ import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStat
 import { Label } from '@/components/ui/label';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { useOverlay } from '@/hooks/useOverlay';
 import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
@@ -51,7 +51,7 @@ const ReservationStatusPage = () => {
   });
 
   const events = reservationListData?.flatMap((item) => {
-    const date = new Date(item.date);
+    const date = parse(item.date, 'yyyy-MM-dd', new Date());
     const result: RBCEvent[] = [];
 
     if (item.reservations.pending > 0) {
