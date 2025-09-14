@@ -9,6 +9,7 @@ import { useOverlay } from '@/hooks/useOverlay';
 import { motion } from 'motion/react';
 import { useImageWithFallback } from '@/hooks/useImageWithFallback';
 import clsx from 'clsx';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 /**
  * 이미지를 표시하는 컴포넌트
@@ -58,10 +59,11 @@ export default function ActivityImageViewer({
           subImages={subImages}
           title={title}
           initialIndex={index}
+          blurImage={blurImage}
         />
       ));
     },
-    [bannerImageUrl, subImages, title, overlay],
+    [bannerImageUrl, subImages, title, overlay, blurImage],
   );
 
   return (
@@ -83,6 +85,7 @@ export default function ActivityImageViewer({
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
             <Image
+              loader={wsrvLoader}
               src={bannerImage.src}
               alt={title}
               fill
@@ -125,6 +128,8 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={subImage1.src}
                 alt={`${title} 서브 이미지 1`}
                 fill
@@ -155,6 +160,8 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
+                loader={wsrvLoader}
+                loading='lazy'
                 src={subImage2.src}
                 alt={`${title} 서브 이미지 2`}
                 fill

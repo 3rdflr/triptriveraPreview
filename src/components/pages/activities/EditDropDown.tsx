@@ -80,7 +80,7 @@ export function EditDropDown({ activityId, isOwner, open, setOpen }: EditDropDow
     onError: (error) => {
       overlay.open(({ isOpen, close }) => (
         <ConfirmModal
-          title={error.response?.data?.message}
+          title={error.response?.data?.message || '체험 삭제에 실패했습니다.'}
           isOpen={isOpen}
           onClose={close}
           onAction={close}

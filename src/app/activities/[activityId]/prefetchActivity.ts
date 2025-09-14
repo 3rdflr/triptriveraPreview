@@ -4,7 +4,7 @@ import { getBlurDataURL } from '@/lib/utils/blur';
 
 /**
  * SSR prefetch용 통합 함수
- * Activity 기본 정보를 서버에서 미리 로드 + 상단 3장 LQIP(blur) 생성
+ * Activity 기본 정보를 서버에서 미리 로드 + 모든 이미지 LQIP(blur) 생성
  */
 
 // NEW: 반환 타입 정의
@@ -42,7 +42,7 @@ export async function prefetchActivityData(activityId: string): Promise<Prefetch
       // 필요시 staleTime/gcTime 부여 가능
     });
 
-    // 캐시된 activity를 꺼내서 상단 3장의 blur 생성
+    // 캐시된 activity를 꺼내서 모든 이미지의 blur 생성
     const activity = queryClient.getQueryData<{
       bannerImageUrl: string;
       subImages: { id: number | string; imageUrl: string }[];
@@ -52,16 +52,20 @@ export async function prefetchActivityData(activityId: string): Promise<Prefetch
 
     if (activity) {
       const banner = activity.bannerImageUrl;
-      const sub0 = activity.subImages?.[0]?.imageUrl;
-      const sub1 = activity.subImages?.[1]?.imageUrl;
+      const allSubImages = activity.subImages || [];
 
-      const [b, s0, s1] = await Promise.all([
+      // 배너 + 모든 서브 이미지 블러 병렬 생성
+      const [bannerBlur, ...subBlurs] = await Promise.all([
         banner ? getBlurDataURL(banner) : undefined,
-        sub0 ? getBlurDataURL(sub0) : undefined,
-        sub1 ? getBlurDataURL(sub1) : undefined,
+        ...allSubImages.map((sub) => (sub.imageUrl ? getBlurDataURL(sub.imageUrl) : undefined)),
       ]);
 
-      blur = { banner: b, sub: [s0, s1] };
+      blur = {
+        banner: bannerBlur,
+        sub: subBlurs,
+      };
+
+      console.log(`🎨 [SSR] 블러 이미지 생성 완료: 배너 1개 + 서브 ${subBlurs.length}개`);
     }
 
     console.log('✅ [SSR] Activity prefetch 성공', { activityId });

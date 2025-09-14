@@ -70,7 +70,8 @@ export default function BookingContainer({
       const month = format(selectedDate, 'MM');
       return getAvailableSchedule(activityId, { year, month });
     },
-    staleTime: 5 * 60 * 1000, // 5분 캐시
+    staleTime: 0,
+    gcTime: 0,
     enabled: !!selectedDate, // 날짜가 선택된 경우에만 실행
   });
   const totalPrice = price * memberCount;

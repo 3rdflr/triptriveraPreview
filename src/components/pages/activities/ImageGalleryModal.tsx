@@ -6,6 +6,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SubImage } from '@/types/activities.type';
 import { cn } from '@/lib/utils/shadCnUtils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 /**
  * 이미지 갤러리 모달 컴포넌트
@@ -21,6 +22,7 @@ interface ImageGalleryModalProps {
   subImages: SubImage[];
   title: string;
   initialIndex?: number;
+  blurImage?: { banner?: string; sub?: (string | undefined)[] };
 }
 
 export default function ImageGalleryModal({
@@ -30,6 +32,7 @@ export default function ImageGalleryModal({
   subImages,
   title,
   initialIndex = 0,
+  blurImage,
 }: ImageGalleryModalProps) {
   /** 상태 관리 */
   // 현재 이미지 인덱스
@@ -41,6 +44,8 @@ export default function ImageGalleryModal({
 
   // 전체 이미지 배열 (배너 + 서브 이미지들)
   const allImages = [{ id: 0, imageUrl: bannerImageUrl }, ...subImages];
+  // 전체 blur 이미지 배열
+  const allBlurImageURLs = [blurImage?.banner, ...(blurImage?.sub || [])];
 
   // 현재 이미지 src (에러 시 placeholder 사용)
   const getCurrentImageSrc = (index: number) => {
@@ -204,9 +209,13 @@ export default function ImageGalleryModal({
                           </div>
                         )}
                         <Image
+                          loader={wsrvLoader}
+                          placeholder='blur'
+                          blurDataURL={allBlurImageURLs[index]}
                           src={getCurrentImageSrc(index)}
                           alt={`${title} - ${index + 1} 이미지`}
-                          fill
+                          width={600}
+                          height={400}
                           className='object-cover'
                           onLoad={() => handleImageLoad(index)}
                           onError={() => {
@@ -238,6 +247,9 @@ export default function ImageGalleryModal({
                     </div>
                   )}
                   <Image
+                    loader={wsrvLoader}
+                    placeholder='blur'
+                    blurDataURL={allBlurImageURLs[currentIndex]}
                     src={getCurrentImageSrc(currentIndex)}
                     alt={`${title} - ${currentIndex + 1}`}
                     width={600}
@@ -320,11 +332,14 @@ export default function ImageGalleryModal({
                       whileTap={{ scale: 0.95 }}
                     >
                       <Image
+                        loader={wsrvLoader}
+                        loading='lazy'
+                        placeholder='blur'
+                        blurDataURL={allBlurImageURLs[index]}
                         src={getCurrentImageSrc(index)}
                         alt={`${title} thumbnail ${index + 1}`}
-                        width={64}
-                        height={64}
-                        className='w-full h-full object-cover'
+                        fill
+                        className='object-cover'
                         onError={() => {
                           console.log('🖼️ Thumbnail failed to load:', image.imageUrl);
                           setImageErrors((prev) => ({ ...prev, [index]: true }));
