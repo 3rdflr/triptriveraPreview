@@ -43,7 +43,7 @@ const MyExperienceList = ({
     retryDelay: 300,
     onSuccess: () => {
       successToast.run('체험 삭제가 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
+      queryClient.invalidateQueries({ queryKey: ['my-activities-list-infinite'] });
     },
     onError: (error) => {
       overlay.open(({ isOpen, close }) => (
