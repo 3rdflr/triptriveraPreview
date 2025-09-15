@@ -2,12 +2,13 @@
 
 import { Stars } from '@/components/common/Stars';
 import { Review } from '@/types/reviews.type';
+import { memo } from 'react';
 
 interface ReviewCardProps {
   review: Review;
 }
 
-export function ReviewCard({ review }: ReviewCardProps) {
+export const ReviewCard = memo(function ReviewCard({ review }: ReviewCardProps) {
   return (
     <div className='w-full p-5 min-h-[140px] flex flex-col gap-3 rounded-3xl bg-white shadow-sm'>
       <div className='flex flex-col gap-1'>
@@ -26,4 +27,4 @@ export function ReviewCard({ review }: ReviewCardProps) {
       <p className='text-gray-800 text-sm leading-relaxed line-clamp-4'>{review.content}</p>
     </div>
   );
-}
+});

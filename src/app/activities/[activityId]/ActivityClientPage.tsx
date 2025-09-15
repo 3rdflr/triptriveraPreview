@@ -32,7 +32,6 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   const { user } = useUserStore();
   const queryClient = useQueryClient();
 
-  // Intersection Observer for performance optimization
   const [mapRef, isMapVisible] = useIntersectionObserver({
     rootMargin: '100px',
     triggerOnce: true,
@@ -58,7 +57,7 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
     gcTime: 60 * 60 * 1000, // 1시간 메모리 보관
   });
 
-  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시, 캐시 재사용 최적화
+  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시, 재사용 최적화
   const { data: dynamicInfo } = useSuspenseQuery({
     queryKey: [...activityQueryKeys.detail(activityId), 'dynamic'],
     queryFn: (): Promise<ActivityDetail> => {
@@ -72,7 +71,7 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
         'static',
       ]);
 
-      // static 캐시가 fresh하면(2분 이내) 재사용
+      // static 캐시가 fresh하면 재사용
       if (
         cachedData &&
         cachedState?.dataUpdatedAt &&
@@ -148,7 +147,6 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
                   </NaverMap>
                 ) : (
                   <div className='h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center'>
-                    {/* MapPinned 아이콘 하나가 중앙에서 콩콩 뛰는 애니메이션 */}
                     <motion.div
                       animate={{
                         y: [0, -20, 0],

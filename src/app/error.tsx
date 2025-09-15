@@ -1,8 +1,9 @@
 'use client';
 
-import Lottie from 'lottie-react';
-import loadingLottie from '@/assets/lottie/T-rex.json';
 import Link from 'next/link';
+import { lazy, Suspense, useState, useEffect } from 'react';
+
+const Lottie = lazy(() => import('lottie-react'));
 
 export default function GlobalError({
   error,
@@ -11,10 +12,27 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [animationData, setAnimationData] = useState<object | null>(null);
+
+  useEffect(() => {
+    // 동적으로 Lottie JSON 로드
+    import('@/assets/lottie/T-rex.json')
+      .then((module) => setAnimationData(module.default))
+      .catch(() => setAnimationData(null));
+  }, []);
+
   return (
     <div className='flex flex-col items-center justify-center h-screen -m-10 overflow-hidden'>
       <div className='w-100 h-100'>
-        <Lottie animationData={loadingLottie} />
+        {animationData ? (
+          <Suspense
+            fallback={<div className='animate-pulse bg-gray-100 rounded-2xl w-100 h-100'></div>}
+          >
+            <Lottie animationData={animationData} />
+          </Suspense>
+        ) : (
+          <div className='animate-pulse bg-gray-100 rounded-2xl w-100 h-100'></div>
+        )}
       </div>
       <div className='flex mt-8 text-24-regular text-subtitle gap-5'>뭔가 잘못되었습니다.</div>
       <span className='text-12-regular text-red-500 m-4'>{error.message}</span>
