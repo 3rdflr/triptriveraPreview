@@ -42,7 +42,6 @@ export default function ActivityCard({
             src={bannerImg}
             alt={activity.title}
             fill
-            priority
             sizes={'375'}
             className='object-cover cursor-pointer hover:scale-105 transition-soft duration-500'
             onClick={() => router.push(`/activities/${activity.id}`)}
