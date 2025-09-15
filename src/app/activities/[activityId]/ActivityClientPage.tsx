@@ -14,8 +14,6 @@ import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 import { activityQueryKeys } from './queryKeys';
 import { useUserStore } from '@/store/userStore';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { motion } from 'framer-motion';
-import { MapPinned } from 'lucide-react';
 
 /**
  * ActivityClient 컴포넌트
@@ -146,21 +144,7 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
                     </Marker>
                   </NaverMap>
                 ) : (
-                  <div className='h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center'>
-                    <motion.div
-                      animate={{
-                        y: [0, -20, 0],
-                      }}
-                      transition={{
-                        duration: 0.8,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                      className='text-gray-400'
-                    >
-                      <MapPinned size={40} />
-                    </motion.div>
-                  </div>
+                  <div className='h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center'></div>
                 )}
               </section>
               <hr className='border-gray-100' />
