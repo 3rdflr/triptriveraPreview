@@ -12,6 +12,7 @@ import Marker from '@/components/common/naverMaps/Marker';
 import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 import { activityQueryKeys } from './queryKeys';
 import { useUserStore } from '@/store/userStore';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 /**
  * ActivityClient 컴포넌트
@@ -26,6 +27,16 @@ interface ActivityClientProps {
 export default function ActivityClient({ activityId, blurImage }: ActivityClientProps) {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const { user } = useUserStore();
+
+  // Intersection Observer for performance optimization
+  const [mapRef, isMapVisible] = useIntersectionObserver({
+    rootMargin: '100px',
+    triggerOnce: true,
+  });
+  const [reviewRef, isReviewVisible] = useIntersectionObserver({
+    rootMargin: '200px',
+    triggerOnce: true,
+  });
 
   // 1. 정적 데이터 (이미지, 주소, 제목, 설명) - 긴 캐시
   const { data: staticInfo } = useSuspenseQuery({
@@ -106,23 +117,35 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
               </section>
               <hr className='border-gray-100' />
               {/* 주소 섹션 */}
-              <section className='flex flex-col gap-2'>
+              <section ref={mapRef} className='flex flex-col gap-2'>
                 <h2 className='text-lg font-semibold'>오시는 길</h2>
                 <p className='text-sm text-gray-600'>{activity.address}</p>
-                <NaverMap address={activity.address} height='256px' zoom={12}>
-                  <Marker address={activity.address} id='image-marker'>
-                    <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
-                  </Marker>
-                </NaverMap>
+                {isMapVisible ? (
+                  <NaverMap address={activity.address} height='256px' zoom={12}>
+                    <Marker address={activity.address} id='image-marker'>
+                      <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
+                    </Marker>
+                  </NaverMap>
+                ) : (
+                  <div className='h-64 bg-gray-100 rounded-lg flex items-center justify-center'>
+                    <span className='text-gray-500'>지도 로딩 준비 중...</span>
+                  </div>
+                )}
               </section>
               <hr className='border-gray-100' />
               {/* 후기 섹션 */}
-              <section className='flex flex-col gap-2'>
+              <section ref={reviewRef} className='flex flex-col gap-2'>
                 <div className='flex items-center gap-2'>
                   <h2 className='text-lg font-semibold'>체험 후기</h2>
                   <p>{activity.reviewCount}개</p>
                 </div>
-                <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
+                {isReviewVisible ? (
+                  <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
+                ) : (
+                  <div className='h-96 bg-gray-50 rounded-lg flex items-center justify-center'>
+                    <span className='text-gray-500'>후기 로딩 준비 중...</span>
+                  </div>
+                )}
               </section>
             </div>
           </div>

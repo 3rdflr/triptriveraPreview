@@ -4,7 +4,6 @@ import { SubImage } from '@/types/activities.type';
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { Expand, ImageIcon } from 'lucide-react';
-import ImageGalleryModal from '@/components/pages/activities/ImageGalleryModal';
 import { useOverlay } from '@/hooks/useOverlay';
 import { motion } from 'motion/react';
 import { useImageWithFallback } from '@/hooks/useImageWithFallback';
@@ -47,9 +46,14 @@ export default function ActivityImageViewer({
   // 남은 이미지 개수 = 전체 - 표시된 3개
   const remainingCount = Math.max(0, allImages.length - 3);
 
-  // 이미지 클릭 핸들러
+  // 이미지 클릭 핸들러 (Dynamic Import)
   const handleImageClick = useCallback(
-    (index: number) => {
+    async (index: number) => {
+      // Dynamic import로 모달 로딩
+      const { default: ImageGalleryModal } = await import(
+        '@/components/pages/activities/ImageGalleryModal'
+      );
+
       // 모달 열기
       overlay.open(({ isOpen, close }) => (
         <ImageGalleryModal

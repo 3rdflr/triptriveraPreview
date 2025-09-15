@@ -13,7 +13,6 @@ import { useSchedulesByDate } from '@/hooks/useSchedulesByDate';
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { useOverlay } from '@/hooks/useOverlay';
-import BookingConfirmModal from '@/components/pages/activities/bookingCard/BookingConfirm.Modal';
 
 interface BookingContainerProps {
   title: string;
@@ -108,8 +107,13 @@ export default function BookingContainer({
     setMemberCount(count);
   };
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (!selectedScheduleTime) return;
+
+    // Dynamic import로 예약 확인 모달 로딩
+    const { default: BookingConfirmModal } = await import(
+      '@/components/pages/activities/bookingCard/BookingConfirm.Modal'
+    );
 
     overlay.open(({ isOpen, close }) => (
       <BookingConfirmModal

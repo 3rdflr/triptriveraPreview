@@ -1,12 +1,12 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Suspense, useId } from 'react';
+import { Suspense, useId, lazy } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import NaverMapSkeleton from './NaverMapSkeleton';
 import NaverMapError from './NaverMapError';
-import NaverMapCore from './NaverMapCore';
 
+const NaverMapCore = lazy(() => import('./NaverMapCore'));
 /**
  * NaverMap 컴포넌트
  * - 네이버 지도 API를 사용한 지도 렌더링 컴포넌트
