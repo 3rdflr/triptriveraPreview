@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { pretendard } from '@/lib/fonts';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import ClientLayout from '@/components/common/ClientLayout';
 import './globals.css';
 
@@ -70,6 +71,7 @@ export default function RootLayout({
         <Suspense>
           <ClientLayout>{children}</ClientLayout>
         </Suspense>
+        <SpeedInsights />
       </body>
     </html>
   );

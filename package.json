@@ -42,6 +42,7 @@
     "@tanstack/react-virtual": "^3.13.12",
     "@tosspayments/payment-widget-sdk": "^0.12.0",
     "@tosspayments/tosspayments-sdk": "^2.4.0",
+    "@vercel/speed-insights": "^1.2.0",
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
