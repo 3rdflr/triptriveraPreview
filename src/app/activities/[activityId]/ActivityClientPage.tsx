@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
+import type { ActivityDetail } from '@/types/activities.type';
 import { useRecentViewedStore } from '@/store/recentlyWatched';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
@@ -29,6 +30,7 @@ interface ActivityClientProps {
 export default function ActivityClient({ activityId, blurImage }: ActivityClientProps) {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const { user } = useUserStore();
+  const queryClient = useQueryClient();
 
   // Intersection Observer for performance optimization
   const [mapRef, isMapVisible] = useIntersectionObserver({
@@ -56,11 +58,31 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
     gcTime: 60 * 60 * 1000, // 1시간 메모리 보관
   });
 
-  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시
+  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시, 캐시 재사용 최적화
   const { data: dynamicInfo } = useSuspenseQuery({
     queryKey: [...activityQueryKeys.detail(activityId), 'dynamic'],
-    queryFn: () => getActivityDetail(Number(activityId)),
-    select: (data) => ({
+    queryFn: (): Promise<ActivityDetail> => {
+      // 캐시된 데이터가 있으면 재사용, 없으면 새로 호출
+      const cachedData = queryClient.getQueryData<ActivityDetail>([
+        ...activityQueryKeys.detail(activityId),
+        'static',
+      ]);
+      const cachedState = queryClient.getQueryState([
+        ...activityQueryKeys.detail(activityId),
+        'static',
+      ]);
+
+      // static 캐시가 fresh하면(2분 이내) 재사용
+      if (
+        cachedData &&
+        cachedState?.dataUpdatedAt &&
+        Date.now() - cachedState.dataUpdatedAt < 2 * 60 * 1000
+      ) {
+        return Promise.resolve(cachedData); // 캐시 재사용
+      }
+      return getActivityDetail(Number(activityId)); // 새 호출
+    },
+    select: (data: ActivityDetail) => ({
       price: data.price,
       schedules: data.schedules,
       rating: data.rating,
