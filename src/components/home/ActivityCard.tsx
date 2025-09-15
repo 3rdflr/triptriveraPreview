@@ -38,7 +38,6 @@ export default function ActivityCard({
         <div className='relative w-full aspect-square rounded-[20px] overflow-hidden bg-grayscale-25'>
           <Image
             loader={wsrvLoader}
-            loading='lazy'
             src={bannerImg}
             alt={activity.title}
             fill

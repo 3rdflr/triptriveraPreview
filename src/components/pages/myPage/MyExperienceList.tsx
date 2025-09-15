@@ -1,7 +1,7 @@
 import { InfinityScroll } from '@/components/common/InfinityScroll';
-import MyExperienceCardSkeleton from './MyExperienceSkeleton';
-import EmptyList from './EmptyList';
-import MyExperienceCard from './MyExperienceCard';
+import MypageCardSkeleton from '@/components/pages/myPage/MypageCardSkeleton';
+import EmptyList from '@/components/pages/myPage/EmptyList';
+import MyExperienceCard from '@/components/pages/myPage/MyExperienceCard';
 import { Activity } from '@/types/activities.type';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -43,7 +43,7 @@ const MyExperienceList = ({
     retryDelay: 300,
     onSuccess: () => {
       successToast.run('체험 삭제가 완료되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['my-activities-list'] });
+      queryClient.invalidateQueries({ queryKey: ['my-activities-list-infinite'] });
     },
     onError: (error) => {
       overlay.open(({ isOpen, close }) => (
@@ -93,13 +93,13 @@ const MyExperienceList = ({
     >
       {/* 초기 로딩 스켈레톤 */}
       <InfinityScroll.Skeleton count={3}>
-        <MyExperienceCardSkeleton />
+        <MypageCardSkeleton />
       </InfinityScroll.Skeleton>
       <InfinityScroll.Contents loadingText='더 많은 체험을 불러오는 중입니다...'>
         {(activity: Activity) => (
           <MyExperienceCard
             key={activity.id}
-            data={activity}
+            activity={activity}
             onEdit={onClickEdit}
             onDelete={onClickShowDeleteModal}
           />

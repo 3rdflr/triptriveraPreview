@@ -1,6 +1,5 @@
 'use client';
 import { getMyActivitiesList } from '@/app/api/myActivities';
-import Spinner from '@/components/common/Spinner';
 import ActivitySelect from '@/components/pages/myPage/ActivitySelect';
 import ReservationStatusCalendar from '@/components/pages/myPage/ReservationStatusCalendar';
 import { Label } from '@/components/ui/label';
@@ -10,14 +9,14 @@ import { format } from 'date-fns';
 import { useOverlay } from '@/hooks/useOverlay';
 import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
-import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
 import clsx from 'clsx';
+import EmptyList from '@/components/pages/myPage/EmptyList';
+import MypageLoadingOverlay from '@/components/pages/myPage/MypageLoadingOverlay';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const { setStatus } = useScheduleStore();
 
@@ -108,18 +107,9 @@ const ReservationStatusPage = () => {
   };
 
   const ReservationSection = () => {
+    if (isActivityListLoading) return null;
     if (!activityListData?.activities || activityListData?.activities.length === 0) {
-      return (
-        <div className='flex flex-col mx-auto'>
-          <Image
-            src={'/images/icons/_empty.png'}
-            width={182}
-            height={182}
-            alt='예약 현황 디폴트 이미지'
-          />
-          <span className='text-18-medium text-grayscale-600'>아직 등록한 체험이 없어요</span>
-        </div>
-      );
+      return <EmptyList text='빈 리스트 이미지' />;
     }
 
     return (
@@ -142,23 +132,14 @@ const ReservationStatusPage = () => {
   };
 
   useEffect(() => {
-    if (!isActivityListLoading && !isReservationListLoading) {
-      setIsInitialLoading(false);
-    }
-  }, [isActivityListLoading, isReservationListLoading]);
-
-  useEffect(() => {
     if (activityListData && activityListData?.activities?.length > 0) {
       setActivityId(String(activityListData?.activities[0].id));
     }
   }, [activityListData]);
 
-  if (isInitialLoading) {
-    return <Spinner />;
-  }
-
   return (
-    <div className='flex flex-col gap-5 pl-4'>
+    <div className='flex flex-col gap-5 pl-4 relative'>
+      {(isActivityListLoading || isReservationListLoading) && <MypageLoadingOverlay />}
       {/* 헤더 */}
       <div className='px-6 sm:px-0 flex flex-col gap-4'>
         <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>

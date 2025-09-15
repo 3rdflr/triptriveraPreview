@@ -1,7 +1,7 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MyActivityFormData, MyActivitySchema } from '@/lib/utils/myActivitySchema';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ActivityCreateRequest,
   ActivityCreateResponse,
@@ -14,11 +14,11 @@ import {
 } from '@/app/api/activities';
 import { ActivitiesCategoryType } from '@/types/activities.type';
 import { successToast } from '@/lib/utils/toastUtils';
-import { toApiDate } from '@/lib/utils/dateUtils';
+import { toISO } from '@/lib/utils/dateUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { activityQueryKeys } from '@/app/activities/[activityId]/queryKeys';
 import { updateActivity } from '@/app/api/myActivities';
+import { activityQueryKeys } from '@/app/activities/[activityId]/queryKeys';
 
 interface useMyActivityForm {
   mode?: 'EDIT' | 'REGISTER';
@@ -28,6 +28,7 @@ interface useMyActivityForm {
 const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm) => {
   const router = useRouter();
   const [originalSchedules, setOriginalSchedules] = useState<MyActivityFormData['schedules']>([]);
+  const queryClient = useQueryClient();
 
   const methods = useForm({
     resolver: zodResolver(MyActivitySchema),
@@ -62,6 +63,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     update,
     append,
     remove,
+    insert,
   } = useFieldArray({
     control,
     name: 'schedules',
@@ -90,7 +92,11 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     },
   });
 
-  const registerMutation = useMutation<ActivityCreateResponse, Error, ActivityCreateRequest>({
+  const { mutate: registerActivity, isPending: isRegisterLoading } = useMutation<
+    ActivityCreateResponse,
+    Error,
+    ActivityCreateRequest
+  >({
     mutationFn: (data: ActivityCreateRequest) => createActivity(data),
     retry: 1,
     retryDelay: 300,
@@ -103,7 +109,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     },
   });
 
-  const updateMutation = useMutation<
+  const { mutate: editActivity, isPending: isEditLoading } = useMutation<
     ActivityUpdateResponse,
     Error,
     { activityId: number; data: ActivityUpdateRequest }
@@ -111,8 +117,10 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     mutationFn: ({ activityId, data }) => updateActivity(activityId, data),
     retry: 1,
     retryDelay: 300,
-    onSuccess: (response) => {
-      router.push(`/activities/${response.id}`);
+    onSuccess: async (_response, variables) => {
+      const { activityId } = variables;
+      await queryClient.refetchQueries({ queryKey: activityQueryKeys.detail(activityId) });
+      router.push(`/activities/${activityId}`);
       successToast.run('수정이 완료되었습니다.');
     },
     onError: (error) => {
@@ -156,13 +164,13 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
       price: Number(values.price.replace(/,/g, '')),
       subImageUrls: values.subImageUrls ?? [],
       schedules: values.schedules.map(({ date, startTime, endTime }) => ({
-        date: toApiDate(date),
+        date: toISO(date),
         startTime,
         endTime,
       })),
     };
 
-    registerMutation.mutate(params);
+    registerActivity(params);
   };
 
   const updateForm = async () => {
@@ -197,7 +205,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
         );
       })
       .map(({ date, startTime, endTime }) => ({
-        date: toApiDate(date),
+        date: toISO(date),
         startTime,
         endTime,
       }));
@@ -212,7 +220,7 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
       subImageUrlsToAdd: values.subImageUrlsToAdd ?? [],
     };
 
-    updateMutation.mutate({ activityId: Number(activityId), data: params });
+    editActivity({ activityId: Number(activityId), data: params });
   };
 
   return {
@@ -228,12 +236,13 @@ const useMyActivityForm = ({ mode = 'REGISTER', activityId }: useMyActivityForm)
     update,
     append,
     remove,
+    insert,
     detailData,
     isDetailLoading,
     isDetailFetching,
     uploadImageMutation,
-    registerMutation,
-    updateMutation,
+    isRegisterLoading,
+    isEditLoading,
     uploadImageAndGetUrl,
     registerForm,
     updateForm,

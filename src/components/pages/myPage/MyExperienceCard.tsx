@@ -1,4 +1,6 @@
 'use client';
+import { LoadErrorFallback } from '@/components/common/LoadErrorFallback';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,20 +12,17 @@ import {
 } from '@/components/ui/card';
 import { Activity } from '@/types/activities.type';
 import Image from 'next/image';
-import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 
 interface MyExperienceCardProps {
-  data: Activity;
+  activity: Activity;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
-const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => {
-  const { id, title, rating, reviewCount, price, bannerImageUrl } = data;
-  const [isError, setIsError] = useState(false);
+const MyExperienceCard = ({ activity, onEdit, onDelete }: MyExperienceCardProps) => {
+  const { id, title, rating, reviewCount, price, bannerImageUrl } = activity;
   const baseImageUrl = '/images/icons/_empty.png';
-  const image = isError ? baseImageUrl : bannerImageUrl;
 
   return (
     <Card className='shadow-xl'>
@@ -60,18 +59,29 @@ const MyExperienceCard = ({ data, onEdit, onDelete }: MyExperienceCardProps) => 
         {/* 체험 이미지 */}
         <div className='pt-9 pr-6 lg:pr-7.5 flex-shrink-0'>
           <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] flex-shrink-0'>
-            <Image
-              src={image}
-              alt='체험 관리 썸네일'
-              fill
-              priority
-              className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
-              sizes='(max-width: 1024px) 82px, 142px'
-              onError={() => {
-                setIsError(true);
-              }}
-              blurDataURL={baseImageUrl}
-            />
+            <LoadErrorFallback
+              fallback={
+                <Image
+                  loader={wsrvLoader}
+                  loading='lazy'
+                  src={baseImageUrl}
+                  alt='이미지를 불러올 수 없습니다'
+                  fill
+                  className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                />
+              }
+            >
+              <Image
+                loader={wsrvLoader}
+                src={bannerImageUrl}
+                alt='체험 관리 썸네일'
+                fill
+                priority
+                className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                sizes='(max-width: 1024px) 82px, 142px'
+                blurDataURL={baseImageUrl}
+              />
+            </LoadErrorFallback>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 'use client';
+import { LoadErrorFallback } from '@/components/common/LoadErrorFallback';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,28 +11,32 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { badgeStatusColor, reservationStatus } from '@/lib/constants/reservation';
-import { toCardDate } from '@/lib/utils/dateUtils';
+import { toFullDot } from '@/lib/utils/dateUtils';
 import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
-import { useState } from 'react';
 import { useOverlay } from '@/hooks/useOverlay';
 import PaymentsModal from '../activities/payments/Payments.Modal';
-interface MyExperienceCardProps {
-  data: Reservation;
+import { wsrvLoader } from '@/components/common/wsrvLoader';
+
+interface ReservationListCardProps {
+  reservation: Reservation;
   onCancel: (id: number) => void;
   onReview: (reservation: Reservation) => void;
   onGoReview: (id: number) => void;
 }
 
-const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperienceCardProps) => {
+const ReservationListCard = ({
+  reservation,
+  onCancel,
+  onReview,
+  onGoReview,
+}: ReservationListCardProps) => {
   const { id, activity, status, totalPrice, headCount, date, startTime, endTime, reviewSubmitted } =
-    data;
+    reservation;
   const overlay = useOverlay();
 
   const { bannerImageUrl, title } = activity;
-  const [isError, setIsError] = useState(false);
   const baseImageUrl = '/images/icons/_empty.png';
-  const image = isError ? baseImageUrl : bannerImageUrl;
 
   const handlePayment = () => {
     overlay.open(({ isOpen, close }) => (
@@ -41,7 +46,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
 
   return (
     <section className='flex flex-col w-full gap-3'>
-      <div className='text-16-bold lg:hidden'>{toCardDate(date)}</div>
+      <div className='text-16-bold lg:hidden'>{toFullDot(date)}</div>
       <Card className='w-full min-w-[300px] shadow-xl'>
         <div className='flex items-start justify-between w-full gap-7.5'>
           {/* 예약 내역 내용 */}
@@ -54,7 +59,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               <CardDescription>
                 <div className='flex items-center pb-0 lg:pb-2'>
                   <div className='lg:block hidden'>
-                    {toCardDate(date)}
+                    {toFullDot(date)}
                     <span className='text-lg px-1'>∙</span>
                   </div>
                   <div className='flex items-center'>{`${startTime} - ${endTime}`}</div>
@@ -74,7 +79,7 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
               <CardFooter className='gap-2 hidden lg:flex lg:px-0 pb-0'>
                 {status === 'completed' &&
                   (!reviewSubmitted ? (
-                    <Button size='xs' onClick={() => onReview(data)}>
+                    <Button size='xs' onClick={() => onReview(reservation)}>
                       후기 작성
                     </Button>
                   ) : (
@@ -97,19 +102,31 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
             </div>
           </div>
 
-          {/* 체험 이미지 */}
+          {/* 예약내역 이미지 */}
           <div className='pt-9 pr-6 lg:pr-7.5 flex-shrink-0'>
             <div className='relative lg:w-[142px] lg:h-[142px] w-[82px] h-[82px] box-border'>
-              <Image
-                src={image}
-                alt='체험 관리 썸네일'
-                fill
-                className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
-                onError={() => {
-                  setIsError(true);
-                }}
-                blurDataURL={baseImageUrl}
-              />
+              <LoadErrorFallback
+                fallback={
+                  <Image
+                    loader={wsrvLoader}
+                    loading='lazy'
+                    src={baseImageUrl}
+                    alt='이미지를 불러올 수 없습니다'
+                    fill
+                    className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                  />
+                }
+              >
+                <Image
+                  loader={wsrvLoader}
+                  loading='lazy'
+                  src={bannerImageUrl}
+                  alt='예약내역 썸네일'
+                  fill
+                  className='lg:rounded-4xl rounded-2xl bg-grayscale-50 object-cover'
+                  blurDataURL={baseImageUrl}
+                />
+              </LoadErrorFallback>
             </div>
           </div>
         </div>
@@ -117,7 +134,11 @@ const ReservationListCard = ({ data, onCancel, onReview, onGoReview }: MyExperie
       <div className='flex gap-3 lg:hidden'>
         {status === 'completed' &&
           (!reviewSubmitted ? (
-            <Button size='sm' className='w-full min-w-[300px] ' onClick={() => onReview(data)}>
+            <Button
+              size='sm'
+              className='w-full min-w-[300px] '
+              onClick={() => onReview(reservation)}
+            >
               후기 작성
             </Button>
           ) : (

@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Spinner from '@/components/common/Spinner';
 import ActivityLike from '@/components/home/ActivityLike';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 export default function WishList() {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +54,7 @@ export default function WishList() {
                   <Link href={`/activities/${activity.id}`}>
                     <div className='w-full h-[200px] relative'>
                       <Image
+                        loader={wsrvLoader}
                         src={activity.bannerImageUrl}
                         alt={activity.title}
                         fill
@@ -80,6 +82,7 @@ export default function WishList() {
                   <Link href={`/activities/${activity.id}`}>
                     <div className='w-[126px] h-full relative flex-shrink-0'>
                       <Image
+                        loader={wsrvLoader}
                         src={activity.bannerImageUrl}
                         alt={activity.title}
                         fill

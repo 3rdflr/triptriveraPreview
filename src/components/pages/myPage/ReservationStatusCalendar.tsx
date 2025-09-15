@@ -39,6 +39,7 @@ const localizer = dateFnsLocalizer({
 const formats = {
   weekdayFormat: (date: Date) => format(date, 'EEEEE'),
   dateFormat: (date: Date) => format(date, 'd'),
+  monthHeaderFormat: (date: Date) => format(date, 'yyyy년 M월', { locale: ko }),
 };
 
 const ReservationStatusCalendar = ({
@@ -48,14 +49,12 @@ const ReservationStatusCalendar = ({
   onClickDate,
 }: ReservationStatusCalendarProps) => {
   const CustomToolbar = ({ label, onNavigate }: ToolbarProps) => {
-    const formatted = format(label, 'yyyy년 M월', { locale: ko });
-
     return (
       <div className='custom-toolbar flex items-center justify-center gap-4 p-7.5'>
         {/* 이전 달 버튼 */}
         <FaCaretLeft onClick={() => onNavigate('PREV')} />
         {/* 월 텍스트 */}
-        <span className='text-16-bold md:text-20-bold whitespace-nowrap'>{formatted}</span>
+        <span className='text-16-bold md:text-20-bold whitespace-nowrap'>{label}</span>
 
         {/* 다음 달 버튼 */}
         <FaCaretRight onClick={() => onNavigate('NEXT')} />
@@ -124,7 +123,7 @@ const ReservationStatusCalendar = ({
   return (
     <div
       className={clsx(
-        'w-full h-170 rounded-2xl tablet:w-119 mobile:h-195 pc:w-160 tablet:border tablet:border-grayscale-100 tablet:shadow-lg',
+        'w-full h-170 rounded-2xl mobile:h-195 tablet:border tablet:border-grayscale-100 tablet:shadow-lg',
       )}
     >
       <BigCalendar

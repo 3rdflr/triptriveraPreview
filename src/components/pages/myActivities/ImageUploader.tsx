@@ -4,6 +4,8 @@ import { useRef } from 'react';
 import RoundButton from './RoundButton';
 import clsx from 'clsx';
 import { errorToast } from '@/lib/utils/toastUtils';
+import ConfirmActionModal from '@/components/common/ConfirmActionModal';
+import { useOverlay } from '@/hooks/useOverlay';
 
 interface FetchImage {
   id?: number;
@@ -25,17 +27,18 @@ const ImageUploader = ({
   onChange,
   onDeleteFetched,
 }: ImageUploaderProps) => {
+  const overlay = useOverlay();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    // 파일 용량 체크 (5MB 제한)
-    const maxSize = 5 * 1024 * 1024;
+    // 파일 용량 체크 (4MB 제한)
+    const maxSize = 4 * 1024 * 1024;
     const fileList = Array.from(e.target.files);
 
     if (fileList.some((file) => file.size > maxSize)) {
-      errorToast.run('5MB를 초과하는 파일은 등록이 불가합니다.');
+      errorToast.run('4MB를 초과하는 파일은 등록이 불가합니다.');
     }
 
     const validFiles = fileList.filter((file) => file.size <= maxSize);
@@ -50,6 +53,21 @@ const ImageUploader = ({
       return;
     }
     inputRef.current?.click();
+  };
+
+  const onClickShowDeleteModal = (index: number, onDelete: (index: number) => void) => {
+    overlay.open(({ isOpen, close }) => (
+      <ConfirmActionModal
+        title='이미지를 정말 삭제하시겠어요?'
+        actionText='삭제하기'
+        isOpen={isOpen}
+        onClose={close}
+        onAction={() => {
+          close();
+          onDelete(index);
+        }}
+      />
+    ));
   };
 
   const deleteFile = (index: number) => {
@@ -70,7 +88,7 @@ const ImageUploader = ({
       <button
         type='button'
         className={clsx(
-          'w-20 h-20 sm:w-31.5 sm:h-31.5 border border-grayscale-100  rounded-2xl gap-0.5 flex flex-col items-center justify-center focus:outline-none focus-visible:border-[var(--primary-200)] focus-visible:ring-[var(--primary-200)]/30 focus-visible:ring-[3px]',
+          'w-20 h-20 sm:w-31.5 sm:h-31.5 border border-grayscale-100  rounded-2xl gap-0.5 flex flex-col items-center justify-center focus:outline-none focus-visible:border-[var(--primary-500)] focus-visible:ring-[var(--primary-300)]/30 focus-visible:ring-[3px]',
           {
             'bg-grayscale-25': files.length + fetchedImages.length === maxImages,
             'bg-white cursor-pointer': files.length + fetchedImages.length !== maxImages,
@@ -100,7 +118,7 @@ const ImageUploader = ({
             />
             <RoundButton
               className='absolute -right-2 -top-2 z-10'
-              onClick={() => deleteFetchedImage(index)}
+              onClick={() => onClickShowDeleteModal(index, deleteFetchedImage)}
             />
           </div>
         );
@@ -120,7 +138,7 @@ const ImageUploader = ({
             />
             <RoundButton
               className='absolute -right-2 -top-2 z-10'
-              onClick={() => deleteFile(index)}
+              onClick={() => onClickShowDeleteModal(index, deleteFile)}
             />
           </div>
         );

@@ -27,6 +27,9 @@ const categories: ActivitiesCategoryType[] = [
   '웰빙',
 ];
 
+const errorClass =
+  'data-[placeholder]:text-destructive/50 border-destructive/20 bg-destructive/10 dark:bg-destructive/20';
+
 const CategorySelect = ({ value, error, onChange, onBlur, className }: CategorySelectProps) => {
   return (
     <Select
@@ -38,9 +41,7 @@ const CategorySelect = ({ value, error, onChange, onBlur, className }: CategoryS
         }
       }}
     >
-      <SelectTrigger
-        className={clsx('w-full', className, error && 'data-[placeholder]:text-destructive/50')}
-      >
+      <SelectTrigger className={clsx('w-full', className, error && errorClass)}>
         <SelectValue
           placeholder='카테고리를 선택해 주세요'
           className={clsx(error && 'placeholder:text-destructive/50')}

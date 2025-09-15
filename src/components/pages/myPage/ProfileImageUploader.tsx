@@ -10,6 +10,7 @@ import { UploadProfileImageResponse, UserProfile, UserUpdateRequest } from '@/ty
 import { AxiosError } from 'axios';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import clsx from 'clsx';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 const ProfileImageUploader = () => {
   const { setUser } = useUserStore();
@@ -130,6 +131,7 @@ const ProfileImageUploader = () => {
     >
       {!profileImageUrl && !previewImageUrl ? (
         <Image
+          loader={wsrvLoader}
           src={PROFILE_IMG_URL}
           priority
           alt='프로필 기본 이미지'
@@ -139,6 +141,7 @@ const ProfileImageUploader = () => {
         />
       ) : (
         <Image
+          loader={wsrvLoader}
           src={previewImageUrl ? previewImageUrl : profileImageUrl}
           alt='프로필 이미지'
           width={120}

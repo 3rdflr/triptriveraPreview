@@ -62,7 +62,12 @@ export const MyActivitySchema = z
           if (!s.startTime || !s.endTime) {
             ctx.addIssue({
               code: 'custom',
-              path: [i, 'date'],
+              path: [i, 'startTime'],
+              message: '시작 시간과 종료 시간을 모두 입력해주세요.',
+            });
+            ctx.addIssue({
+              code: 'custom',
+              path: [i, 'endTime'],
               message: '시작 시간과 종료 시간을 모두 입력해주세요.',
             });
             return;
@@ -97,7 +102,7 @@ export const MyActivitySchema = z
           if (isBefore(startDate, now)) {
             ctx.addIssue({
               code: 'custom',
-              path: [i, 'date'],
+              path: [i, 'startTime'],
               message: '현재 시각 이후의 일정만 등록 가능합니다.',
             });
             return;
@@ -107,7 +112,12 @@ export const MyActivitySchema = z
           if (!isAfter(endDate, startDate)) {
             ctx.addIssue({
               code: 'custom',
-              path: [i, 'date'],
+              path: [i, 'startTime'],
+              message: '시작 시간을 종료 시간보다 이전으로 설정해주세요.',
+            });
+            ctx.addIssue({
+              code: 'custom',
+              path: [i, 'endTime'],
               message: '시작 시간을 종료 시간보다 이전으로 설정해주세요.',
             });
             return;
@@ -119,6 +129,16 @@ export const MyActivitySchema = z
             ctx.addIssue({
               code: 'custom',
               path: [i, 'date'],
+              message: '예약 시간은 중복될 수 없습니다.',
+            });
+            ctx.addIssue({
+              code: 'custom',
+              path: [i, 'startTime'],
+              message: '예약 시간은 중복될 수 없습니다.',
+            });
+            ctx.addIssue({
+              code: 'custom',
+              path: [i, 'endTime'],
               message: '예약 시간은 중복될 수 없습니다.',
             });
             return;

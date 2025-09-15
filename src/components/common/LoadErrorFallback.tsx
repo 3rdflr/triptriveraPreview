@@ -2,6 +2,7 @@
 
 import { useState, cloneElement, isValidElement, ReactElement } from 'react';
 import Image from 'next/image';
+import { wsrvLoader } from './wsrvLoader';
 
 interface LoadErrorFallbackProps {
   children: ReactElement<{ onError?: (e: Event) => void }>;
@@ -11,6 +12,8 @@ interface LoadErrorFallbackProps {
 function DefaultImageFallback() {
   return (
     <Image
+      loader={wsrvLoader}
+      loading='lazy'
       src='/images/placeholder.svg'
       alt='이미지를 불러올 수 없습니다'
       width={200}

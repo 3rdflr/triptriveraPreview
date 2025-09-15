@@ -16,8 +16,8 @@ import { UserProfile, UserUpdateRequest } from '@/types/user.type';
 import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
-import Spinner from '@/components/common/Spinner';
 import clsx from 'clsx';
+import MypageLoadingOverlay from '@/components/pages/myPage/MypageLoadingOverlay';
 
 type UserFormValues = {
   nickname: string;
@@ -100,12 +100,9 @@ const UserPage = () => {
     }
   }, [userData, reset, setUser]);
 
-  if (isLoading) {
-    return <Spinner />;
-  }
-
   return (
-    <div className='flex flex-col gap-7.5'>
+    <div className='flex flex-col gap-7.5 relative'>
+      {isLoading && <MypageLoadingOverlay />}
       {/* 헤더 */}
       <div className={clsx('flex flex-col w-full items-start gap-8 pl-4')}>
         <div className='flex flex-col gap-2.5'>
