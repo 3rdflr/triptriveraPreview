@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Activity } from '@/types/activities.type';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface ViewedActivity extends Activity {
   viewedAt: string; // ISO string
@@ -15,23 +16,6 @@ interface RecentViewedState {
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const STORAGE_KEY = 'recent-viewed';
-
-const loadRecent = (): ViewedActivity[] => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveRecent = (items: ViewedActivity[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (e) {
-    console.error('최근 본 목록 저장 실패:', e);
-  }
-};
 
 const formatDateLabel = (date: Date) => {
   const today = new Date();
@@ -64,38 +48,46 @@ const groupByLabel = (items: ViewedActivity[]) => {
   return groups;
 };
 
-export const useRecentViewedStore = create<RecentViewedState>((set) => {
-  const initial = loadRecent();
-  return {
-    recentViewed: initial,
-    grouped: groupByLabel(initial),
+export const useRecentViewedStore = create<RecentViewedState>()(
+  persist(
+    (set) => ({
+      recentViewed: [],
+      grouped: {},
 
-    addViewed: (activity) => {
-      const now = new Date();
-      const weekAgo = now.getTime() - WEEK_MS;
+      addViewed: (activity) => {
+        const now = new Date();
+        const weekAgo = now.getTime() - WEEK_MS;
 
-      set((state) => {
-        const filtered = state.recentViewed.filter(
-          (a) => a.id !== activity.id && new Date(a.viewedAt).getTime() >= weekAgo,
-        );
+        set((state) => {
+          const filtered = state.recentViewed.filter(
+            (a) => a.id !== activity.id && new Date(a.viewedAt).getTime() >= weekAgo,
+          );
 
-        const newItems = [{ ...activity, viewedAt: now.toISOString() }, ...filtered];
+          const newItems = [{ ...activity, viewedAt: now.toISOString() }, ...filtered];
 
-        saveRecent(newItems);
-        return { recentViewed: newItems, grouped: groupByLabel(newItems) };
-      });
+          return { recentViewed: newItems, grouped: groupByLabel(newItems) };
+        });
+      },
+
+      removeViewed: (activityId) =>
+        set((state) => {
+          const newItems = state.recentViewed.filter((a) => a.id !== activityId);
+          return { recentViewed: newItems, grouped: groupByLabel(newItems) };
+        }),
+
+      clearViewed: () => {
+        set({ recentViewed: [], grouped: {} });
+      },
+    }),
+    {
+      name: STORAGE_KEY,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ recentViewed: state.recentViewed }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.grouped = groupByLabel(state.recentViewed);
+        }
+      },
     },
-
-    removeViewed: (activityId) =>
-      set((state) => {
-        const newItems = state.recentViewed.filter((a) => a.id !== activityId);
-        saveRecent(newItems);
-        return { recentViewed: newItems, grouped: groupByLabel(newItems) };
-      }),
-
-    clearViewed: () => {
-      saveRecent([]);
-      set({ recentViewed: [], grouped: {} });
-    },
-  };
-});
+  ),
+);
