@@ -13,6 +13,8 @@ import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 import { activityQueryKeys } from './queryKeys';
 import { useUserStore } from '@/store/userStore';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { motion } from 'framer-motion';
+import { MapPinned } from 'lucide-react';
 
 /**
  * ActivityClient 컴포넌트
@@ -31,10 +33,6 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   // Intersection Observer for performance optimization
   const [mapRef, isMapVisible] = useIntersectionObserver({
     rootMargin: '100px',
-    triggerOnce: true,
-  });
-  const [reviewRef, isReviewVisible] = useIntersectionObserver({
-    rootMargin: '200px',
     triggerOnce: true,
   });
 
@@ -127,25 +125,32 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
                     </Marker>
                   </NaverMap>
                 ) : (
-                  <div className='h-64 bg-gray-100 rounded-lg flex items-center justify-center'>
-                    <span className='text-gray-500'>지도 로딩 준비 중...</span>
+                  <div className='h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center'>
+                    {/* MapPinned 아이콘 하나가 중앙에서 콩콩 뛰는 애니메이션 */}
+                    <motion.div
+                      animate={{
+                        y: [0, -20, 0],
+                      }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                      className='text-gray-400'
+                    >
+                      <MapPinned size={40} />
+                    </motion.div>
                   </div>
                 )}
               </section>
               <hr className='border-gray-100' />
               {/* 후기 섹션 */}
-              <section ref={reviewRef} className='flex flex-col gap-2'>
+              <section className='flex flex-col gap-2'>
                 <div className='flex items-center gap-2'>
                   <h2 className='text-lg font-semibold'>체험 후기</h2>
                   <p>{activity.reviewCount}개</p>
                 </div>
-                {isReviewVisible ? (
-                  <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
-                ) : (
-                  <div className='h-96 bg-gray-50 rounded-lg flex items-center justify-center'>
-                    <span className='text-gray-500'>후기 로딩 준비 중...</span>
-                  </div>
-                )}
+                <ReviewList activityId={activity.id.toString()} rating={activity.rating} />
               </section>
             </div>
           </div>
