@@ -34,7 +34,6 @@ export function BookingDateInput({
 
   // selectedDate가 변경될 때 각 input value 업데이트
   useEffect(() => {
-    console.log('📅 selectedDate 변경:', selectedDate);
     if (selectedDate) {
       setYearValue(format(selectedDate, 'yyyy'));
       setMonthValue(format(selectedDate, 'MM'));

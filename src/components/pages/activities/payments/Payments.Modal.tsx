@@ -57,9 +57,8 @@ export default function PaymentsModal({ isOpen, onClose, title, totalPrice }: Pa
         customerName: user?.nickname || '홍길동',
         customerMobilePhone: '01012341234',
       })
-      .then((result) => {
+      .then(() => {
         onClose();
-        console.log('결제 성공, result:', result);
         overlay.open(({ isOpen, close }) => (
           <ConfirmModal
             isOpen={isOpen}

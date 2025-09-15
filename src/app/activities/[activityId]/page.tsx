@@ -28,17 +28,10 @@ interface ActivityStaticParams {
 }
 
 const ActivityPage = async ({ params }: ActivityPageProps) => {
-  const startTime = performance.now();
-  console.log('🎬 [SSR] ActivityPage 시작');
-
   // params 추출
   const { activityId } = await params;
-
   // Activity 데이터 prefetch
   const { dehydratedState, blur } = await prefetchActivityData(activityId);
-
-  const duration = performance.now() - startTime;
-  console.log(`⏱️ [SSR] ActivityPage 완료: ${duration.toFixed(2)}ms`, { activityId });
 
   return (
     <HydrationBoundary state={dehydratedState}>
@@ -53,7 +46,6 @@ export default ActivityPage;
 // SSG를 위한 정적 경로 생성
 export async function generateStaticParams(): Promise<ActivityStaticParams[]> {
   const startTime = performance.now();
-  console.log('🏗️ [SSG] generateStaticParams 시작 - 인기 체험 20개 선정');
 
   try {
     const activities = await getActivitiesList({
@@ -68,7 +60,7 @@ export async function generateStaticParams(): Promise<ActivityStaticParams[]> {
     }));
 
     const duration = performance.now() - startTime;
-    console.log(`⏱️ [SSG] generateStaticParams 완료: ${duration.toFixed(2)}ms`, {
+    console.log(`⏱️ [SSG] 인기 체험 20개 선정 완료: ${duration.toFixed(2)}ms`, {
       count: staticParams.length,
       activityIds: staticParams.map((p) => p.activityId),
     });

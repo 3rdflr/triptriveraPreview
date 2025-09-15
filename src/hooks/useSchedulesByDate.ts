@@ -22,9 +22,6 @@ export function useSchedulesByDate(baseSchedules: Schedule[]): SchedulesByDate {
         endTime: schedule.endTime,
       });
     });
-
-    console.log('📅 [useSchedulesByDate] 날짜별 스케줄 변환:', schedulesByDate);
-
     return schedulesByDate;
   }, [baseSchedules]);
 }

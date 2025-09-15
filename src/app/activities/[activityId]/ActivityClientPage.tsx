@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import { getActivityDetail } from '@/app/api/activities';
+import type { ActivityDetail } from '@/types/activities.type';
 import { useRecentViewedStore } from '@/store/recentlyWatched';
 import ActivityImageViewer from '@/components/pages/activities/ActivityImageViewer';
 import ActivityInfo from '@/components/pages/activities/ActivityInfo';
@@ -12,6 +13,7 @@ import Marker from '@/components/common/naverMaps/Marker';
 import ImageMarker from '@/components/common/naverMaps/ImageMarker';
 import { activityQueryKeys } from './queryKeys';
 import { useUserStore } from '@/store/userStore';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 /**
  * ActivityClient 컴포넌트
@@ -25,7 +27,13 @@ interface ActivityClientProps {
 
 export default function ActivityClient({ activityId, blurImage }: ActivityClientProps) {
   const [isOwner, setIsOwner] = useState<boolean>(false);
-  const user = useUserStore((state) => state.user);
+  const { user } = useUserStore();
+  const queryClient = useQueryClient();
+
+  const [mapRef, isMapVisible] = useIntersectionObserver({
+    rootMargin: '100px',
+    triggerOnce: true,
+  });
 
   // 1. 정적 데이터 (이미지, 주소, 제목, 설명) - 긴 캐시
   const { data: staticInfo } = useSuspenseQuery({
@@ -47,11 +55,31 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
     gcTime: 60 * 60 * 1000, // 1시간 메모리 보관
   });
 
-  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시
+  // 2. 동적 데이터 (가격, 스케줄, 평점) - 짧은 캐시, 재사용 최적화
   const { data: dynamicInfo } = useSuspenseQuery({
     queryKey: [...activityQueryKeys.detail(activityId), 'dynamic'],
-    queryFn: () => getActivityDetail(Number(activityId)),
-    select: (data) => ({
+    queryFn: (): Promise<ActivityDetail> => {
+      // 캐시된 데이터가 있으면 재사용, 없으면 새로 호출
+      const cachedData = queryClient.getQueryData<ActivityDetail>([
+        ...activityQueryKeys.detail(activityId),
+        'static',
+      ]);
+      const cachedState = queryClient.getQueryState([
+        ...activityQueryKeys.detail(activityId),
+        'static',
+      ]);
+
+      // static 캐시가 fresh하면 재사용
+      if (
+        cachedData &&
+        cachedState?.dataUpdatedAt &&
+        Date.now() - cachedState.dataUpdatedAt < 2 * 60 * 1000
+      ) {
+        return Promise.resolve(cachedData); // 캐시 재사용
+      }
+      return getActivityDetail(Number(activityId)); // 새 호출
+    },
+    select: (data: ActivityDetail) => ({
       price: data.price,
       schedules: data.schedules,
       rating: data.rating,
@@ -69,11 +97,10 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   const addViewed = useRecentViewedStore((s) => s.addViewed);
 
   useEffect(() => {
-    if (activity) {
+    if (activity?.id) {
       addViewed(activity);
-      console.log('👀 최근 본 목록에 추가됨', activity.title);
     }
-  }, [activity, addViewed]);
+  }, [activity, addViewed]); // eslint 경고 해결을 위해 원복하되, 조건문 최적화
 
   useEffect(() => {
     if (user?.id === activity.userId) {
@@ -107,14 +134,18 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
               </section>
               <hr className='border-gray-100' />
               {/* 주소 섹션 */}
-              <section className='flex flex-col gap-2'>
+              <section ref={mapRef} className='flex flex-col gap-2'>
                 <h2 className='text-lg font-semibold'>오시는 길</h2>
                 <p className='text-sm text-gray-600'>{activity.address}</p>
-                <NaverMap address={activity.address} height='256px' zoom={12}>
-                  <Marker address={activity.address} id='image-marker'>
-                    <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
-                  </Marker>
-                </NaverMap>
+                {isMapVisible ? (
+                  <NaverMap address={activity.address} height='256px' zoom={12}>
+                    <Marker address={activity.address} id='image-marker'>
+                      <ImageMarker src={activity.bannerImageUrl} alt='주소 마커' size={40} />
+                    </Marker>
+                  </NaverMap>
+                ) : (
+                  <div className='h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center'></div>
+                )}
               </section>
               <hr className='border-gray-100' />
               {/* 후기 섹션 */}

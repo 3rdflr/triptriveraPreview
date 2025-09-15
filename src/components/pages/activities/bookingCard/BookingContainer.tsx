@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import BookingCardDesktop from './BookingCardDesktop';
-import BookingCardMobile from './BookingCardMobile';
+import { lazy, Suspense } from 'react';
+
+// 모바일 예약 카드 지연 로딩
+const BookingCardMobile = lazy(() => import('./BookingCardMobile'));
 import BookingError from '@/components/pages/activities/bookingCard/BookingError';
 import { ErrorBoundary } from 'react-error-boundary';
 import { getAvailableSchedule } from '@/app/api/activities';
@@ -13,7 +16,6 @@ import { useSchedulesByDate } from '@/hooks/useSchedulesByDate';
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { useOverlay } from '@/hooks/useOverlay';
-import BookingConfirmModal from '@/components/pages/activities/bookingCard/BookingConfirm.Modal';
 
 interface BookingContainerProps {
   title: string;
@@ -70,7 +72,8 @@ export default function BookingContainer({
       const month = format(selectedDate, 'MM');
       return getAvailableSchedule(activityId, { year, month });
     },
-    staleTime: 5 * 60 * 1000, // 5분 캐시
+    staleTime: 0,
+    gcTime: 0,
     enabled: !!selectedDate, // 날짜가 선택된 경우에만 실행
   });
   const totalPrice = price * memberCount;
@@ -86,7 +89,6 @@ export default function BookingContainer({
           ...prev,
           [dateStr]: newSchedule.times,
         }));
-        console.log(`✅ [BookingCard] ${dateStr} 스케줄 업데이트됨`);
       }
     }
   }, [scheduleByDate, isSuccess, selectedDate]);
@@ -108,15 +110,14 @@ export default function BookingContainer({
     setMemberCount(count);
   };
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (!selectedScheduleTime) return;
 
-    console.log('🎫 [BookingCard] 예약 요청:', {
-      activityId,
-      selectedScheduleTime,
-      memberCount,
-      totalPrice: price * memberCount,
-    });
+    // Dynamic import로 예약 확인 모달 로딩
+    const { default: BookingConfirmModal } = await import(
+      '@/components/pages/activities/bookingCard/BookingConfirm.Modal'
+    );
+
     overlay.open(({ isOpen, close }) => (
       <BookingConfirmModal
         isOpen={isOpen}
@@ -191,7 +192,15 @@ export default function BookingContainer({
           <DrawerTitle></DrawerTitle>
           <DrawerDescription></DrawerDescription>
           <DrawerContent aria-describedby='예약 바텀시트'>
-            <BookingCardMobile {...bookingCardProps} />
+            <Suspense
+              fallback={
+                <div className='flex items-center justify-center h-96'>
+                  <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500'></div>
+                </div>
+              }
+            >
+              <BookingCardMobile {...bookingCardProps} />
+            </Suspense>
           </DrawerContent>
         </Drawer>
       </div>

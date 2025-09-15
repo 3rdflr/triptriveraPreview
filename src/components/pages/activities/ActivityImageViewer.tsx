@@ -4,11 +4,11 @@ import { SubImage } from '@/types/activities.type';
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { Expand, ImageIcon } from 'lucide-react';
-import ImageGalleryModal from '@/components/pages/activities/ImageGalleryModal';
 import { useOverlay } from '@/hooks/useOverlay';
 import { motion } from 'motion/react';
 import { useImageWithFallback } from '@/hooks/useImageWithFallback';
 import clsx from 'clsx';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 /**
  * 이미지를 표시하는 컴포넌트
@@ -46,9 +46,14 @@ export default function ActivityImageViewer({
   // 남은 이미지 개수 = 전체 - 표시된 3개
   const remainingCount = Math.max(0, allImages.length - 3);
 
-  // 이미지 클릭 핸들러
+  // 이미지 클릭 핸들러 (Dynamic Import)
   const handleImageClick = useCallback(
-    (index: number) => {
+    async (index: number) => {
+      // Dynamic import로 모달 로딩
+      const { default: ImageGalleryModal } = await import(
+        '@/components/pages/activities/ImageGalleryModal'
+      );
+
       // 모달 열기
       overlay.open(({ isOpen, close }) => (
         <ImageGalleryModal
@@ -58,10 +63,11 @@ export default function ActivityImageViewer({
           subImages={subImages}
           title={title}
           initialIndex={index}
+          blurImage={blurImage}
         />
       ));
     },
-    [bannerImageUrl, subImages, title, overlay],
+    [bannerImageUrl, subImages, title, overlay, blurImage],
   );
 
   return (
@@ -83,10 +89,11 @@ export default function ActivityImageViewer({
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
             <Image
+              loader={(props) => wsrvLoader({ ...props, quality: 80 })}
               src={bannerImage.src}
               alt={title}
               fill
-              sizes='(max-width: 768px) 50vw, 25vw'
+              sizes='(max-width: 1024px) 100vw, 50vw'
               className='object-cover cursor-pointer'
               onClick={() => handleImageClick(0)}
               onError={bannerImage.onError}
@@ -125,10 +132,12 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
+                loader={(props) => wsrvLoader({ ...props, quality: 75 })}
+                loading='lazy'
                 src={subImage1.src}
                 alt={`${title} 서브 이미지 1`}
                 fill
-                sizes='(max-width: 768px) 50vw, 25vw'
+                sizes='(max-width: 1024px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(1)}
                 onError={subImage1.onError}
@@ -155,10 +164,12 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
+                loader={(props) => wsrvLoader({ ...props, quality: 75 })}
+                loading='lazy'
                 src={subImage2.src}
                 alt={`${title} 서브 이미지 2`}
                 fill
-                sizes='(max-width: 768px) 50vw, 25vw'
+                sizes='(max-width: 1024px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(2)}
                 onError={subImage2.onError}
