@@ -107,8 +107,7 @@ const ReservationStatusPage = () => {
   };
 
   const ReservationSection = () => {
-    if (isActivityListLoading || isReservationListLoading) return null;
-
+    if (isActivityListLoading) return null;
     if (!activityListData?.activities || activityListData?.activities.length === 0) {
       return (
         <div className='flex flex-col mx-auto'>
