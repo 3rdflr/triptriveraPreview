@@ -209,7 +209,7 @@ export default function ImageGalleryModal({
                           </div>
                         )}
                         <Image
-                          loader={wsrvLoader}
+                          loader={(props) => wsrvLoader({ ...props, quality: 75 })}
                           placeholder='blur'
                           blurDataURL={allBlurImageURLs[index]}
                           src={getCurrentImageSrc(index)}
@@ -247,7 +247,7 @@ export default function ImageGalleryModal({
                     </div>
                   )}
                   <Image
-                    loader={wsrvLoader}
+                    loader={(props) => wsrvLoader({ ...props, quality: 85 })}
                     placeholder='blur'
                     blurDataURL={allBlurImageURLs[currentIndex]}
                     src={getCurrentImageSrc(currentIndex)}
@@ -327,7 +327,7 @@ export default function ImageGalleryModal({
                       whileTap={{ scale: 0.95 }}
                     >
                       <Image
-                        loader={wsrvLoader}
+                        loader={(props) => wsrvLoader({ ...props, quality: 60 })}
                         loading='lazy'
                         placeholder='blur'
                         blurDataURL={allBlurImageURLs[index]}

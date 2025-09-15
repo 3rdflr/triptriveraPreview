@@ -85,11 +85,11 @@ export default function ActivityImageViewer({
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
             <Image
-              loader={wsrvLoader}
+              loader={(props) => wsrvLoader({ ...props, quality: 80 })}
               src={bannerImage.src}
               alt={title}
               fill
-              sizes='(max-width: 768px) 50vw, 25vw'
+              sizes='(max-width: 1024px) 100vw, 50vw'
               className='object-cover cursor-pointer'
               onClick={() => handleImageClick(0)}
               onError={bannerImage.onError}
@@ -128,12 +128,12 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
-                loader={wsrvLoader}
+                loader={(props) => wsrvLoader({ ...props, quality: 75 })}
                 loading='lazy'
                 src={subImage1.src}
                 alt={`${title} 서브 이미지 1`}
                 fill
-                sizes='(max-width: 768px) 50vw, 25vw'
+                sizes='(max-width: 1024px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(1)}
                 onError={subImage1.onError}
@@ -160,12 +160,12 @@ export default function ActivityImageViewer({
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <Image
-                loader={wsrvLoader}
+                loader={(props) => wsrvLoader({ ...props, quality: 75 })}
                 loading='lazy'
                 src={subImage2.src}
                 alt={`${title} 서브 이미지 2`}
                 fill
-                sizes='(max-width: 768px) 50vw, 25vw'
+                sizes='(max-width: 1024px) 50vw, 25vw'
                 className='object-cover cursor-pointer'
                 onClick={() => handleImageClick(2)}
                 onError={subImage2.onError}
