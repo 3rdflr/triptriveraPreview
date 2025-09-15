@@ -1,5 +1,6 @@
 'use client';
 import { LoadErrorFallback } from '@/components/common/LoadErrorFallback';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -61,6 +62,8 @@ const MyExperienceCard = ({ activity, onEdit, onDelete }: MyExperienceCardProps)
             <LoadErrorFallback
               fallback={
                 <Image
+                  loader={wsrvLoader}
+                  loading='lazy'
                   src={baseImageUrl}
                   alt='이미지를 불러올 수 없습니다'
                   fill
@@ -69,6 +72,7 @@ const MyExperienceCard = ({ activity, onEdit, onDelete }: MyExperienceCardProps)
               }
             >
               <Image
+                loader={wsrvLoader}
                 src={bannerImageUrl}
                 alt='체험 관리 썸네일'
                 fill

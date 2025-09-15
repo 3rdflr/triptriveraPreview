@@ -9,11 +9,11 @@ import { format } from 'date-fns';
 import { useOverlay } from '@/hooks/useOverlay';
 import { Event as RBCEvent } from 'react-big-calendar';
 import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleModal';
-import Image from 'next/image';
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
 import clsx from 'clsx';
 import MyPageLoading from '@/components/pages/myPage/MyPageLoading';
+import EmptyList from '@/components/pages/myPage/EmptyList';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -109,17 +109,7 @@ const ReservationStatusPage = () => {
   const ReservationSection = () => {
     if (isActivityListLoading) return null;
     if (!activityListData?.activities || activityListData?.activities.length === 0) {
-      return (
-        <div className='flex flex-col mx-auto'>
-          <Image
-            src={'/images/icons/_empty.png'}
-            width={182}
-            height={182}
-            alt='예약 현황 디폴트 이미지'
-          />
-          <span className='text-18-medium text-grayscale-600'>아직 등록한 체험이 없어요</span>
-        </div>
-      );
+      return <EmptyList text='빈 리스트 이미지' />;
     }
 
     return (

@@ -16,6 +16,7 @@ import { Reservation } from '@/types/myReservation.type';
 import Image from 'next/image';
 import { useOverlay } from '@/hooks/useOverlay';
 import PaymentsModal from '../activities/payments/Payments.Modal';
+import { wsrvLoader } from '@/components/common/wsrvLoader';
 
 interface ReservationListCardProps {
   reservation: Reservation;
@@ -107,6 +108,8 @@ const ReservationListCard = ({
               <LoadErrorFallback
                 fallback={
                   <Image
+                    loader={wsrvLoader}
+                    loading='lazy'
                     src={baseImageUrl}
                     alt='이미지를 불러올 수 없습니다'
                     fill
@@ -115,6 +118,8 @@ const ReservationListCard = ({
                 }
               >
                 <Image
+                  loader={wsrvLoader}
+                  loading='lazy'
                   src={bannerImageUrl}
                   alt='예약내역 썸네일'
                   fill
