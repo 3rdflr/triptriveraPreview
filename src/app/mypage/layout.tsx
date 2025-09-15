@@ -1,5 +1,5 @@
 'use client';
-import Spinner from '@/components/common/Spinner';
+import MypageLoadingOverlay from '@/components/pages/myPage/MypageLoadingOverlay';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useUserStore } from '@/store/userStore';
@@ -34,7 +34,8 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
             isMobileMenuPage && 'mobile:hidden',
           )}
         >
-          {isPending ? <Spinner /> : children}
+          {children}
+          {isPending && <MypageLoadingOverlay />}
         </div>
       </>
     );
