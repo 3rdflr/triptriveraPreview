@@ -120,6 +120,7 @@ export function EditDropDown({ activityId, isOwner, open, setOpen }: EditDropDow
     <div ref={dropdownRef} className='relative'>
       {/* 트리거 버튼 */}
       <Button
+        aria-label='활동 수정 및 삭제 메뉴 열기'
         variant='ghost'
         className='h-8 w-8 p-0 rounded-full hover:bg-gray-100 transition-colors'
         onClick={handleToggle}

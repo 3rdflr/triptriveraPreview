@@ -28,6 +28,7 @@ export default function BookingMember({
 
       <div className='max-w-[140px] md:max-w-none lg:max-w-[140px] w-full flex items-center justify-between border border-gray-100 rounded-3xl'>
         <Button
+          aria-label='참여 인원 수 줄이기'
           variant='ghost'
           size='sm'
           className='disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 rounded-full size-10'
@@ -38,6 +39,7 @@ export default function BookingMember({
         </Button>
         <span className='font-bold'>{memberCount}</span>
         <Button
+          aria-label='참여 인원 수 늘리기'
           className='rounded-full size-10'
           variant='ghost'
           size='sm'
