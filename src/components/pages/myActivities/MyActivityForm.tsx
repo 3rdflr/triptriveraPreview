@@ -16,6 +16,7 @@ import ImageUploadSection from './ImageUploadSection';
 import Script from 'next/script';
 import { isBefore, parse } from 'date-fns';
 import RoundButton from './RoundButton';
+import MyPageLoading from '../myPage/MyPageLoading';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -65,7 +66,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
   useEffect(() => {
     if (mode === 'EDIT') {
-      if (!detailData || isDetailLoading || isDetailFetching) return;
+      if (!detailData || isDetailFetching || isEditLoading) return;
 
       const now = new Date();
 
@@ -113,7 +114,8 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
   }, [detailData, isDetailLoading, isDetailFetching, mode, methods, setOriginalSchedules]);
 
   return (
-    <div className='flex-1 flex flex-col'>
+    <div className='flex-1 flex flex-col relative'>
+      {(isDetailFetching || isRegisterLoading || isEditLoading) && <MyPageLoading />}
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <div className='flex flex-col gap-6'>

@@ -1,5 +1,5 @@
 'use client';
-import Spinner from '@/components/common/Spinner';
+import MyPageLoading from '@/components/pages/myPage/MyPageLoading';
 import SideMenu from '@/components/pages/myPage/SideMenu';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useUserStore } from '@/store/userStore';
@@ -30,11 +30,12 @@ const MyPageCommonLayout = ({ children }: MyPageCommonLayoutProps) => {
 
         <div
           className={clsx(
-            'pt-2.5 flex-1 min-w-0 min-h-70 tablet:block',
+            'pt-2.5 flex-1 min-w-0 min-h-80 tablet:block relative',
             isMobileMenuPage && 'mobile:hidden',
           )}
         >
-          {isPending ? <Spinner /> : children}
+          {children}
+          {isPending && <MyPageLoading />}
         </div>
       </>
     );
