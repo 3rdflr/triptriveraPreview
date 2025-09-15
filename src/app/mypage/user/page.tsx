@@ -17,7 +17,7 @@ import { useOverlay } from '@/hooks/useOverlay';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { successToast } from '@/lib/utils/toastUtils';
 import clsx from 'clsx';
-import MyPageLoading from '@/components/pages/myPage/MyPageLoading';
+import MypageLoadingOverlay from '@/components/pages/myPage/MypageLoadingOverlay';
 
 type UserFormValues = {
   nickname: string;
@@ -102,7 +102,7 @@ const UserPage = () => {
 
   return (
     <div className='flex flex-col gap-7.5 relative'>
-      {isLoading && <MyPageLoading />}
+      {isLoading && <MypageLoadingOverlay />}
       {/* 헤더 */}
       <div className={clsx('flex flex-col w-full items-start gap-8 pl-4')}>
         <div className='flex flex-col gap-2.5'>

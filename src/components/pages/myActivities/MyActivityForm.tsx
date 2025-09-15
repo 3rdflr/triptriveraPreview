@@ -16,7 +16,7 @@ import ImageUploadSection from './ImageUploadSection';
 import Script from 'next/script';
 import { isBefore, parse } from 'date-fns';
 import RoundButton from './RoundButton';
-import MyPageLoading from '../myPage/MyPageLoading';
+import LoadingOverlay from '../myPage/LoadingOverlay';
 
 interface MyActivityFormProps {
   mode?: 'EDIT' | 'REGISTER';
@@ -115,7 +115,7 @@ const MyActivityForm = ({ mode = 'REGISTER', activityId }: MyActivityFormProps) 
 
   return (
     <div className='flex-1 flex flex-col relative'>
-      {(isDetailFetching || isRegisterLoading || isEditLoading) && <MyPageLoading />}
+      {(isDetailFetching || isRegisterLoading || isEditLoading) && <LoadingOverlay />}
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <div className='flex flex-col gap-6'>

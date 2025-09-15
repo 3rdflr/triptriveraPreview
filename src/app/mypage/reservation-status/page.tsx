@@ -12,8 +12,8 @@ import ReservedScheduleModal from '@/components/pages/myPage/ReservedScheduleMod
 import { useScheduleStore } from '@/store/reservedScheduleStore';
 import { getReservationDashboard } from '@/app/api/myReservations';
 import clsx from 'clsx';
-import MyPageLoading from '@/components/pages/myPage/MyPageLoading';
 import EmptyList from '@/components/pages/myPage/EmptyList';
+import MypageLoadingOverlay from '@/components/pages/myPage/MypageLoadingOverlay';
 
 const ReservationStatusPage = () => {
   const overlay = useOverlay();
@@ -139,7 +139,7 @@ const ReservationStatusPage = () => {
 
   return (
     <div className='flex flex-col gap-5 pl-4 relative'>
-      {(isActivityListLoading || isReservationListLoading) && <MyPageLoading />}
+      {(isActivityListLoading || isReservationListLoading) && <MypageLoadingOverlay />}
       {/* 헤더 */}
       <div className='px-6 sm:px-0 flex flex-col gap-4'>
         <div className='flex flex-col md:flex-row w-full justify-between items-start md:items-center gap-4 md:gap-16'>
