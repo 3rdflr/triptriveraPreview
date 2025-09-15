@@ -99,10 +99,10 @@ export default function ActivityClient({ activityId, blurImage }: ActivityClient
   const addViewed = useRecentViewedStore((s) => s.addViewed);
 
   useEffect(() => {
-    if (activity) {
+    if (activity?.id) {
       addViewed(activity);
     }
-  }, [activity, addViewed]);
+  }, [activity, addViewed]); // eslint 경고 해결을 위해 원복하되, 조건문 최적화
 
   useEffect(() => {
     if (user?.id === activity.userId) {

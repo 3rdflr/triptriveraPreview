@@ -2,6 +2,7 @@
 
 import { ActivityDetail } from '@/types/activities.type';
 import { MapPin, Star } from 'lucide-react';
+import { memo } from 'react';
 
 import { twMerge } from 'tailwind-merge';
 import { EditDropDown } from './EditDropDown';
@@ -18,7 +19,11 @@ interface ActivityInfoProps {
   isOwner: boolean;
 }
 
-export default function ActivityInfo({ activity, className, isOwner }: ActivityInfoProps) {
+const ActivityInfo = memo(function ActivityInfo({
+  activity,
+  className,
+  isOwner,
+}: ActivityInfoProps) {
   return (
     <div className={twMerge('flex flex-col gap-2 justify-self-start', className)}>
       {/* 카테고리 및 드롭다운 */}
@@ -46,4 +51,6 @@ export default function ActivityInfo({ activity, className, isOwner }: ActivityI
       </div>
     </div>
   );
-}
+});
+
+export default ActivityInfo;

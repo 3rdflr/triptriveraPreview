@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import BookingCardDesktop from './BookingCardDesktop';
-import BookingCardMobile from './BookingCardMobile';
+import { lazy, Suspense } from 'react';
+
+// 모바일 예약 카드 지연 로딩
+const BookingCardMobile = lazy(() => import('./BookingCardMobile'));
 import BookingError from '@/components/pages/activities/bookingCard/BookingError';
 import { ErrorBoundary } from 'react-error-boundary';
 import { getAvailableSchedule } from '@/app/api/activities';
@@ -189,7 +192,15 @@ export default function BookingContainer({
           <DrawerTitle></DrawerTitle>
           <DrawerDescription></DrawerDescription>
           <DrawerContent aria-describedby='예약 바텀시트'>
-            <BookingCardMobile {...bookingCardProps} />
+            <Suspense
+              fallback={
+                <div className='flex items-center justify-center h-96'>
+                  <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500'></div>
+                </div>
+              }
+            >
+              <BookingCardMobile {...bookingCardProps} />
+            </Suspense>
           </DrawerContent>
         </Drawer>
       </div>
